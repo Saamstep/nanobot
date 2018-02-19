@@ -4,14 +4,14 @@ const bot = new Discord.Client();
 const config = require("./config.json");
 client.login(config.token);
 const fs = require("fs");
+var colors = require('colors');
 
 
 client.on("ready", () => {
-  client.user.setGame("Minecraft").catch(console.error);
-  client.user.setStatus('away');
-  (message => message.delete([2000]));
-  setTimeout(() => { client.user.setStatus("online"); }, 5000);
-  console.log("Nanobot enabled.");
+  client.user.setPresence({game: {name: "Minecraft", type: 0} }).catch(console.error);
+  console.log(`\n\n${config.serverName}'s bot is online!`.green)
+  console.log(`\n\nBot successfully running. Keep this window open!\n\n`.red)
+  console.log(`Prefix: ${config.prefix}`.blue);
 });
 
 
@@ -59,8 +59,23 @@ client.on("message", message => {
   } catch (err) {
     // console.error(err);
     // console.log("hi");
+    console.log(err);
   }
 });
+
+/*
+client.elevation = message => {
+  /* This function should resolve to an ELEVATION level which
+     is then sent to the command handler for verification
+  let permlvl = 0;
+  const mod_role = message.guild.roles.find('name', config.modrolename);
+  if (mod_role && message.member.roles.has(mod_role.id)) permlvl = 2;
+  const admin_role = message.guild.roles.find('name', config.adminrolename);
+  if (admin_role && message.member.roles.has(admin_role.id)) permlvl = 3;
+  if (message.author.id === config.ownerid) permlvl = 4;
+  return permlvl;
+};
+*/
 
 
 client.on("guildMemberAdd", member => {

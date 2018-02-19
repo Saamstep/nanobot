@@ -1,16 +1,19 @@
+const config = require('../config.json');
+
 exports.run = (client, message, args) => {
   var request = require('request');
 
-  var mcIP = '167.114.208.237'; // Your MC server IP
-  var mcPort = `25560`; // Your MC server port
+  var mcIP = `${config.mcIP}`; // Your MC server IP
+  var mcPort = `${config.mcPort}`; // Your MC server port
   var url = 'http://mcapi.us/server/status?ip=' + mcIP + '&port=' + mcPort;
+
   request(url, function(err, response, body) {
     if(err) {
       console.log(err);
       return message.reply('Error getting Minecraft server status...');
     }
     body = JSON.parse(body);
-    var status = '**NanoSMP** is currently offline.';
+    var status = '**' + serverName + '** is currently offline.';
     if(body.online) {
       status = '**NanoSMP** server is **online**  -  ';
       if(body.players.now) {
@@ -21,5 +24,19 @@ exports.run = (client, message, args) => {
     }
     message.reply(status);
   });
+
+  // exports.conf = {
+  //   enabled: true,
+  //   guildOnly: false,
+  //   aliases: ['check'],
+  //   permLevel: 0
+  // };
+
+  // exports.help = {
+  //   name: 'server',
+  //   description: 'Checks status of the server',
+  //   usage: 'server'
+  // };
+
 
 };

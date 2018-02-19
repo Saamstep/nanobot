@@ -1,15 +1,17 @@
+const config = require('../config.json');
+
 exports.run = (client, message, args) => {
 
   let reportedUser = message.mentions.users.first();
   let guild = message.guild;
   let reportOptions = args[0];
   let reportType = args[1];
-  let modchannel = guild.channels.find("name", "log");
+  let modchannel = guild.channels.find("name", `${config.logchannel}`);
   let reportReason = ["Bullying/Harrasment", "Racism", "Blackmail", "Inapropriate DMs", "Spam", "Advertising", "Bad Attitude"];
   let reportTypeConverted = reportReason[+ reportType - 1];
   var reportSys = function(reportedUser, reportType) {
 
-
+//sends to log channel
     modchannel.send('', {embed: {
       color: 0x8B0000,
       fields: [{
@@ -50,7 +52,7 @@ exports.run = (client, message, args) => {
       color: 0x8B0000,
       fields: [{
         name: "Report Types",
-        value: "\u200b"
+        value: `${config.prefix}report [username] [reasonNumber]`
       },
       {
         name: "1",
@@ -88,10 +90,10 @@ exports.run = (client, message, args) => {
     }
     }
 );}
-
+//reporter confirmation DM
   if (reportType <= 7) {
     message.delete(0);
     reportSys(reportedUser, reportType);
-    message.author.send(":printer: | You're report about " + reportedUser + " for **" + reportTypeConverted + "** has been recived. If the issue does become more serious please Direct message a moderator and report ALL abuse to discord (https://support.discordapp.com/hc/en-us/articles/115002334127-Contacting-Abuse-Support). You can also change your privacy settings (https://support.discordapp.com/hc/en-us/articles/217916488-Blocking-Privacy-Settings).");
+    message.author.send(":printer: | You're report about " + reportedUser + " for **" + reportTypeConverted + "** has been recived. If the issue does become more serious please Direct message a moderator and report ALL abuse to discord (https://support.discordapp.com/hc/en-us/articles/115002334127-Contacting-Abuse-Support). You can also change your privacy config (https://support.discordapp.com/hc/en-us/articles/217916488-Blocking-Privacy-Settings).");
   }
 };

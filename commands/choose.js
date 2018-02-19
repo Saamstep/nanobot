@@ -9,4 +9,17 @@ exports.run = (client, message, args) => {
     message.reply("I choose " + data2);
   }
 
+  exports.conf = {
+    enabled: true,
+    guildOnly: false,
+    aliases: ['other', 'o'],
+    permLevel: 0
+  };
+    
+  exports.help = {
+    name: 'choose',
+    description: 'Choose between 2 things',
+    usage: 'choose [thing1] [thing2]'
+  }
+
 };

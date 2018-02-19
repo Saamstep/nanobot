@@ -5,5 +5,17 @@ exports.run = (client, message, args) => {
   } else {
     message.reply(":arrows_counterclockwise: | Tails");
   }
+  exports.conf = {
+    enabled: true,
+    guildOnly: false,
+    aliases: ['coin', 'coinflip'],
+    permLevel: 0
+  };
+    
+  exports.help = {
+    name: 'flip',
+    description: 'Flips a coin',
+    usage: 'flip'
+  }
 
 };

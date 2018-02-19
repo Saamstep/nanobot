@@ -1,0 +1,13 @@
+{
+    "prefix": "?", 
+    "token": "string",
+    "ownerid": "string",
+    "modrolename": "Mod",
+    "adminrolename": "Admin",
+    "memberrole": "Member",
+    "log": "log",
+    "mcIP": "serverIP",
+    "mcPort": "", 
+    "serverName": "CoolCraftNetwork",
+    "acceptMessage": "Congratulations your application was accepted. Please make sure to read the **welcome** channel for more information. The IP is ip.net enjoy crafting!"
+}
