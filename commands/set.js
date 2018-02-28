@@ -4,7 +4,7 @@ const logEvent = require("../logMod.js");
 exports.run = (client, message, args) => {
     let option = args[0];
     
-
+// allows you to change options from config.json file
 switch (option) {
     case "prefix":
         let newPrefix = args[1]
