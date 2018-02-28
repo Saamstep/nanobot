@@ -9,6 +9,9 @@ exports.run = (client, message, args) => {
  member.send(config.acceptMessage).catch(console.error);
  message.channel.send("Accepted " + member);
 
+  const logEvent = require("../logMod.js");
+
+   logEvent("Member Added", `${member} has been promoted to Member.`, 13632027,  message);
 
 
 
@@ -31,10 +34,10 @@ exports.run = (client, message, args) => {
   //   permLevel: 4
   // };
     
-  // exports.help = {
-  //   name: 'member',
-  //   description: 'Promotes a user to member and sends them all server info.',
-  //   usage: 'member [user]'
-  // }
+  exports.help = {
+    name: 'member',
+    description: 'Promotes a user to member and sends them all server info.',
+    usage: 'member [user]'
+  }
 
 }

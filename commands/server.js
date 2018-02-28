@@ -10,19 +10,19 @@ exports.run = (client, message, args) => {
   request(url, function(err, response, body) {
     if(err) {
       console.log(err);
-      return message.reply('Error getting Minecraft server status...');
+      return message.channel.send(':warning: Error getting Minecraft server status...');
     }
     body = JSON.parse(body);
-    var status = '**' + serverName + '** is currently offline.';
+    var status = '**' + config.serverName + '** is currently offline.';
     if(body.online) {
-      status = '**NanoSMP** server is **online**  -  ';
+      status = config.serverName + ' is **online**';
       if(body.players.now) {
-        status += '**' + body.players.now + '** persons are playing!';
+        status += '\n**' + body.players.now + '** persons are playing!';
       } else {
-        status += '*Nobody is playing!*';
+        status += '\n*Nobody is playing!*';
       }
     }
-    message.reply(status);
+    message.channel.send(status);
   });
 
   // exports.conf = {

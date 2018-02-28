@@ -5,21 +5,23 @@ exports.run = (client, message, args) => {
   var url = 'https://mcapi.us/server/status?ip=' + mcIP;
   request(url, function(err, response, body) {
 
-    if(err) {
-      console.log(err);
-      return message.reply('There was an error getting the Minecraft server status.');
-    }
+ 
     body = JSON.parse(body);
-    var status = 'The server is currently offline';
+    var status = '\n**Server:** :x:';
     if(body.online) {
-      status = 'The server is **online**  -  ';
+      status = '\n**Server:** :white_check_mark:';
       if(body.players.now) {
-        status += '**' + body.players.now + '** persons are playing!';
+        status += '\n**Players:** ' + body.players.now;
       } else {
-        status += '*Nobody is playing!*';
+        status += '\n**Players:** 0';
       } 
     }
-    message.reply(status + " Direct URL: " + url);
+
+    if (mcIP) {
+    message.channel.send("\n**" + mcIP + "** " + status);
+    } else {
+      return message.reply("Provide an IP please.");
+    }
   });
 
 };

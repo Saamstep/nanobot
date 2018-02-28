@@ -1,6 +1,6 @@
 {
     "prefix": "?", 
-    "token": "string",
+    "token": "000000",
     "ownerid": "string",
     "modrolename": "Mod",
     "adminrolename": "Admin",
