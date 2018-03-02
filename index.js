@@ -7,12 +7,12 @@ const fs = require("fs");
 var colors = require('colors');
 
 
-client.on("ready", () => {
-  client.user.setPresence({game: {name: "Minecraft", type: 0} }).catch(console.error);
-  console.log(`\n\n${config.serverName}'s bot is online!`.green)
-  console.log(`\n\nBot successfully running. Keep this window open!\n\n`.red)
-  console.log(`Prefix: ${config.prefix}`.blue);
-});
+// client.on("ready", () => {
+//   client.user.setPresence({game: {name: "Minecraft", type: 0} }).catch(console.error);
+//   console.log(`\n\n[${config.serverName} ] bot is online!`.green)
+//   console.log(`\n\nBot successfully running. Keep this window open!\n\n`.red)
+//   console.log(`Prefix: ${config.prefix}`.blue);
+// });
 
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
@@ -58,62 +58,13 @@ client.on("message", message => {
     let commandFile = require(`./commands/${command}.js`);
     commandFile.run(client, message, args);
   } catch (err) {
-   if (config.debug === 0) {
+   if (config.debug === "on") {
      console.log(err);
+   } else {
+     return;
    }
   }
 
  
 
-});
-
-
-
-
-
-client.on("guildMemberAdd", member => {
-  const channel = member.guild.channels.find("name", "general");
-  if (!channel) return;
-  // Send the message, mentioning the member
-  channel.send(`Welcome to the server **${member}**`);
-});
-
-client.on("guildMemberRemove", member => {
-  let gchannel = member.guild.channels.find("name", "general");
-  gchannel.send(` **${member}** left the server`);
-});
-
-
-client.on("guildBanAdd",(guild, user) => {
-  let logchannel = guild.channels.find("name", "log");
-  logchannel.send('', {embed: {
-    color: 44242,
-    author: {
-      name: "A user was banned!"
-    },
-    title: '\nUsername:',
-    description: `${user.username}`,
-    timestamp: new Date(),
-    footer: {
-      text: 'Logged by honeydewbot'
-    }
-  }
-  });
-});
-
-client.on('guildBanRemove',(guild, user) => {
-  let logchannel = guild.channels.find("name", "log");
-  logchannel.send('', {embed: {
-    color: 44242,
-    author: {
-      name: "A user was banned!"
-    },
-    title: '\nUsername:',
-    description: `${user.username}`,
-    timestamp: new Date(),
-    footer: {
-      text: 'Logged by honeydewbot'
-    }
-  }
-  });
 });

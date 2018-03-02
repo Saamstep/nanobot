@@ -1,6 +1,8 @@
 const config = require('../config.json');
 const fs = require("fs")
-const logEvent = require("../logMod.js");
+const logEvent = require("../modules/logMod.js");
+const consoleEvent = require("../modules/consoleMod.js");
+
 exports.run = (client, message, args) => {
     let option = args[0];
     
@@ -9,15 +11,14 @@ switch (option) {
     case "prefix":
         let newPrefix = args[1]
         config.prefix = newPrefix;
-        // fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error);
-        fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error);
+        fs.writeFile("../config.json", JSON.stringify(config, null, 2), (err) => console.error);
         message.channel.send(`New prefix is now **${newPrefix}**`)
         logEvent("New Prefix", `Prefix has been changed to **${newPrefix}**`, 16776960,  message);
         break;
     case "ip":
         let newIP = args[1];    
         config.mcIP = newIP;
-        fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error);
+        fs.writeFile("../config.json", JSON.stringify(config, null, 2), (err) => console.error);
         message.channel.send(`IP changed to **${newIP}**`)
         logEvent("IP Updated", `IP has been changed to **${newIP}**`, 16776960,  message);
         break;
@@ -37,7 +38,7 @@ switch (option) {
         break;
     case "acceptmessage":
         let tl = args[1]
-        let newAcceptMessage = args.join(' ').replace('acceptmessage', "");
+        let newAcceptMessage = args.join(' ').slice(14);
         config.acceptMessage = newAcceptMessage
         fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error);
         message.channel.send(`Accept message changed to **${newAcceptMessage}**`)
@@ -55,7 +56,7 @@ switch (option) {
     }
         break;
     case "servername":
-        let newServerName = args.join(' ').replace('servername', "");
+        let newServerName = args.join(' ').slice(11);
         config.serverName = newServerName
         fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error);
         message.channel.send(`Server name changed to **${newServerName}**`)
@@ -63,15 +64,27 @@ switch (option) {
         break;
     case "debug":
         let newDebug = args[1];
-        if (newDebug === 0) {
+        if (newDebug === "on") {
             config.debug = newDebug
             fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error);
+            consoleEvent("Debug mode was enabled");
+            message.channel.send("Debug mode enabled.");
+            return;
+        } 
+        if (newDebug === "off") {
+            config.debug = newDebug
+            fs.writeFile("./config.json", JSON.stringify(config, null, 2), (err) => console.error);
+            consoleEvent("Debug mode was disabled");
+            message.channel.send(`Debug mode disabled.`);
+            return;
+        } else {
+            return message.channel.send("Value must be ON or OFF.")
         }
     default:
          message.channel.send(`*You can edit these values using this syntax
                ${config.prefix}set [option] [newOne]*\n`)
     //usage
-        message.channel.send(`__Usage__\n**Prefix:** ${config.prefix}\n**Log Channel:** ${config.log}`);
+        message.channel.send(`__Usage__\n**Prefix:** ${config.prefix}\n**Log Channel:** ${config.log}\n**Debug:** ${config.debug}`);
     //text
         message.channel.send(`__Text__\n**Server Name:** ${config.serverName}\n**Accept Message:** ${config.acceptMessage}\n**IP:** ${config.mcIP}\n**Port:** *(Leave empty if none)* ${config.mcPort}`);
     //roles

@@ -10,7 +10,7 @@ exports.run = (client, message, args) => {
   request(url, function(err, response, body) {
     if(err) {
       console.log(err);
-      return message.channel.send(':warning: Error getting Minecraft server status...');
+      return message.chanel.send(':warning: Error getting Minecraft server status...');
     }
     body = JSON.parse(body);
     var status = '**' + config.serverName + '** is currently offline.';

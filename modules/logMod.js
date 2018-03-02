@@ -1,5 +1,5 @@
 module.exports = function logEvent(event, reason, color, message) { 
-  const config = require('./config.json');
+  const config = require('../config.json');
 
   const embed = {
     "color": color,
