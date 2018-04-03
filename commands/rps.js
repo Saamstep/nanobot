@@ -1,62 +1,28 @@
-exports.run = (client, message, args) => { /*
-  let userInput = args[0];
-  let pcInput = Math.floor((Math.random() * 3 ) + 1);
-  let correctVal = ["rock", "paper", "scissors"];
+exports.run = (client, message, args) => {
+  let userInput = args[0].toLowerCase();
+  let pcInput = Math.floor(Math.random() * 3 + 1);
+  let correctVal = ['rock', 'paper', 'scissors'];
+  let compressed = correctVal[pcInput];
 
-//The code that runs after the correctVal is found
-  var game = function ()
-    {
-    message.channel.send("The :robot: is choosing a random object...");
-    botChoose();
-
-  };
-
-  var botChoose = function()
-  {
-    if (pcInput === 1) {
-      let pcVal = "rock";
-      message.channel.send("The :robot: chooses: " + pcVal);
-    } else if(pcInput === 2) {
-      let pcVal = "paper";
-      message.channel.send("The :robot: chooses: " + pcVal);
-    } else if(pcInput === 3) {
-      message.channel.send("The :robot: chooses: " + pcVal);
-      let pcVal = "scissors";
-    }
-  };
-
-
-  // Check val. [correctVal]
-
-  if(userInput === correctVal[0])
-  {
-
-    return game();
-
-  } else if(userInput === correctVal[1])
-  {
-
-    return game();
-
-  } else if(userInput === correctVal[2])
-  {
-
-    return game();
-
-  } else if(userInput !== correctVal) {
-    return message.reply(":no_entry_sign: | Please input: rock, paper, or scissors");
+  function computerValue() {
+    message.channel.send(
+      'The bot has chosen: ' + '`' + correctVal[pcInput] + '`'
+    );
   }
 
-// if two of the outputs are equal then produce a winner
-  var compare = function ()
-  {
-    if (pcVal === userInput) {
-//
+  if (!userInput) {
+    return message.channel.send('You must choose `rock, paper, or scissors`.');
+  }
+
+  function analyze(userInput, compressed) {
+    if ((userInput = compressed)) {
+      return message.channel.send("It's a tie!");
     }
+    if (userInput == 'paper' && compressed == 'rock') {
+      return message.channel.send('Bot wins!');
+    }
+  }
 
-
-
-  };
-*/
-  message.reply("This doesn't work yet 😛");
+  computerValue();
+  analyze();
 };
