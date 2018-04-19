@@ -2,6 +2,7 @@ const config = require('../config.json');
 const fs = require('fs');
 const logEvent = require('../modules/logMod.js');
 const consoleEvent = require('../modules/consoleMod.js');
+const error = require('../modules/errorMod.js');
 
 exports.run = (client, message, args) => {
   let option = args[0];
@@ -151,6 +152,26 @@ exports.run = (client, message, args) => {
       } else {
         return message.channel.send('Value must be ON or OFF.');
       }
+    case 'website':
+      let newSite = args[1];
+      if (newSite.includes('http://')) {
+        config.website = newSite;
+        fs.writeFile(
+          './config.json',
+          JSON.stringify(config, null, 2),
+          err => console.error
+        );
+        message.channel.send('Website changed to ' + newSite);
+        logEvent(
+          'Website Update',
+          `Website has been changed to **${newLog}**`,
+          16776960,
+          message
+        );
+      } else {
+        return error('This must be a valid website URL!', message);
+      }
+
     default:
       message.channel.send(`*You can edit these values using this syntax
                ${config.prefix}set [option] [newOne]*\n`);
@@ -166,7 +187,7 @@ exports.run = (client, message, args) => {
           config.acceptMessage
         }\n**IP:** ${config.mcIP}\n**Port:** *(Leave empty if none)* ${
           config.mcPort
-        }`
+        }\n**Website:** ${config.website}`
       );
       //roles
       message.channel.send(

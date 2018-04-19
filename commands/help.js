@@ -1,27 +1,33 @@
-const config = require('../config.json');
+// hi
 exports.run = (client, message, args) => {
-  if (!args[0]) {
-    const commandNames = Array.from(client.commands.keys());
-    const longest = commandNames.reduce((long, str) => Math.max(long, str.length), 0);
-    message.channel.send(`= Command List =\n\n[Use ${config.prefix}help <commandname> for details]\n\n${client.commands.map(c => `${config.prefix}${c.help.name}${' '.repeat(longest - c.help.name.length)} :: ${c.help.description}`).join('\n')}`, {code:'asciidoc'});
-  } else {
-    let command = args[0];
-    if (client.commands.has(command)) {
-      command = client.commands.get(command);
-      message.channel.send(`= ${command.help.name} = \n${command.help.description}\nusage::${command.help.usage}`, {code:'asciidoc'});
-    }
-  }
+  // const config = require('../config.json');
+  // let command = message.content.split(' ')[0];
+  // command = command.slice(config.prefix.length);
+
+  const testFolder = './commands/';
+  const fs = require('fs');
+  const config = require('../config.json');
+
+  fs.readdir(testFolder, (err, files) => {
+    files.forEach(file => {
+      let otherfile = require(`../commands/${file}`);
+      // let desc = otherfile.description;
+      // console.log(otherfile + '||' + description);
+      // function parsedData() {
+      // let parsedData =
+      //   `${config.prefix}` +
+      //   file.toString().replace('.js', ` - ${accept.description}`);
+      // message.channel.send(`${parsedData}`);
+      // }
+    });
+  });
+  // parsedData();
+  // message.channel.send(`${file.join('\n')}`, { code: 'asciidoc' });
+  var description = require('../commands/accept.js').description;
+
+  console.log(description);
 };
 
-exports.conf = {
-  enabled: true,
-  guildOnly: false,
-  aliases: ['h', 'halp'],
-  permLevel: 0
-};
-  
 exports.help = {
-  name: 'help',
-  description: 'Displays all the available commands for your permission level.',
-  usage: 'help [command]'
+  description: 'Displays all the available commands for your permission level.'
 };

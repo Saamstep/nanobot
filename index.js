@@ -33,7 +33,7 @@ client.on('message', message => {
   if (message.content.includes(`youtu.be`)) {
     message.react(`👍`);
   }
-  if (message.content.includes(`${config.mcIP}`)) {
+  if (message.content.includes(`${config.mcIP}`) && !message.author.bot) {
     message.react(`✅`);
   }
 
@@ -42,7 +42,7 @@ client.on('message', message => {
 
   let command = message.content.split(' ')[0];
   command = command.slice(config.prefix.length);
-
+  client.config = config;
   let args = message.content.split(' ').slice(1);
   // The list of if/else is replaced with those simple 2 lines:
 
