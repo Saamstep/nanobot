@@ -23,11 +23,7 @@ exports.run = (client, message, args) => {
   });
   // parsedData();
   // message.channel.send(`${file.join('\n')}`, { code: 'asciidoc' });
-  var description = require('../commands/accept.js').description;
+  var description = require('../commands/accept.js');
 
-  console.log(description);
-};
-
-exports.help = {
-  description: 'Displays all the available commands for your permission level.'
+  console.log(JSON.stringify(description));
 };
