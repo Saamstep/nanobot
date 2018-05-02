@@ -1,7 +1,7 @@
 exports.run = (client, message, args) => {
   let data1 = args[0];
   let data2 = args[1];
-  let chooseVal = Math.floor((Math.random() * 2 ) + 1);
+  let chooseVal = Math.floor((Math.random() * 2) + 1);
   if (chooseVal == 2) {
 
     message.reply("I choose " + data1);
@@ -15,7 +15,7 @@ exports.run = (client, message, args) => {
     aliases: ['other', 'o'],
     permLevel: 0
   };
-    
+
   exports.help = {
     name: 'choose',
     description: 'Choose between 2 things',
@@ -23,3 +23,6 @@ exports.run = (client, message, args) => {
   }
 
 };
+
+
+exports.description = 'Choose between two listed things.'

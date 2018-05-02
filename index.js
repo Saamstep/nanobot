@@ -52,8 +52,6 @@ client.on('message', message => {
   } catch (err) {
     if (config.debug === 'on') {
       console.log(err);
-    } else {
-      return;
     }
   }
 
@@ -61,6 +59,10 @@ client.on('message', message => {
     let commandFile = require(`./commands/cc/${command}.js`);
     commandFile.run(client, message, args);
   } catch (err) {
-    return;
+    if (config.debug === 'on') {
+      console.log(err);
+    } else {
+      return;
+    }
   }
 });

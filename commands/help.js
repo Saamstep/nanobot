@@ -1,29 +1,38 @@
 // hi
 exports.run = (client, message, args) => {
-  // const config = require('../config.json');
-  // let command = message.content.split(' ')[0];
-  // command = command.slice(config.prefix.length);
+  const config = require('../config.json');
+  let command = message.content.split(' ')[0];
+  command = command.slice(config.prefix.length);
 
   const testFolder = './commands/';
   const fs = require('fs');
-  const config = require('../config.json');
+  var path = '../NanoBot/commands.txt'
+
+  // fs.unlinkSync(path, function (err) {
+  //   if (err) throw err;
+  // });
 
   fs.readdir(testFolder, (err, files) => {
     files.forEach(file => {
-      let otherfile = require(`../commands/${file}`);
-      // let desc = otherfile.description;
-      // console.log(otherfile + '||' + description);
-      // function parsedData() {
-      // let parsedData =
-      //   `${config.prefix}` +
-      //   file.toString().replace('.js', ` - ${accept.description}`);
-      // message.channel.send(`${parsedData}`);
-      // }
-    });
-  });
-  // parsedData();
-  // message.channel.send(`${file.join('\n')}`, { code: 'asciidoc' });
-  var description = require('../commands/accept.js');
+      let cmdfiles = require(`../commands/${file}`);
+      const config = require('../config.json');
+      if (file === "cc") {
+        fs.appendFile('commands.txt', '')
+      } else {
+        fs.appendFile('commands.txt', `${config.prefix}` + file.toString().replace('.js', ` - ${cmdfiles.description}\n`, function (err) {
+          if (err) return;
+        }));
+      }
 
-  console.log(JSON.stringify(description));
+      // let parsedData = + `?` + file.toString().replace('.js', ` - ${cmdfiles.description}\n`);
+
+
+
+
+    });
+
+  });
+  message.channel.send(JSON.parse(fs.readFileSync('NanoBot/commands.txt', 'utf8')));
 };
+
+exports.description = 'Shows all commands.'

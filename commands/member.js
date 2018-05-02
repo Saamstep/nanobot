@@ -42,3 +42,5 @@ exports.run = (client, message, args) => {
   //   usage: 'member [user]'
   // }
 };
+
+exports.description = 'Allows mods promote users to Member without sending the accept message.'

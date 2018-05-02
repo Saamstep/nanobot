@@ -1,5 +1,5 @@
 exports.run = (client, message, args) => {
-  let coinVal = Math.floor((Math.random() * 2 ) + 1);
+  let coinVal = Math.floor((Math.random() * 2) + 1);
   if (coinVal == 2) {
     message.reply(":arrows_counterclockwise: | Heads");
   } else {
@@ -11,7 +11,7 @@ exports.run = (client, message, args) => {
     aliases: ['coin', 'coinflip'],
     permLevel: 0
   };
-    
+
   exports.help = {
     name: 'flip',
     description: 'Flips a coin',
@@ -19,3 +19,5 @@ exports.run = (client, message, args) => {
   }
 
 };
+
+exports.description = 'Flips a coin.'

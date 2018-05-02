@@ -1,5 +1,6 @@
 exports.run = (client, message, args) => {
-  message.channel.sendEmbed({ color: 3447003,
+  message.channel.sendEmbed({
+    color: 3447003,
     title: "Creator:",
     description: "This bot was made by Samstep",
     fields: [{
@@ -9,17 +10,6 @@ exports.run = (client, message, args) => {
     }]
   });
 
-  exports.conf = {
-    enabled: true,
-    guildOnly: false,
-    aliases: ['bot', 'about'],
-    permLevel: 0
-  };
-
-  exports.help = {
-    name: 'bot',
-    description: 'Bot creator displayed',
-    usage: 'bot'
-  };
-
 };
+
+exports.description = 'Shows info about the bot.'

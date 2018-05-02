@@ -4,14 +4,23 @@ exports.run = (client, message, args) => {
   let acceptMember = message.guild.member(message.mentions.users.first());
   let guild = message.guild.id;
   let memberRole = message.guild.roles.find('name', `${config.memberrole}`);
+  let adminRole = message.member.roles.find('name', `${config.adminrolename}`);
 
-  if (!acceptMember) {
-    errorMod('Please mention a user', message);
-  }
-  if (acceptMember) {
-    acceptMember.addRole(memberRole);
-    message.acceptMember.send(`${config.acceptMessage}`);
+  if (!message.member.roles.has(adminRole.id)) {
+    return errorMod('You do not have the right permissions', message);
   }
 
-  exports.description = 'Allows mod to accept members.';
+  if (message.mentions.users.size === 0) {
+    return errorMod('Please mention a user', message);
+  }
+  if (acceptMember.roles.not(memberRole.id)) {
+    // acceptMember.addRole(memberRole);
+    message.guild.member(acceptMember).addRole(memberRole);
+    acceptMember.send(`${config.acceptMessage}`);
+    message.react('✅');
+  } else {
+    return errorMod('This user already is a member', message);
+  }
 };
+exports.description = 'Allows mods to accept members.'
+

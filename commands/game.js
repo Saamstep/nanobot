@@ -43,3 +43,5 @@ exports.run = (client, message, args) => {
   //   usage: 'game [new]'
   // };
 };
+
+exports.description = 'Allows admins to change the game.'

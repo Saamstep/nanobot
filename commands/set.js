@@ -178,22 +178,23 @@ exports.run = (client, message, args) => {
       //usage
       message.channel.send(
         `__Usage__\n**Prefix:** ${config.prefix}\n**Log Channel:** ${
-          config.log
+        config.log
         }\n**Debug:** ${config.debug}\n**Default Game:** ${config.defaultGame}`
       );
       //text
       message.channel.send(
         `__Text__\n**Server Name:** ${config.serverName}\n**Accept Message:** ${
-          config.acceptMessage
+        config.acceptMessage
         }\n**IP:** ${config.mcIP}\n**Port:** *(Leave empty if none)* ${
-          config.mcPort
+        config.mcPort
         }\n**Website:** ${config.website}`
       );
       //roles
       message.channel.send(
         `__Roles__\n**Mod Role:** ${config.modrolename}\n**Admin Role:** ${
-          config.adminrolename
+        config.adminrolename
         }\n**Member Role:** ${config.memberrole}\n`
       );
   }
 };
+exports.description = 'Allows admins to change the bot\'s settings.'

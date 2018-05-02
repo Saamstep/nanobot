@@ -26,3 +26,6 @@ exports.run = (client, message, args) => {
   computerValue();
   analyze();
 };
+
+
+exports.description = '(Non functional) Rock, paper, scissors.'

@@ -5,7 +5,7 @@ var errorEvent = require('../modules/errorMod.js');
 exports.run = (client, message, args) => {
   var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json';
 
-  request(url, function(err, response, body) {
+  request(url, function (err, response, body) {
     if (err) {
       // console.log(err);
       return errorEvent('Could not fetch Discord status', message);
@@ -25,3 +25,5 @@ exports.run = (client, message, args) => {
     }
   });
 };
+
+exports.description = 'Checks Discord status.'

@@ -7,16 +7,16 @@ exports.run = (client, message, args) => {
   var mcPort = `${config.mcPort}`; // Your MC server port
   var url = 'http://mcapi.us/server/status?ip=' + mcIP + '&port=' + mcPort;
 
-  request(url, function(err, response, body) {
-    if(err) {
+  request(url, function (err, response, body) {
+    if (err) {
       console.log(err);
       return message.chanel.send(':warning: Error getting Minecraft server status...');
     }
     body = JSON.parse(body);
     var status = '**' + config.serverName + '** is currently offline.';
-    if(body.online) {
+    if (body.online) {
       status = config.serverName + ' is **online**';
-      if(body.players.now) {
+      if (body.players.now) {
         status += '\n**' + body.players.now + '** persons are playing!';
       } else {
         status += '\n*Nobody is playing!*';
@@ -40,3 +40,5 @@ exports.run = (client, message, args) => {
 
 
 };
+
+exports.description = 'Get server status for said Minecraft server.'

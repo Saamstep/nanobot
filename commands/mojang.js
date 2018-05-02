@@ -3,15 +3,15 @@ var request = require('request');
 
 exports.run = (client, message, args) => {
 
-var url = "https://status.mojang.com/check"
+  var url = "https://status.mojang.com/check"
 
-request(url, function(err, response, body) {
-    if(err) {
+  request(url, function (err, response, body) {
+    if (err) {
       console.log(err);
       return message.reply('Error getting Mojang status.');
     }
     body = JSON.parse(body);
-    
+
     var mcnet = body[0]['minecraft.net'];
     // console.log(body);
     // console.log(mcnet);
@@ -26,10 +26,12 @@ request(url, function(err, response, body) {
 
       responseString += `\n**${domain}:** ${connected ? ':white_check_mark:\n' : ':x:\n'}`;
 
-      
-      
+
+
     }
     message.channel.send(responseString)
 
-})
+  })
 }
+
+exports.description = 'Gets Mojang server status.'

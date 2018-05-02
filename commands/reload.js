@@ -7,3 +7,5 @@ exports.run = (client, message, args) => {
     message.reply(`The command ${args[0]} has been reloaded`);
   }
 };
+
+exports.description = 'Reloads a command.'
