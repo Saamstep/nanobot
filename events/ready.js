@@ -1,10 +1,15 @@
 const config = require('../config.json');
 exports.run = (client, member, message) => {
-  var config = require('../config.json');
   var colors = require('colors');
   var request = require('request');
   const guildNames = client.guilds.map(g => g.name).join('\n');
   let bar = '+===========================================+';
+  const errorMod = require('../modules/errorMod.js');
+  const testFolder = './commands/';
+  const ccFolder = './commands/cc/';
+  const fs = require('fs');
+  var path = '../NanoBot/commands.txt';
+
 
   client.user
     .setPresence({ game: { name: `${config.defaultGame}`, type: 0 } })
@@ -14,7 +19,7 @@ exports.run = (client, member, message) => {
 
   // DISCORD_STATUS_REQUEST
 
-  request(url, function(err, response, body) {
+  request(url, function (err, response, body) {
     if (err) {
       return console.log(
         'Error: DISCORD_STATUS_REQUEST. Please tell the bot author.'.red.bold
@@ -37,14 +42,34 @@ exports.run = (client, member, message) => {
     }
   });
 
+  // fs.readdir(testFolder, (err, files) => {
+  //   files.forEach(file => {
+  //     let cmdfiles = require(`../commands/${file}`);
+  //     const config = require('../config.json');
+  //     if (file === 'cc') {
+  //       fs.appendFile('commands.txt', '');
+  //     } else {
+  //       fs.appendFile(
+  //         'commands.txt',
+  //         `${config.prefix}` +
+  //         file
+  //           .toString()
+  //           .replace('.js', ` - ${cmdfiles.description}\n`, function (err) {
+  //             if (err) { return; }
+  //           })
+  //       );
+  //     }
+  //   });
+  // });
+
   // DISCORD_T-O_FUNCTION
 
   setTimeout(() => {
     console.log(
       `${config.serverName}`.underline.cyan +
-        ' bot is online!\n'.cyan +
-        `\nConnected to:`.cyan +
-        `\n${guildNames}`.italic.cyan
+      ' bot is online!\n'.cyan +
+      `\nConnected to:`.cyan +
+      `\n${guildNames}`.italic.cyan
     );
     console.log(
       '\n[IMPORTANT] KEEP THIS WINDOW OPEN FOR BOT TO STAY ONLINE'.bold.red
@@ -53,9 +78,30 @@ exports.run = (client, member, message) => {
 
     if (config.debug === 'on') {
       console.log(
-        '\nErrors will appear if you have debug mode enabled. Specific console log events will appear below as well.\n'
+        '\nErrors will appear below.\n'
           .italic.green
       );
     }
   }, 500);
+
+  // if (fs.existsSync('./commands.txt')) {
+  //   fs.unlinkSync('./commands.txt');
+  // }
+
+
+
+  // fs.readdir(ccFolder, (err, files) => {
+  //   files.forEach(file => {
+  //     let cmdfiles = require(`../commands/cc/${file}`);
+  //     const config = require('../config.json');
+  //     fs.appendFile(
+  //       'commands.txt',
+  //       `${config.prefix}` +
+  //       file.toString().replace('.js', `\n`, function (err) {
+  //         if (err) return;
+  //       })
+  //     );
+  //   });
+  // });
+
 };

@@ -1,21 +1,25 @@
 const config = require('../config.json');
+const error = require('../modules/errorMod.js');
 
 exports.run = (client, message, args) => {
-  let member = message.mentions.users.first();
-  //  console.log(member);
+  let modRole = message.guild.roles.find('name', `${config.adminrolename}`);
+  if (!message.member.roles.has(modRole.id)) {
+    let member = message.mentions.users.first();
 
-  // member.addRole(memberRole);
-  member.send(config.acceptMessage).catch(console.error);
-  message.channel.send('Accepted ' + member);
+    member.send(config.acceptMessage).catch(console.error);
+    message.channel.send('Accepted ' + member);
 
-  const logEvent = require('../modules/logMod.js');
+    const logEvent = require('../modules/logMod.js');
 
-  logEvent(
-    'Member Added',
-    `${member} has been promoted to Member.`,
-    13632027,
-    message
-  );
+    logEvent(
+      'Member Added',
+      `${member} has been promoted to Member.`,
+      13632027,
+      message
+    );
+  } else {
+    error('You do not have the right permissions!', message);
+  }
 
   // let modRole = message.guild.roles.find("name", `${modrolename}`);
 
@@ -43,4 +47,5 @@ exports.run = (client, message, args) => {
   // }
 };
 
-exports.description = 'Allows mods promote users to Member without sending the accept message.'
+exports.description =
+  'Allows mods promote users to Member without sending the accept message.';

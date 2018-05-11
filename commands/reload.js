@@ -1,5 +1,10 @@
 exports.run = (client, message, args) => {
-  if (!args) return message.reply('Must provide a command name to reload.');
+  const config = require('../config.json');
+  if (args[1] == null) {
+    return message.channel.send(`${config.prefix}reload [commandName]`, {
+      code: 'acsiidoc'
+    });
+  }
   // the path is relative to the *current folder*, so just ./filename.js
 
   if (args) {
@@ -8,4 +13,4 @@ exports.run = (client, message, args) => {
   }
 };
 
-exports.description = 'Reloads a command.'
+exports.description = 'Reloads a command.';

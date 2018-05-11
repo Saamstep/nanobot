@@ -21,10 +21,6 @@ exports.run = (client, message, args) => {
     await sentMessage.react('👎');
   }).catch(err => console.error)
 
-  // .then(async message => {
-  //   await message.react('👍');
-  //   await message.react('👎');
-  // });
 };
 
 exports.description = 'Allows admins to send a message with reactions to take a poll.'

@@ -6,8 +6,12 @@ const error = require('../modules/errorMod.js');
 
 exports.run = (client, message, args) => {
   let option = args[0];
-
+  let adminRole = message.guild.roles.find('name', `${config.adminrolename}`);
   // allows you to change options from config.json file
+  if (!message.member.roles.has(adminRole.id)) {
+    return error('You do not have the right permissions!', message);
+  }
+
   switch (option) {
     case 'prefix':
       let newPrefix = args[1];
@@ -17,7 +21,7 @@ exports.run = (client, message, args) => {
         JSON.stringify(config, null, 2),
         err => console.error
       );
-      message.channel.send(`New prefix is now **${newPrefix}**`);
+      message.channel.send(`New prefix is now \`${newPrefix}\``);
       logEvent(
         'New Prefix',
         `Prefix has been changed to **${newPrefix}**`,
@@ -33,7 +37,7 @@ exports.run = (client, message, args) => {
         JSON.stringify(config, null, 2),
         err => console.error
       );
-      message.channel.send(`IP changed to **${newIP}**`);
+      message.channel.send(`IP changed to \`${newIP}\``);
       logEvent(
         'IP Updated',
         `IP has been changed to **${newIP}**`,
@@ -43,10 +47,20 @@ exports.run = (client, message, args) => {
       break;
     case 'port':
       let newPort = args[1];
+      if (newPort == null) {
+        return message.channel.send(
+          `${
+          config.prefix
+          }set port reset/[port]\nReset will make the port blank.`,
+          {
+            code: 'ascidoc'
+          }
+        );
+      }
       if (newPort === 'reset') {
         config.mcPort = '';
         fs.writeFile(
-          './config.json',
+          '../config.json',
           JSON.stringify(config, null, 2),
           err => console.error
         );
@@ -60,11 +74,11 @@ exports.run = (client, message, args) => {
       } else {
         config.mcPort = newPort;
         fs.writeFile(
-          './config.json',
+          '../config.json',
           JSON.stringify(config, null, 2),
           err => console.error
         );
-        message.channel.send(`Port changed to **${newPort}**`);
+        message.channel.send(`Port changed to \`${newPort}\``);
         logEvent(
           'New Port',
           `Port has been changed to **${newPort}**`,
@@ -78,11 +92,11 @@ exports.run = (client, message, args) => {
       let newAcceptMessage = args.join(' ').slice(14);
       config.acceptMessage = newAcceptMessage;
       fs.writeFile(
-        './config.json',
+        '../config.json',
         JSON.stringify(config, null, 2),
         err => console.error
       );
-      message.channel.send(`Accept message changed to **${newAcceptMessage}**`);
+      message.channel.send(`Accept message changed to \`${newAcceptMessage}\``);
       logEvent(
         'Accept Message',
         `Accept Message has been changed to **${newAcceptMessage}**`,
@@ -101,7 +115,7 @@ exports.run = (client, message, args) => {
           JSON.stringify(config, null, 2),
           err => console.error
         );
-        message.channel.send(`Log channel changed to **${newLog}**`);
+        message.channel.send(`Log channel changed to \`${newLog}\``);
         logEvent(
           'Log Channel Update',
           `Log Channel has been changed to **${newLog}**`,
@@ -114,11 +128,11 @@ exports.run = (client, message, args) => {
       let newServerName = args.join(' ').slice(11);
       config.serverName = newServerName;
       fs.writeFile(
-        './config.json',
+        '../config.json',
         JSON.stringify(config, null, 2),
         err => console.error
       );
-      message.channel.send(`Server name changed to **${newServerName}**`);
+      message.channel.send(`Server name changed to \`${newServerName}\``);
       logEvent(
         'Server Name',
         `Server Name has been changed to **${newServerName}**`,
@@ -131,7 +145,7 @@ exports.run = (client, message, args) => {
       if (newDebug === 'on') {
         config.debug = newDebug;
         fs.writeFile(
-          './config.json',
+          '../config.json',
           JSON.stringify(config, null, 2),
           err => console.error
         );
@@ -142,7 +156,7 @@ exports.run = (client, message, args) => {
       if (newDebug === 'off') {
         config.debug = newDebug;
         fs.writeFile(
-          './config.json',
+          '../config.json',
           JSON.stringify(config, null, 2),
           err => console.error
         );
@@ -152,16 +166,17 @@ exports.run = (client, message, args) => {
       } else {
         return message.channel.send('Value must be ON or OFF.');
       }
+      break;
     case 'website':
       let newSite = args[1];
-      if (newSite.includes('http://')) {
+      if (newSite.includes('http')) {
         config.website = newSite;
         fs.writeFile(
-          './config.json',
+          '../config.json',
           JSON.stringify(config, null, 2),
           err => console.error
         );
-        message.channel.send('Website changed to ' + newSite);
+        message.channel.send('Website changed to `' + newSite + '`');
         logEvent(
           'Website Update',
           `Website has been changed to **${newLog}**`,
@@ -171,30 +186,75 @@ exports.run = (client, message, args) => {
       } else {
         return error('This must be a valid website URL!', message);
       }
-
+      break;
+    case 'pollchannel':
+      let newPoll = args[1];
+      if (newPoll.includes('#')) {
+        return error('Just write the name of the channel');
+      } else {
+        config.pollchannel = newPoll;
+        fs.writeFile(
+          '../config.json',
+          JSON.stringify(config, null, 2),
+          err => console.error
+        );
+        message.channel.send(`Poll channel changed to \`${newPoll}\``);
+        logEvent(
+          'Poll Channel Update',
+          `Poll channel has been changed to **${newPoll}**`,
+          16776960,
+          message
+        );
+      }
+      break;
+    case 'defaultgame':
+      let newGame = args[1];
+      config.defaultGame = newGame;
+      fs.writeFile(
+        '../config.json',
+        JSON.stringify(config, null, 2),
+        err => console.error
+      );
+      message.channel.send(`Default game changed to \`${newGame}\``);
+      logEvent(
+        'Default Game Update',
+        `Default Game has been changed to **${newGame}**`,
+        16776960,
+        message
+      );
+      break;
+    case 'joinmessage':
+      let newJoin = args.join(' ').slice(12)
+      fs.writeFile('../config.json', JSON.stringify(config, null, 2), err => console.error);
+      message.channel.send(`Join message updated to \`${newJoin}\`.`);
+      logEvent(
+        'Join Message Update',
+        `Join message changed to \`${newJoin}\``,
+        16776960,
+        message
+      );
+      break;
     default:
-      message.channel.send(`*You can edit these values using this syntax
-               ${config.prefix}set [option] [newOne]*\n`);
       //usage
       message.channel.send(
-        `__Usage__\n**Prefix:** ${config.prefix}\n**Log Channel:** ${
+        `[Bot Settings]\n\nYou can edit these values with ${
+        config.prefix
+        }set [option] [newOne]\nOptions are the names in between the equal signs with no spaces and no caps!` +
+        `\n\n[Usage]\nPrefix: '${config.prefix}'\nLog Channel: '${
         config.log
-        }\n**Debug:** ${config.debug}\n**Default Game:** ${config.defaultGame}`
-      );
-      //text
-      message.channel.send(
-        `__Text__\n**Server Name:** ${config.serverName}\n**Accept Message:** ${
+        }'\n\Poll Channel: '${config.pollchannel}'\nJoin Channel: '${
+        config.joinCh
+        }'\nDebug: '${config.debug}'\nDefault Game: '${config.defaultGame}'` +
+        `\n[Text]\nServer Name: '${config.serverName}'\nAccept Message: '${
         config.acceptMessage
-        }\n**IP:** ${config.mcIP}\n**Port:** *(Leave empty if none)* ${
+        }'\nIP: '${config.mcIP}'\nPort: '${
         config.mcPort
-        }\n**Website:** ${config.website}`
-      );
-      //roles
-      message.channel.send(
-        `__Roles__\n**Mod Role:** ${config.modrolename}\n**Admin Role:** ${
+        } (Leave empty if none)'\nWebsite: '${config.website}'\nJoin Message: '${config.joinMsg}'` +
+        `\n[Roles]\nMod Role: '${config.modrolename}'\nAdmin Role: '${
         config.adminrolename
-        }\n**Member Role:** ${config.memberrole}\n`
+        }'\nMember Role: '${config.memberrole}'\n`,
+        { code: 'css' }
       );
   }
 };
-exports.description = 'Allows admins to change the bot\'s settings.'
+exports.description = "Allows admins to change the bot's settings.";

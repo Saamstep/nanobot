@@ -12,7 +12,6 @@ exports.run = (client, message, args) => {
   );
   cM(`The console was cleared by ${message.author.username}`, message);
   message.react('✅');
-
 };
 
-exports.description = 'Lets the owner clear the console.'
+exports.description = 'Lets the owner clear the console.';

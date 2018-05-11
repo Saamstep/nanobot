@@ -1,6 +1,6 @@
 {
-  "name": "honeydewbot",
-  "version": "1.0.0",
+  "name": "NanoBot",
+  "version": "honeydew 2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {

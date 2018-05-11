@@ -25,19 +25,6 @@ exports.run = (client, message, args) => {
     message.channel.send(status);
   });
 
-  // exports.conf = {
-  //   enabled: true,
-  //   guildOnly: false,
-  //   aliases: ['check'],
-  //   permLevel: 0
-  // };
-
-  // exports.help = {
-  //   name: 'server',
-  //   description: 'Checks status of the server',
-  //   usage: 'server'
-  // };
-
 
 };
 
