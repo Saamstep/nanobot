@@ -9,8 +9,8 @@ exports.run = (client, message, args) => {
   if (args[0] === 'add') {
     fs.writeFile(
       `./commands/cc/${args[1]}.js`,
-      `exports.run = (client, message, args) => { const config = require('../../config.json'); message.channel.send(\`${newerMsg}\`); };`,
-      function(err) {
+      `exports.run = (client, message, args) => { const config = require('../../config.json'); let guild = message.guild; message.channel.send(\`${newerMsg}\`); };`,
+      function (err) {
         if (err) throw err;
       }
     );
@@ -22,7 +22,7 @@ exports.run = (client, message, args) => {
     if (fs.existsSync(`./commands/cc/${args[1]}.js`)) {
       fs.unlink(`./commands/cc/${args[1]}.js`);
       message.channel.send(`Deleted \`${config.prefix}${args[1]}\``);
-      process.on('exit', function() {
+      process.on('exit', function () {
         require('child_process').spawn(process.argv.shift(), process.argv, {
           cwd: process.cwd(),
           detached: true,
@@ -41,7 +41,7 @@ exports.run = (client, message, args) => {
   if (!args[0]) {
     message.channel.send(
       `${
-        config.prefix
+      config.prefix
       }cc [add | OR | del] [commandname] [text if adding command]`,
       { code: 'asciidoc' }
     );

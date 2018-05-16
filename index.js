@@ -17,6 +17,9 @@ var colors = require('colors');
 fs.readdir('./events/', (err, files) => {
   if (err) return console.error(err);
   files.forEach(file => {
+    if (file.startsWith('.')) {
+      return;
+    }
     let eventFunction = require(`./events/${file}`);
     let eventName = file.split('.')[0];
     // super-secret recipe to call events with all their proper arguments *after* the `client` var.
@@ -24,6 +27,15 @@ fs.readdir('./events/', (err, files) => {
   });
 });
 // YT Video like system
+
+
+client.on('guildMemberUpdate', (oldmember, newmember) => {
+
+  console.log(oldmember.roles.array().toString())
+  console.log(newmember.roles.array().toString())
+
+})
+
 
 client.on('message', message => {
   if (message.content.includes(`youtube.com/watch?v=`)) {

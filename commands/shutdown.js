@@ -13,4 +13,4 @@ exports.run = (client, message, args) => {
   }
 };
 
-exports.description = 'Force shutdown the bot.';
+exports.description = 'Allows owner to force shutdown the bot.';

@@ -42,25 +42,30 @@ exports.run = (client, member, message) => {
     }
   });
 
-  // fs.readdir(testFolder, (err, files) => {
-  //   files.forEach(file => {
-  //     let cmdfiles = require(`../commands/${file}`);
-  //     const config = require('../config.json');
-  //     if (file === 'cc') {
-  //       fs.appendFile('commands.txt', '');
-  //     } else {
-  //       fs.appendFile(
-  //         'commands.txt',
-  //         `${config.prefix}` +
-  //         file
-  //           .toString()
-  //           .replace('.js', ` - ${cmdfiles.description}\n`, function (err) {
-  //             if (err) { return; }
-  //           })
-  //       );
-  //     }
-  //   });
-  // });
+  if (fs.existsSync('./commands.txt')) {
+    fs.unlinkSync('./commands.txt');
+  }
+
+  fs.readdir(testFolder, (err, files) => {
+    console.log('Updating help file...'.red);
+    files.forEach(file => {
+      if (file === 'cc') {
+        return;
+      }
+      if (file.startsWith('.')) {
+        return;
+      }
+      else {
+        let cmdfiles = require(`../commands/${file}`);
+        const config = require('../config.json');
+        fs.appendFile('commands.txt', `${config.prefix}` + file.toString().replace('.js', ` - ${cmdfiles.description}\n`), function (err, written, buffer) {
+          if (err) { return; }
+        });
+      }
+    });
+  });
+
+
 
   // DISCORD_T-O_FUNCTION
 
@@ -87,9 +92,6 @@ exports.run = (client, member, message) => {
   // if (fs.existsSync('./commands.txt')) {
   //   fs.unlinkSync('./commands.txt');
   // }
-
-
-
   // fs.readdir(ccFolder, (err, files) => {
   //   files.forEach(file => {
   //     let cmdfiles = require(`../commands/cc/${file}`);
