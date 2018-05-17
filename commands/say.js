@@ -1,4 +1,5 @@
 exports.run = (client, message, args) => {
+  message.channel.startTyping();
   function sender() {
     message.delete(0);
     let msgSender = args.join(' ');
@@ -14,6 +15,8 @@ exports.run = (client, message, args) => {
   } else {
     return sender();
   }
+
+  message.channel.stopTyping();
 };
 
 exports.description = 'Allows admins to send a message as the bot.'

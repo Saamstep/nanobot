@@ -46,25 +46,48 @@ exports.run = (client, member, message) => {
     fs.unlinkSync('./commands.txt');
   }
 
-  fs.readdir(testFolder, (err, files) => {
-    console.log('Updating help file...'.red);
-    files.forEach(file => {
-      if (file === 'cc') {
-        return;
-      }
-      if (file.startsWith('.')) {
-        return;
-      }
-      else {
-        let cmdfiles = require(`../commands/${file}`);
-        const config = require('../config.json');
-        fs.appendFile('commands.txt', `${config.prefix}` + file.toString().replace('.js', ` - ${cmdfiles.description}\n`), function (err, written, buffer) {
-          if (err) { return; }
-        });
-      }
-    });
-  });
 
+  async function RD() {
+
+    await fs.readdir(testFolder, (err, files) => {
+      console.log('Updating help file...'.red);
+      files.forEach(file => {
+        if (file === 'cc') {
+          return;
+        }
+        if (file.startsWith('.')) {
+          return;
+        }
+        else {
+          let cmdfiles = require(`../commands/${file}`);
+          const config = require('../config.json');
+          fs.appendFile('commands.txt', `${config.prefix}` + file.toString().replace('.js', ` - ${cmdfiles.description}\n`), function (err, written, buffer) {
+            if (err) { return; }
+          });
+        }
+      });
+    });
+
+    await fs.readdir(ccFolder, (err, files) => {
+      console.log('Updating help file...'.red);
+      files.forEach(file => {
+        if (file.startsWith('.')) {
+          return;
+        }
+        else {
+          let cmdfiles = require(`../commands/cc/${file}`);
+          const config = require('../config.json');
+
+          fs.appendFile('commands.txt', `${config.prefix}` + file.toString().replace('.js', ` - [Custom Command]\n`), function (err, written, buffer) {
+            if (err) { return; }
+          });
+        }
+      });
+    });
+
+  }
+
+  RD();
 
 
   // DISCORD_T-O_FUNCTION

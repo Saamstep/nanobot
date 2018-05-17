@@ -1,4 +1,5 @@
 exports.run = (client, message, args) => {
+  message.channel.startTyping();
   var request = require('request');
 
   var mcIP = args[0];
@@ -24,5 +25,6 @@ exports.run = (client, message, args) => {
     }
   });
 
+  message.channel.stopTyping();
 };
 exports.description = 'Find the status of the server.'

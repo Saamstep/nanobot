@@ -9,7 +9,6 @@
 ?game - Allows admins to change the game.
 ?help - Shows all commands.
 ?kick - This command doesn't actually work.
-?loadhelp - Allows admins to refresh the help command.
 ?member - Allows mods promote users to Member without sending the accept message.
 ?mojang - Gets Mojang server status.
 ?ping - Pings the bot.
@@ -19,10 +18,11 @@
 ?report - Lets you report a user.
 ?roll - Rolls a dice.
 ?rps - (Non functional) Rock, paper, scissors.
+?rr - Allows admins to remove a role.
 ?say - Allows admins to send a message as the bot.
 ?server - Get server status for said Minecraft server.
 ?set - Allows admins to change the bot's settings.
-?shutdown - Force shutdown the bot.
+?shutdown - Allows owner to force shutdown the bot.
 ?status - Find the status of the server.
 ?vote - Allows admins to send a message with reactions to take a poll.
 ?website - Shows the website of HiSMP.

@@ -2,6 +2,7 @@ const config = require('../config.json');
 var request = require('request');
 
 exports.run = (client, message, args) => {
+  message.channel.startTyping()
 
   var url = "https://status.mojang.com/check"
 
@@ -30,6 +31,7 @@ exports.run = (client, message, args) => {
 
     }
     message.channel.send(responseString)
+    message.channel.stopTyping();
 
   })
 }

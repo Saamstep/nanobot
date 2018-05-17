@@ -1,6 +1,13 @@
 exports.run = (client, message, args) => {
-  let roll = Math.floor((Math.random() * 6) + 1);
-  message.reply(":game_die: | You rolled a " + roll);
+  async function cmd() {
+    let roll = Math.floor((Math.random() * 6) + 1);
+    await message.channel.startTyping();
+    await message.reply(":game_die: | You rolled a " + roll);
+    await message.channel.stopTyping();
+  }
+
+  cmd();
+
 };
 
 exports.description = 'Rolls a dice.'

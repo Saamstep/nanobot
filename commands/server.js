@@ -1,6 +1,7 @@
 const config = require('../config.json');
 
 exports.run = (client, message, args) => {
+  message.chanel.startTyping();
   var request = require('request');
 
   var mcIP = `${config.mcIP}`; // Your MC server IP
@@ -23,8 +24,10 @@ exports.run = (client, message, args) => {
       }
     }
     message.channel.send(status);
+
   });
 
+  message.channel.stopTyping();
 
 };
 

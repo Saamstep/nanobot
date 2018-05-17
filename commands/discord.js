@@ -3,6 +3,7 @@ var request = require('request');
 var errorEvent = require('../modules/errorMod.js');
 
 exports.run = (client, message, args) => {
+  message.channel.startTyping();
   var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json';
 
   request(url, function (err, response, body) {
@@ -24,6 +25,8 @@ exports.run = (client, message, args) => {
       );
     }
   });
+  message.channel.stopTyping();
 };
+
 
 exports.description = 'Checks Discord status.'

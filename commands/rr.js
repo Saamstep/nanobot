@@ -1,4 +1,5 @@
 exports.run = (client, message, args) => {
+
   let guild = message.guild;
   let role = message.guild.roles.find('name', `${args[1]}`);
   let user = message.guild.member(message.mentions.users.first());
@@ -19,14 +20,15 @@ exports.run = (client, message, args) => {
     return errorMod('Please mention a user', message);
   }
 
-  if (user.roles.has(role.id)) {
+  if (!user.roles.has(role.id)) {
     message.delete(0)
-    return errorMod('That user already has **' + role.name + "**!", message);
+    return errorMod('That user does not have **' + role.name + "**!", message);
   }
-  message.delete(0);
-  user.addRole(role.id)
 
+  message.delete(0)
+  user.removeRole(role.id);
 
 };
 
-exports.description = "Allows admins to add role to a user."
+
+exports.description = "Allows admins to remove role from a user."

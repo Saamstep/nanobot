@@ -29,12 +29,6 @@ fs.readdir('./events/', (err, files) => {
 // YT Video like system
 
 
-client.on('guildMemberUpdate', (oldmember, newmember) => {
-
-  console.log(oldmember.roles.array().toString())
-  console.log(newmember.roles.array().toString())
-
-})
 
 
 client.on('message', message => {
