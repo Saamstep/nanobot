@@ -1,5 +1,5 @@
 ?accept - Allows mods to accept members.
-?ar - Allows mods to add role to a user.
+?ar - Allows admins to add role to a user.
 ?bot - Shows info about the bot.
 ?cc - Allows admins to add/remove custom commands.
 ?choose - Choose between two listed things.
@@ -8,8 +8,8 @@
 ?flip - Flips a coin.
 ?game - Allows admins to change the game.
 ?help - Shows all commands.
+?helpfile - Allows users to download all commands/descriptions.
 ?kick - This command doesn't actually work.
-?member - Allows mods promote users to Member without sending the accept message.
 ?mojang - Gets Mojang server status.
 ?ping - Pings the bot.
 ?qotd - Allows you to ask a formatted question of the day.
@@ -18,7 +18,7 @@
 ?report - Lets you report a user.
 ?roll - Rolls a dice.
 ?rps - (Non functional) Rock, paper, scissors.
-?rr - Allows admins to remove a role.
+?rr - Allows admins to remove role from a user.
 ?say - Allows admins to send a message as the bot.
 ?server - Get server status for said Minecraft server.
 ?set - Allows admins to change the bot's settings.

@@ -1,6 +1,7 @@
 exports.run = (client, message, args) => {
   message.channel.startTyping();
   var request = require('request');
+  const error = require('../modules/errorMod.js');
 
   var mcIP = args[0];
   var url = 'https://mcapi.us/server/status?ip=' + mcIP;
@@ -21,7 +22,7 @@ exports.run = (client, message, args) => {
     if (mcIP) {
       message.channel.send("\n**" + mcIP + "** " + status);
     } else {
-      return message.reply("Provide an IP please.");
+      return error("Provide an IP please.", message);
     }
   });
 

@@ -5,7 +5,7 @@ exports.run = (client, message, args) => {
   let msg = args.join(' ').replace(args[0], '');
   let newMsg = msg.replace(/\s/, '');
   let newerMsg = newMsg.replace(args[1], '');
-  const cmd = require('node-cmd');
+
 
   if (args[0] === 'add') {
     fs.writeFile(
@@ -24,7 +24,6 @@ exports.run = (client, message, args) => {
       fs.unlink(`./commands/cc/${args[1]}.js`, (err) => {
         if (err) throw err;
         message.channel.send(`Deleted \`${config.prefix}${args[1]}\``);
-        cmd.run('echo TEST');
       });
 
     } else {

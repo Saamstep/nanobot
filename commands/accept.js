@@ -13,7 +13,7 @@ exports.run = (client, message, args) => {
   if (message.mentions.users.size === 0) {
     return errorMod('Please mention a user', message);
   }
-  if (acceptMember.roles.not(memberRole.id)) {
+  if (!acceptMember.roles.has(memberRole.id)) {
     // acceptMember.addRole(memberRole);
     message.guild.member(acceptMember).addRole(memberRole);
     acceptMember.send(`${config.acceptMessage}`);
