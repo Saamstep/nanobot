@@ -43,6 +43,66 @@ client.on('message', message => {
     message.react(`✅`);
   }
 
+  let guild = message.guild;
+
+
+  async function pMreact() {
+    await message.react('☑');
+    await message.react('🇽');
+  };
+
+  // if (message.channel.id === `${config.supportChannelid}`) {
+  //   let args = message.content.split(' ').slice(1);
+  //   let option = args[0];
+
+  //   switch (message.content.includes(option)) {
+  //     case "[Addition]":
+  //       return pMreact();
+  //       break;
+  //     case "[Request]":
+  //       return pMreact();
+  //       break;
+  //     case "[Removal]":
+  //       return pMreact();
+  //       break;
+  //     default:
+  //       message.delete();
+  //   };
+  // };
+
+
+
+  if (message.channel.id === `${config.supportChannelid}`) {
+
+
+    if (message.content.includes('[Addition]')) {
+      return pMreact();
+    }
+    if (message.content.includes('[Request]')) {
+      return pMreact();
+    }
+    if (message.content.includes('[Removal]')) {
+      return pMreact();
+    }
+
+    if (!message.content.includes('[Addition]')) {
+      return message.delete();
+    }
+    if (!message.content.includes('[Request]')) {
+      return message.delete();
+    }
+    if (!message.content.includes('[Removal]')) {
+      return message.delete();
+    }
+
+
+
+  }
+
+
+
+
+
   if (message) if (message.author.bot) return;
   if (!message.content.startsWith(config.prefix)) return;
 
