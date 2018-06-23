@@ -4,10 +4,9 @@ exports.run = (client, message, args) => {
   let acceptMember = message.guild.member(message.mentions.users.first());
   let guild = message.guild.id;
   let memberRole = message.guild.roles.find('name', `${config.memberrole}`);
-  let adminRole = message.member.roles.find('name', `${config.modrolename}`);
-  let intRole = message.guild.roles.find('name', `${config.introlename}`);
+  let modRole = message.member.roles.find('name', `${config.modrolename}`);
 
-  if (!message.member.roles.has(adminRole.id)) {
+  if (!message.member.roles.has(modRole.id)) {
     return errorMod('You do not have the right permissions', message);
   }
 
@@ -15,15 +14,23 @@ exports.run = (client, message, args) => {
     return errorMod('Please mention a user', message);
   }
   if (!acceptMember.roles.has(memberRole.id)) {
-    // acceptMember.addRole(memberRole);
-    message.guild.member(acceptMember).addRole(memberRole);
-    message.guild.member(acceptMember).removeRole(intRole);
+    async function sender() {
 
-    acceptMember.send(`${config.acceptMessage}`);
-    message.react('✅');
+
+      await acceptMember.send(`${config.denyMessage}`);
+      await acceptMember.send({
+        files: [`${config.denyImg}`]
+      })
+      await acceptMember.kick();
+      await message.react('✅');
+
+    }
+
+    sender();
+
   } else {
-    return errorMod('This user already is a member', message);
+    return errorMod('This user is a member', message);
   }
 };
-exports.description = 'Allows mods to accept members.'
+exports.description = 'Allows mods to deny members.'
 

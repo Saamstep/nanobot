@@ -32,6 +32,7 @@ fs.readdir('./events/', (err, files) => {
 
 
 client.on('message', message => {
+  // YT video like system
   if (message.content.includes(`youtube.com/watch?v=`)) {
     message.react(`👍`);
   }
@@ -45,31 +46,11 @@ client.on('message', message => {
 
   let guild = message.guild;
 
-
+  // Support Channel Code
   async function pMreact() {
     await message.react('☑');
     await message.react('🇽');
   };
-
-  // if (message.channel.id === `${config.supportChannelid}`) {
-  //   let args = message.content.split(' ').slice(1);
-  //   let option = args[0];
-
-  //   switch (message.content.includes(option)) {
-  //     case "[Addition]":
-  //       return pMreact();
-  //       break;
-  //     case "[Request]":
-  //       return pMreact();
-  //       break;
-  //     case "[Removal]":
-  //       return pMreact();
-  //       break;
-  //     default:
-  //       message.delete();
-  //   };
-  // };
-
 
 
   if (message.channel.id === `${config.supportChannelid}`) {
@@ -101,7 +82,7 @@ client.on('message', message => {
 
 
 
-
+  // Command file manager code
 
   if (message) if (message.author.bot) return;
   if (!message.content.startsWith(config.prefix)) return;
@@ -112,6 +93,7 @@ client.on('message', message => {
   let args = message.content.split(' ').slice(1);
   // The list of if/else is replaced with those simple 2 lines:
 
+  // Regular command file manager
   try {
     let commandFile = require(`./commands/${command}.js`);
     commandFile.run(client, message, args);
@@ -121,6 +103,7 @@ client.on('message', message => {
     }
   }
 
+  // Custom command file manager
   try {
     let commandFile = require(`./commands/cc/${command}.js`);
     commandFile.run(client, message, args);

@@ -3,9 +3,10 @@ const errorMod = require('../modules/errorMod.js');
 exports.run = (client, message, args) => {
   let acceptMember = message.guild.member(message.mentions.users.first());
   let guild = message.guild.id;
-  let memberRole = message.guild.roles.find('name', `${config.memberrole}`);
-  let adminRole = message.member.roles.find('name', `${config.modrolename}`);
-  let intRole = message.guild.roles.find('name', `${config.introlename}`);
+  let memberRole = message.guild.roles.find('name', `Members`);
+  let oldRole = message.guild.roles.find('name', `Application`);
+  let newRole = message.guild.roles.find('name', `${config.introlename}`);
+  let adminRole = message.member.roles.find('name', `${config.adminrolename}`);
 
   if (!message.member.roles.has(adminRole.id)) {
     return errorMod('You do not have the right permissions', message);
@@ -16,14 +17,13 @@ exports.run = (client, message, args) => {
   }
   if (!acceptMember.roles.has(memberRole.id)) {
     // acceptMember.addRole(memberRole);
-    message.guild.member(acceptMember).addRole(memberRole);
-    message.guild.member(acceptMember).removeRole(intRole);
-
-    acceptMember.send(`${config.acceptMessage}`);
+    message.guild.member(acceptMember).addRole(newRole);
+    message.guild.member(acceptMember).removeRole(oldRole);
+    acceptMember.send(`${config.interviewMessage}`);
     message.react('✅');
   } else {
     return errorMod('This user already is a member', message);
   }
 };
-exports.description = 'Allows mods to accept members.'
+exports.description = 'Allows admins to setup interviews.'
 
