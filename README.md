@@ -1,3 +1,1 @@
-# Honeydew Discord Bot!
-Honeydew's custom discord bot!
-## Please read [the Wiki](https://github.com/Saamstep/honeydewbot/wiki) for more information.
+# The [Minecraft](http://minecraft.net) [SMP](https://minecraft.gamepedia.com/Survival#SMP) Discord manager bot.
