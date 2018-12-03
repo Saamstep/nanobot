@@ -2,4 +2,4 @@
 
 Made by Saamstep with help from [anidiotsguide](http://anidiots.guide) and the Discord.JS Discord community!
 
-# https://samstep.ga/bots/nano
+# https://samstep.ga/bots/
