@@ -212,6 +212,5 @@ exports.run = (client, message, args) => {
           { code: 'css' }
         );
     }
-  message.channel.send('This command is currently not functional D:')
 };
-exports.description = "Allows admins to change the bot's settings. BROKEN";
+exports.description = "Allows admins to change the bot's settings.";
