@@ -2,36 +2,20 @@ const fs = require('fs');
 const logEvent = require('../modules/logMod.js');
 const consoleEvent = require('../modules/consoleMod.js');
 const error = require('../modules/errorMod.js');
-const config = require('../config.js');
-
-const changeConfigProperty = (property, value) => {
-  console.log(`Attempting to change config property "${property}" to "${value}"`);
-
-  if (config) {
-    config[property] = value;
-  } else {
-    console.error('No config.json loaded into memory');
-  }
-  
-  fs.writeFile(
-    '../config.json',
-    JSON.stringify(config, null, 2),
-    err => console.error
-  );
-}
+const ConfigService = require('../config.js');
 
 exports.run = (client, message, args) => {
     let option = args[0];
-    let adminRole = message.guild.roles.find('name', `${config.adminrolename}`);
-    // allows you to change options from config.json file
-    if (!message.member.roles.has(adminRole.id)) {
+    let adminRole = message.guild.roles.find('name', `${ConfigService.config.adminrolename}`);
+
+    if (!message.member.roles.has(adminRole)) {
       return error('You do not have the right permissions!', message);
     }
 
     switch (option) {
       case 'prefix':
         let newPrefix = args[1];
-        changeConfigProperty('prefix', newPrefix);
+        ConfigService.setConfigProperty('prefix', newPrefix);
         message.channel.send(`New prefix is now \`${newPrefix}\``);
         logEvent(
           'New Prefix',
@@ -56,7 +40,7 @@ exports.run = (client, message, args) => {
         if (newPort == null) {
           return message.channel.send(
             `${
-            config.prefix
+            ConfigService.config.prefix
             }set port reset/[port]\nReset will make the port blank.`,
             {
               code: 'ascidoc'
@@ -64,7 +48,7 @@ exports.run = (client, message, args) => {
           );
         }
         if (newPort === 'reset') {
-          changeConfigProperty('mcPort', '');
+          ConfigService.setConfigProperty('mcPort', '');
           message.channel.send(`Port reset`);
           logEvent(
             'Port Reset',
@@ -73,7 +57,7 @@ exports.run = (client, message, args) => {
             message
           );
         } else {
-          changeConfigProperty('mcPort', newPort);
+          ConfigService.setConfigProperty('mcPort', newPort);
           message.channel.send(`Port changed to \`${newPort}\``);
           logEvent(
             'New Port',
@@ -86,7 +70,7 @@ exports.run = (client, message, args) => {
       case 'acceptmessage':
         let tl = args[1];
         let newAcceptMessage = args.join(' ').slice(14);
-        changeConfigProperty('acceptMessage', newAcceptMessage);
+        ConfigService.setConfigProperty('acceptMessage', newAcceptMessage);
         message.channel.send(`Accept message changed to \`${newAcceptMessage}\``);
         logEvent(
           'Accept Message',
@@ -100,7 +84,7 @@ exports.run = (client, message, args) => {
         if (newLog.includes('#')) {
           return message.channel.send('Just write the name of the channel.');
         } else {
-          changeConfigProperty('log', newLog);
+          ConfigService.setConfigProperty('log', newLog);
           message.channel.send(`Log channel changed to \`${newLog}\``);
           logEvent(
             'Log Channel Update',
@@ -112,7 +96,7 @@ exports.run = (client, message, args) => {
         break;
       case 'servername':
         let newServerName = args.join(' ').slice(11);
-        changeConfigProperty('serverName', newServerName);
+        ConfigService.setConfigProperty('serverName', newServerName);
         message.channel.send(`Server name changed to \`${newServerName}\``);
         logEvent(
           'Server Name',
@@ -124,13 +108,13 @@ exports.run = (client, message, args) => {
       case 'debug':
         let newDebug = args[1];
         if (newDebug === 'on') {
-          changeConfigProperty('debug', newDebug);
+          ConfigService.setConfigProperty('debug', newDebug);
           consoleEvent('Debug mode was enabled');
           message.channel.send('Debug mode enabled.');
           return;
         }
         if (newDebug === 'off') {
-          changeConfigProperty('debug', newDebug);
+          ConfigService.setConfigProperty('debug', newDebug);
           consoleEvent('Debug mode was disabled');
           message.channel.send(`Debug mode disabled.`);
           return;
@@ -141,7 +125,7 @@ exports.run = (client, message, args) => {
       case 'website':
         let newSite = args[1];
         if (newSite.includes('http')) {
-          changeConfigProperty('website', newSite);
+          ConfigService.setConfigProperty('website', newSite);
           message.channel.send('Website changed to `' + newSite + '`');
           logEvent(
             'Website Update',
@@ -158,7 +142,7 @@ exports.run = (client, message, args) => {
         if (newPoll.includes('#')) {
           return error('Just write the name of the channel');
         } else {
-          changeConfigProperty('pollchannel', newPoll);
+          ConfigService.setConfigProperty('pollchannel', newPoll);
           message.channel.send(`Poll channel changed to \`${newPoll}\``);
           logEvent(
             'Poll Channel Update',
@@ -170,7 +154,7 @@ exports.run = (client, message, args) => {
         break;
       case 'defaultgame':
         let newGame = args[1];
-        changeConfigProperty('defaultGame', newGame);
+        ConfigService.setConfigProperty('defaultGame', newGame);
         message.channel.send(`Default game changed to \`${newGame}\``);
         logEvent(
           'Default Game Update',
@@ -181,7 +165,7 @@ exports.run = (client, message, args) => {
         break;
       case 'joinmessage':
         let newJoin = args.join(' ').slice(12)
-        changeConfigProperty('joinMessage', newJoin);
+        ConfigService.setConfigProperty('joinMessage', newJoin);
         message.channel.send(`Join message updated to \`${newJoin}\`.`);
         logEvent(
           'Join Message Update',
@@ -194,21 +178,21 @@ exports.run = (client, message, args) => {
         //usage
         message.channel.send(
           `[Bot Settings]\n\nYou can edit these values with ${
-          config.prefix
+          ConfigService.config.prefix
           }set [option] [newOne]\nOptions are the names in between the equal signs with no spaces and no caps!` +
-          `\n\n[Usage]\nPrefix: '${config.prefix}'\nLog Channel: '${
-          config.log
-          }'\n\Poll Channel: '${config.pollchannel}'\nJoin Channel: '${
-          config.joinCh
-          }'\nDebug: '${config.debug}'\nDefault Game: '${config.defaultGame}'` +
-          `\n[Text]\nServer Name: '${config.serverName}'\nAccept Message: '${
-          config.acceptMessage
-          }'\nIP: '${config.mcIP}'\nPort: '${
-          config.mcPort
-          } (Leave empty if none)'\nWebsite: '${config.website}'\nJoin Message: '${config.joinMsg}'` +
-          `\n[Roles]\nMod Role: '${config.modrolename}'\nAdmin Role: '${
-          config.adminrolename
-          }'\nMember Role: '${config.memberrole}'\n`,
+          `\n\n[Usage]\nPrefix: '${ConfigService.config.prefix}'\nLog Channel: '${
+          ConfigService.config.log
+          }'\n\Poll Channel: '${ConfigService.config.pollchannel}'\nJoin Channel: '${
+          ConfigService.config.joinCh
+          }'\nDebug: '${ConfigService.config.debug}'\nDefault Game: '${ConfigService.config.defaultGame}'` +
+          `\n[Text]\nServer Name: '${ConfigService.config.serverName}'\nAccept Message: '${
+          ConfigService.config.acceptMessage
+          }'\nIP: '${ConfigService.config.mcIP}'\nPort: '${
+          ConfigService.config.mcPort
+          } (Leave empty if none)'\nWebsite: '${ConfigService.config.website}'\nJoin Message: '${ConfigService.config.joinMsg}'` +
+          `\n[Roles]\nMod Role: '${ConfigService.config.modrolename}'\nAdmin Role: '${
+          ConfigService.config.adminrolename
+          }'\nMember Role: '${ConfigService.config.memberrole}'\n`,
           { code: 'css' }
         );
     }

@@ -1,10 +1,10 @@
-const config = require('../config.json');
+const ConfigService = require('../config.js');
 const errorMod = require('../modules/errorMod.js');
 exports.run = (client, message, args) => {
   let acceptMember = message.guild.member(message.mentions.users.first());
   let guild = message.guild.id;
-  let memberRole = message.guild.roles.find('name', `${config.memberrole}`);
-  let modRole = message.member.roles.find('name', `${config.modrolename}`);
+  let memberRole = message.guild.roles.find('name', `${ConfigService.config.memberrole}`);
+  let modRole = message.member.roles.find('name', `${ConfigService.config.modrolename}`);
 
   if (!message.member.roles.has(modRole.id)) {
     return errorMod('You do not have the right permissions', message);
@@ -17,9 +17,9 @@ exports.run = (client, message, args) => {
     async function sender() {
 
 
-      await acceptMember.send(`${config.denyMessage}`);
+      await acceptMember.send(`${ConfigService.config.denyMessage}`);
       await acceptMember.send({
-        files: [`${config.denyImg}`]
+        files: [`${ConfigService.config.denyImg}`]
       })
       await acceptMember.kick();
       await message.react('✅');

@@ -1,10 +1,10 @@
 exports.run = (client, member, message) => {
-  var config = require("../config.json");
+  var ConfigService = require("../config.js");
   let guild = member.guild;
   let NEWUSER = member.user
   let SERVERNAME = guild.name;
-  let newchannel = guild.channels.find(`name`, `${config.joinCh}`);
-  var replacer = config.joinMsg.replace('NEWUSER', NEWUSER).replace('SERVERNAME', SERVERNAME);
+  let newchannel = guild.channels.find(`name`, `${ConfigService.config.joinCh}`);
+  var replacer = ConfigService.config.joinMsg.replace('NEWUSER', NEWUSER).replace('SERVERNAME', SERVERNAME);
   newchannel.send(`${replacer}`).catch(console.error);
 
 };

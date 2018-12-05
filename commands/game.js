@@ -1,10 +1,11 @@
 exports.run = (client, message, args) => {
-  var config = require('../config.json');
+  const ConfigService = require('../config.js');
   let game = args.join(' ');
   var errorEvent = require('../modules/errorMod.js');
 
   function configChange(game) {
     const fs = require('fs');
+    // TODO: Change whatever this does
     game = config.defaultGame;
     fs.writeFile(
       '../config.json',

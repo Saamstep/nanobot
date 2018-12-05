@@ -1,4 +1,4 @@
-const config = require('../config.json');
+const ConfigService = require('../config.js');
 exports.run = (client, member, message) => {
   var colors = require('colors');
   var request = require('request');
@@ -12,7 +12,7 @@ exports.run = (client, member, message) => {
 
 
   client.user
-    .setPresence({ game: { name: `${config.defaultGame}`, type: 0 } })
+    .setPresence({ game: { name: `${ConfigService.config.defaultGame}`, type: 0 } })
     .catch(console.error);
 
   var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json/';
@@ -60,8 +60,8 @@ exports.run = (client, member, message) => {
         }
         else {
           let cmdfiles = require(`../commands/${file}`);
-          const config = require('../config.json');
-          fs.appendFile('commands.txt', `${config.prefix}` + file.toString().replace('.js', ` - ${cmdfiles.description}\n`), function (err, written, buffer) {
+          const ConfigService = require('../config.js');
+          fs.appendFile('commands.txt', `${ConfigService.config.prefix}` + file.toString().replace('.js', ` - ${cmdfiles.description}\n`), function (err, written, buffer) {
             if (err) { return; }
           });
         }
@@ -70,15 +70,16 @@ exports.run = (client, member, message) => {
 
     await fs.readdir(ccFolder, (err, files) => {
       console.log('Updating help file...'.red);
+      if (!files) return;
       files.forEach(file => {
         if (file.startsWith('.')) {
           return;
         }
         else {
           let cmdfiles = require(`../commands/cc/${file}`);
-          const config = require('../config.json');
+          const ConfigService = require('../config.js');
 
-          fs.appendFile('commands.txt', `${config.prefix}` + file.toString().replace('.js', ` - [Custom Command]\n`), function (err, written, buffer) {
+          fs.appendFile('commands.txt', `${ConfigService.config.prefix}` + file.toString().replace('.js', ` - [Custom Command]\n`), function (err, written, buffer) {
             if (err) { return; }
           });
         }
@@ -94,7 +95,7 @@ exports.run = (client, member, message) => {
 
   setTimeout(() => {
     console.log(
-      `${config.serverName}`.underline.cyan +
+      `${ConfigService.config.serverName}`.underline.cyan +
       ' bot is online!\n'.cyan +
       `\nConnected to:`.cyan +
       `\n${guildNames}`.italic.cyan
@@ -104,7 +105,7 @@ exports.run = (client, member, message) => {
     );
     console.log(bar.yellow);
 
-    if (config.debug === 'on') {
+    if (ConfigService.config.debug === 'on') {
       console.log(
         '\nErrors will appear below.\n'
           .italic.green
@@ -118,10 +119,10 @@ exports.run = (client, member, message) => {
   // fs.readdir(ccFolder, (err, files) => {
   //   files.forEach(file => {
   //     let cmdfiles = require(`../commands/cc/${file}`);
-  //     const config = require('../config.json');
+  //     const ConfigService = require('../config.js');
   //     fs.appendFile(
   //       'commands.txt',
-  //       `${config.prefix}` +
+  //       `${ConfigService.configprefix}` +
   //       file.toString().replace('.js', `\n`, function (err) {
   //         if (err) return;
   //       })

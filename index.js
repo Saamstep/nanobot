@@ -1,16 +1,16 @@
 const Discord = require('discord.js');
 const client = new Discord.Client({ autoReconnect: true });
 const bot = new Discord.Client({ autoReconnect: true });
-const config = require('./config.json');
-client.login(config.token);
+const ConfigService = require('./config.js');
+client.login(ConfigService.config.token);
 const fs = require('fs');
 var colors = require('colors');
 
 // client.on("ready", () => {
 //   client.user.setPresence({game: {name: "Minecraft", type: 0} }).catch(console.error);
-//   console.log(`\n\n[${config.serverName} ] bot is online!`.green)
+//   console.log(`\n\n[${ConfigService.configserverName} ] bot is online!`.green)
 //   console.log(`\n\nBot successfully running. Keep this window open!\n\n`.red)
-//   console.log(`Prefix: ${config.prefix}`.blue);
+//   console.log(`Prefix: ${ConfigService.configprefix}`.blue);
 // });
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
@@ -40,7 +40,7 @@ client.on('message', message => {
   if (message.content.includes(`youtu.be`)) {
     message.react(`👍`);
   }
-  if (message.content.includes(`${config.mcIP}`) && !message.author.bot) {
+  if (message.content.includes(`${ConfigService.configmcIP}`) && !message.author.bot) {
     message.react(`✅`);
   }
 
@@ -53,7 +53,7 @@ client.on('message', message => {
   };
 
 
-  if (message.channel.id === `${config.supportChannelid}`) {
+  if (message.channel.id === `${ConfigService.config.supportChannelid}`) {
 
 
     if (message.content.includes('[Addition]')) {
