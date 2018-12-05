@@ -5,9 +5,9 @@ exports.run = (client, message, args) => {
   const errorMod = require('../modules/errorMod.js');
 
 
-  const config = require('../config.json');
+  const ConfigService = require('../config.js');
 
-  let adminRole = message.member.roles.find('name', `${config.adminrolename}`);
+  let adminRole = message.member.roles.find('name', `${ConfigService.config.adminrolename}`);
 
   if (!message.member.roles.has(adminRole.id)) {
     message.delete(0)

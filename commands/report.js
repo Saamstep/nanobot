@@ -1,4 +1,4 @@
-const config = require('../config.json');
+const ConfigService = require('../config.js');
 
 exports.run = (client, message, args) => {
   message.channel.startTyping();
@@ -7,7 +7,7 @@ exports.run = (client, message, args) => {
   let guild = message.guild;
   let reportOptions = args[0];
   let reportType = args[1];
-  let modchannel = guild.channels.find("name", `${config.log}`);
+  let modchannel = guild.channels.find("name", `${ConfigService.config.log}`);
   let reportReason = ["Bullying/Harrasment", "Racism", "Blackmail", "Inapropriate DMs", "Spam", "Advertising", "Bad Attitude"];
   let reportTypeConverted = reportReason[+ reportType - 1];
   const logEvent = require('../modules/logMod.js');
@@ -21,7 +21,7 @@ exports.run = (client, message, args) => {
     } */
   if (reportType > 7) {
     message.delete(0);
-    message.channel.send("`" + reportType + "` is not a correct report! Do \`" + config.prefix + "report types\` to see options.").then(setTimeout(function (sentMessage) { sentMessage.delete(0) }, 3000)).catch(err => console.error);
+    message.channel.send("`" + reportType + "` is not a correct report! Do \`" + ConfigService.config.prefix + "report types\` to see options.").then(setTimeout(function (sentMessage) { sentMessage.delete(0) }, 3000)).catch(err => console.error);
     message.channel.stopTyping();
   }
   if (reportOptions === "types") {
@@ -30,7 +30,7 @@ exports.run = (client, message, args) => {
         color: 0x8B0000,
         fields: [{
           name: "Report Types",
-          value: `${config.prefix}report [@user] [reason #]\n`
+          value: `${ConfigService.config.prefix}report [@user] [reason #]\n`
         },
         {
           name: "1",
@@ -73,7 +73,7 @@ exports.run = (client, message, args) => {
 
   if (reportOptions == null) {
     async function nothing() {
-      message.channel.send(`${config.prefix}report types\n${config.prefix}report [@user] [reason #]`, { code: 'aciidoc' });
+      message.channel.send(`${ConfigService.config.prefix}report types\n${ConfigService.config.prefix}report [@user] [reason #]`, { code: 'aciidoc' });
       await message.channel.stopTyping();
     }
     return nothing();

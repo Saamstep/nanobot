@@ -5,13 +5,13 @@ exports.run = (client, message, args) => {
   let f2 = args[2];
   let f3 = args[3];
   let guild = message.guild;
-  const config = require('../config.json');
-  let pollchannel = guild.channels.find('name', `${config.pollchannel}`);
+  const ConfigService = require('../config.js');
+  let pollchannel = guild.channels.find('name', `${ConfigService.config.pollchannel}`);
 
   if (type == null) {
     message.channel.send(
       `${
-      config.prefix
+        ConfigService.config.prefix
       }qotd [0/2/3] [option1] [option2] [option3 (only for #3)]\n0 - 2 options to choose from along with a BOTH option.\n2 - 2 options to choose from.\n3 - 3 options to choose from.`,
       { code: 'aciidoc' }
     );

@@ -1,30 +1,30 @@
-?accept - Allows mods to accept members.
-?ar - Allows admins to add role to a user.
-?bot - Shows info about the bot.
-?cc - Allows admins to add/remove custom commands.
-?choose - Choose between two listed things.
-?consoleclear - Lets the owner clear the console.
-?deny - Allows mods to deny members.
-?discord - Checks Discord status.
-?flip - Flips a coin.
-?game - Allows admins to change the game.
-?help - Shows all commands.
-?interview - Allows admins to setup interviews.
-?kick - This command doesn't actually work.
-?mojang - Gets Mojang server status.
-?ping - Pings the bot.
-?qotd - Allows you to ask a formatted question of the day.
-?random - Chooses a random number between 1 and 100.
-?reload - Reloads a command.
-?report - Lets you report a user.
-?roll - Rolls a dice.
-?rps - (Non functional) Rock, paper, scissors.
-?rr - Allows admins to remove role from a user.
-?say - Allows admins to send a message as the bot.
-?server - Get server status for said Minecraft server.
-?set - Allows admins to change the bot's settings. BROKEN
-?shutdown - Allows owner to force shutdown the bot.
-?status - Find the status of the server.
-?stype - Forces the stop typing command if it is in an infinite loop.
-?vote - Allows admins to send a message with reactions to take a poll.
-?website - Shows the website of HiSMP.
+!accept - Allows mods to accept members.
+!ar - Allows admins to add role to a user.
+!cc - Allows admins to add/remove custom commands.
+!bot - Shows info about the bot.
+!choose - Choose between two listed things.
+!consoleclear - Lets the owner clear the console.
+!deny - Allows mods to deny members.
+!discord - Checks Discord status.
+!flip - Flips a coin.
+!game - Allows admins to change the game.
+!help - Shows all commands.
+!interview - Allows admins to setup interviews.
+!kick - This command doesn't actually work.
+!mojang - Gets Mojang server status.
+!ping - Pings the bot.
+!qotd - Allows you to ask a formatted question of the day.
+!random - Chooses a random number between 1 and 100.
+!reload - Reloads a command.
+!report - Lets you report a user.
+!roll - Rolls a dice.
+!rps - (Non functional) Rock, paper, scissors.
+!rr - Allows admins to remove role from a user.
+!say - Allows admins to send a message as the bot.
+!server - Get server status for said Minecraft server.
+!set - Allows admins to change the bot's settings.
+!shutdown - Allows owner to force shutdown the bot.
+!status - Find the status of the server.
+!stype - Forces the stop typing command if it is in an infinite loop.
+!vote - Allows admins to send a message with reactions to take a poll.
+!website - Shows the website of Sam.

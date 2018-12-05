@@ -1,7 +1,7 @@
 exports.run = (client, message, args) => {
-  const config = require('../config.json');
+  const ConfigService = require('../config.js');
   if (args[1] == null) {
-    return message.channel.send(`${config.prefix}reload [commandName]`, {
+    return message.channel.send(`${ConfigService.config.prefix}reload [commandName]`, {
       code: 'acsiidoc'
     });
   }

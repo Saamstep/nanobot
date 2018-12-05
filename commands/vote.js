@@ -1,7 +1,7 @@
 exports.run = (client, message, args) => {
   let otherMessage = message.guild;
-  const config = require('../config.json');
-  let adminRole = message.guild.roles.find('name', `${config.adminrolename}`);
+  const ConfigService = require('../config.js');
+  let adminRole = message.guild.roles.find('name', `${ConfigService.config.adminrolename}`);
 
   function react(emoji) {
     message.react('👍');

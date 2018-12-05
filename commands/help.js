@@ -1,6 +1,6 @@
 // hi
 exports.run = (client, message, args) => {
-  const config = require('../config.json');
+  const ConfigService = require('../config.js');
   let command = message.content.split(' ')[0];
   command = command.slice(config.prefix.length);
   const error = require('../modules/errorMod.js');
