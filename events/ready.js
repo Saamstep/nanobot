@@ -10,16 +10,17 @@ exports.run = (client, member, message) => {
   const fs = require('fs');
   var path = '../NanoBot/commands.txt';
 
-
   client.user
-    .setPresence({ game: { name: `${ConfigService.config.defaultGame}`, type: 0 } })
+    .setPresence({
+      game: { name: `${ConfigService.config.defaultGame}`, type: 0 }
+    })
     .catch(console.error);
 
   var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json/';
 
   // DISCORD_STATUS_REQUEST
 
-  request(url, function (err, response, body) {
+  request(url, function(err, response, body) {
     if (err) {
       return console.log(
         'Error: DISCORD_STATUS_REQUEST. Please tell the bot author.'.red.bold
@@ -46,9 +47,7 @@ exports.run = (client, member, message) => {
     fs.unlinkSync('./commands.txt');
   }
 
-
   async function RD() {
-
     await fs.readdir(testFolder, (err, files) => {
       console.log('Updating help file...'.red);
       files.forEach(file => {
@@ -57,13 +56,19 @@ exports.run = (client, member, message) => {
         }
         if (file.startsWith('.')) {
           return;
-        }
-        else {
+        } else {
           let cmdfiles = require(`../commands/${file}`);
           const ConfigService = require('../config.js');
-          fs.appendFile('commands.txt', `${ConfigService.config.prefix}` + file.toString().replace('.js', ` - ${cmdfiles.description}\n`), function (err, written, buffer) {
-            if (err) { return; }
-          });
+          fs.appendFile(
+            'commands.txt',
+            `${ConfigService.config.prefix}` +
+              file.toString().replace('.js', ` - ${cmdfiles.description}\n`),
+            function(err, written, buffer) {
+              if (err) {
+                return;
+              }
+            }
+          );
         }
       });
     });
@@ -74,31 +79,35 @@ exports.run = (client, member, message) => {
       files.forEach(file => {
         if (file.startsWith('.')) {
           return;
-        }
-        else {
+        } else {
           let cmdfiles = require(`../commands/cc/${file}`);
           const ConfigService = require('../config.js');
 
-          fs.appendFile('commands.txt', `${ConfigService.config.prefix}` + file.toString().replace('.js', ` - [Custom Command]\n`), function (err, written, buffer) {
-            if (err) { return; }
-          });
+          fs.appendFile(
+            'commands.txt',
+            `${ConfigService.config.prefix}` +
+              file.toString().replace('.js', ` = [Custom Command]\n`),
+            function(err, written, buffer) {
+              if (err) {
+                return;
+              }
+            }
+          );
         }
       });
     });
-
   }
 
   RD();
-
 
   // DISCORD_T-O_FUNCTION
 
   setTimeout(() => {
     console.log(
       `${ConfigService.config.serverName}`.underline.cyan +
-      ' bot is online!\n'.cyan +
-      `\nConnected to:`.cyan +
-      `\n${guildNames}`.italic.cyan
+        ' bot is online!\n'.cyan +
+        `\nConnected to:`.cyan +
+        `\n${guildNames}`.italic.cyan
     );
     console.log(
       '\n[IMPORTANT] KEEP THIS WINDOW OPEN FOR BOT TO STAY ONLINE'.bold.red
@@ -106,10 +115,7 @@ exports.run = (client, member, message) => {
     console.log(bar.yellow);
 
     if (ConfigService.config.debug === 'on') {
-      console.log(
-        '\nErrors will appear below.\n'
-          .italic.green
-      );
+      console.log('\nErrors will appear below.\n'.italic.green);
     }
   }, 500);
 
@@ -129,5 +135,4 @@ exports.run = (client, member, message) => {
   //     );
   //   });
   // });
-
 };

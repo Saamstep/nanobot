@@ -6,56 +6,62 @@ exports.run = (client, message, args) => {
   let f3 = args[3];
   let guild = message.guild;
   const ConfigService = require('../config.js');
-  let pollchannel = guild.channels.find('name', `${ConfigService.config.pollchannel}`);
+  let pollchannel = guild.channels.find(
+    'name',
+    `${ConfigService.config.pollchannel}`
+  );
+  let isMod = require('../modules/isMod.js');
+  if (isMod(message.author, message)) {
+    if (type == null) {
+      message.channel.send(
+        `${
+          ConfigService.config.prefix
+        }qotd [0/2/3] [option1] [option2] [option3 (only for #3)]\n0 - 2 options to choose from along with a BOTH option.\n2 - 2 options to choose from.\n3 - 3 options to choose from.`,
+        { code: 'aciidoc' }
+      );
+    }
 
-  if (type == null) {
-    message.channel.send(
-      `${
-        ConfigService.config.prefix
-      }qotd [0/2/3] [option1] [option2] [option3 (only for #3)]\n0 - 2 options to choose from along with a BOTH option.\n2 - 2 options to choose from.\n3 - 3 options to choose from.`,
-      { code: 'aciidoc' }
-    );
-  }
-
-  if (type == 2) {
-    message.delete(0);
-    pollchannel.send(
-      '**' +
-      f1 +
-      '** ( :a: ) | **OR** | **' +
-      f2 +
-      '** ( :b: ) _Add a reaction with the right emoji!_'
-    );
-  }
-
-  if (type == 3) {
-    message.delete(0);
-    pollchannel
-      .send(
+    if (type == 2) {
+      message.delete(0);
+      pollchannel.send(
         '**' +
-        f1 +
-        '** ( :a: ) | **OR** | **' +
-        f2 +
-        '** ( :b: ) | **OR** | **' +
-        f3 +
-        '** ( :regional_indicator_c: ) _Add a reaction with the right emoji!_'
-      )
-      .catch(error => console.log(error));
-  }
+          f1 +
+          '** ( :a: ) | **OR** | **' +
+          f2 +
+          '** ( :b: ) _Add a reaction with the right emoji!_'
+      );
+    }
 
-  if (type == 0) {
-    message.delete(0);
-    pollchannel
-      .send(
-        '**' +
-        f1 +
-        '** ( :a: ) | **OR** | **' +
-        f2 +
-        '** ( :b: ) | **OR** | **BOTH** ( :ab: ) _Add a reaction with the right emoji!_'
-      )
-      .catch(error => console.log(error));
+    if (type == 3) {
+      message.delete(0);
+      pollchannel
+        .send(
+          '**' +
+            f1 +
+            '** ( :a: ) | **OR** | **' +
+            f2 +
+            '** ( :b: ) | **OR** | **' +
+            f3 +
+            '** ( :regional_indicator_c: ) _Add a reaction with the right emoji!_'
+        )
+        .catch(error => console.log(error));
+    }
+
+    if (type == 0) {
+      message.delete(0);
+      pollchannel
+        .send(
+          '**' +
+            f1 +
+            '** ( :a: ) | **OR** | **' +
+            f2 +
+            '** ( :b: ) | **OR** | **BOTH** ( :ab: ) _Add a reaction with the right emoji!_'
+        )
+        .catch(error => console.log(error));
+    }
+    message.channel.stopTyping(true);
   }
-  message.channel.stopTyping(true);
 };
 
-exports.description = 'Allows you to ask a formatted question of the day.';
+exports.description =
+  'Allows moderators to ask a formatted question of the day.';

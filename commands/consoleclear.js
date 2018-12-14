@@ -4,8 +4,8 @@ exports.run = (client, message, args) => {
 
   const ConfigService = require('../config.js');
 
-
-  if (message.author.id === `${ConfigService.config.ownerid}`) {
+  let isOwner = require('../modules/isOwner.js');
+  if (isOwner(message)) {
     console.log(
       '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
     );
@@ -17,10 +17,7 @@ exports.run = (client, message, args) => {
     );
     cM(`The console was cleared by ${message.author.username}`, message);
     message.react('✅');
-  } else {
-    error('You do not have the right permissions', message);
   }
-
 };
 
 exports.description = 'Lets the owner clear the console.';

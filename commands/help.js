@@ -11,17 +11,19 @@ exports.run = (client, message, args) => {
   var path = '../NanoBot/commands.txt';
   let option = args[1];
 
-
-
   var msg = fs.readFileSync('./commands.txt', 'utf8');
-  message.author.send('Bot Commands:\n\n' + msg, {
-    code: 'asciidoc'
-  });
 
   message.react('🖨');
 
-
-
+  if (args[0] === 'here') {
+    return message.channel.send('Bot Commands:\n\n' + msg, {
+      code: 'utf8'
+    });
+  } else {
+    return message.author.send('Bot Commands:\n\n' + msg, {
+      code: 'utf8'
+    });
+  }
 };
 
 exports.description = 'Shows all commands.';

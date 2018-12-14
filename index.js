@@ -4,7 +4,7 @@ const bot = new Discord.Client({ autoReconnect: true });
 const ConfigService = require('./config.js');
 client.login(ConfigService.config.token);
 const fs = require('fs');
-var colors = require('colors');
+const request = require('request');
 
 // client.on("ready", () => {
 //   client.user.setPresence({game: {name: "Minecraft", type: 0} }).catch(console.error);
@@ -26,21 +26,122 @@ fs.readdir('./events/', (err, files) => {
     client.on(eventName, (...args) => eventFunction.run(client, ...args));
   });
 });
-// YT Video like system
 
+//Twitch Streamer Notifier
+const compare = new Set();
+function twitch(message) {
+  // List of streamers to get notifications for
+  var streamers = ['nullpointer128', 'fitzyhere', 'saamstep'];
 
+  streamers.forEach(function(element) {
+    // Allows request to be made
 
+    let options = {
+      url: `https://api.twitch.tv/kraken/streams?channel=${element}`,
+      method: 'GET',
+      headers: {
+        'User-Agent': 'D.js-Bot-Dev',
+        'Client-ID': `${config.twitchID}`,
+        'content-type': 'application/json'
+      }
+    };
+    // Makes request
+    request(options, function(error, response, body) {
+      body = JSON.parse(body);
+      if (body._total < 1) {
+        return;
+      } else if (!compare.has(element)) {
+        // Message formatter for the notificiations
+        const embed = {
+          description: '**' + body.streams[0].channel.status + '**',
+          url: 'http://twitch.tv/' + body.streams[0].channel.display_name,
+          color: 6684837,
+          footer: {
+            icon_url:
+              'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png',
+            text: config.serverName + ' Bot'
+          },
+          thumbnail: {
+            url: body.streams[0].channel.logo
+          },
+          author: {
+            name: body.streams[0].channel.display_name + ' is live',
+            url: 'http://twitch.tv/' + body.streams[0].channel.display_name,
+            icon_url:
+              'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png'
+          },
+          fields: [
+            {
+              name: 'Game',
+              value: body.streams[0].channel.game,
+              inline: true
+            },
+            {
+              name: 'Link',
+              value: 'http://twitch.tv/' + body.streams[0].channel.display_name,
+              inline: true
+            }
+          ]
+        };
+        // Add streamer name to a set
+        compare.add(element);
+
+        if (compare.has(element)) {
+          console.log('Compare has element!');
+        }
+
+        // Finds channel and sends msg to channel
+        client.guilds.map(guild => {
+          if (guild.available) {
+            let channel = guild.channels.find(
+              channel => channel.name === `${config.twitchChannel}`
+            );
+            if (channel) {
+              channel.send(config.mentionNotify, {
+                embed
+              });
+            }
+          }
+        });
+      } else if (compare.has(element) && body._total < 1) {
+        compare.delete(element);
+        return;
+      }
+    });
+  });
+}
+
+// Starts checking for Twitch channels live on launch
+// client.on('ready', ready => {
+//   setInterval(twitch, 2000);
+// });
+
+// End of Twitch Streamer Notifier
 
 client.on('message', message => {
   // YT video like system
-  if (message.content.includes(`youtube.com/watch?v=`)) {
-    message.react(`👍`);
+
+  let urls = ConfigService.config.urls;
+  if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
+    return message.react(`👍`);
   }
 
-  if (message.content.includes(`youtu.be`)) {
-    message.react(`👍`);
+  // Nicknamer
+
+  try {
+    if (message.channel.id === ConfigService.config.nickChannelid) {
+      if (message.content !== '.iam') {
+        message.delete(0);
+      }
+    }
+  } catch (err) {
+    return;
   }
-  if (message.content.includes(`${ConfigService.configmcIP}`) && !message.author.bot) {
+
+  if (
+    message.content.includes(`${ConfigService.configmcIP}`) &&
+    !message.author.bot
+  ) {
     message.react(`✅`);
   }
 
@@ -50,37 +151,20 @@ client.on('message', message => {
   async function pMreact() {
     await message.react('☑');
     await message.react('🇽');
-  };
-
-
-  if (message.channel.id === `${ConfigService.config.supportChannelid}`) {
-
-
-    if (message.content.includes('[Addition]')) {
-      return pMreact();
-    }
-    if (message.content.includes('[Request]')) {
-      return pMreact();
-    }
-    if (message.content.includes('[Removal]')) {
-      return pMreact();
-    }
-
-    if (!message.content.includes('[Addition]')) {
-      return message.delete();
-    }
-    if (!message.content.includes('[Request]')) {
-      return message.delete();
-    }
-    if (!message.content.includes('[Removal]')) {
-      return message.delete();
-    }
-
-
-
   }
 
+  if (
+    message.channel.id === `${ConfigService.config.supportChannelid}` &&
+    !message.author.bot
+  ) {
+    const tag = ConfigService.config.supportTags;
 
+    if (tag.some(word => message.content.includes(word))) {
+      return pMreact();
+    } else {
+      return message.delete();
+    }
+  }
 
   // Command file manager code
 
@@ -91,6 +175,7 @@ client.on('message', message => {
   command = command.slice(config.prefix.length);
   client.config = config;
   let args = message.content.split(' ').slice(1);
+
   // The list of if/else is replaced with those simple 2 lines:
 
   // Regular command file manager
@@ -98,7 +183,7 @@ client.on('message', message => {
     let commandFile = require(`./commands/${command}.js`);
     commandFile.run(client, message, args);
   } catch (err) {
-    if (config.debug === 'on') {
+    if (config.debug === true) {
       console.log(err);
     }
   }
@@ -106,9 +191,9 @@ client.on('message', message => {
   // Custom command file manager
   try {
     let commandFile = require(`./commands/cc/${command}.js`);
-    commandFile.run(client, message, args);
+    commandFile.run(client, message, args, set);
   } catch (err) {
-    if (config.debug === 'on') {
+    if (config.debug === true) {
       console.log(err);
     } else {
       return;

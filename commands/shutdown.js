@@ -1,9 +1,7 @@
 exports.run = (client, message, args) => {
   const ConfigService = require('../config.js');
-  if (message.author.id !== `${ConfigService.config.ownerid}`) {
-    const errorMod = require('../modules/errorMod.js');
-    return errorMod(':no_entry_sign: | You are not the bot owner!');
-  } else {
+  let isOwner = require('../modules/isOwner.js');
+  if (isOwner(message)) {
     client.destroy(err => {
       console.log('====================');
       console.log('Command: [!@shutdown] run by ' + message.author.username);

@@ -7,20 +7,18 @@ exports.run = (client, message, args) => {
     message.channel.stopTyping(true);
   }
   const ConfigService = require('../config.js');
-  let modRole = message.guild.roles.find("name", `${ConfigService.config.adminrolename}`);
-  if (!message.member.roles.has(modRole.id)) {
-    message.channel.stopTyping(true);
-    return message.channel.send(":no_entry_sign: | Error. You don't have the right permissions").catch(console.error);
+  let isAdmin = require('../modules/isAdmin.js');
+  if (isAdmin(message.author, message)) {
+    if (args[0] == null) {
+      message.channel.stopTyping(true);
+      return message.channel.send(
+        `${ConfigService.config.prefix}say [message]`,
+        { code: 'asciidoc' }
+      );
+    } else {
+      return sender();
+    }
   }
-  if (args[0] == null) {
-    message.channel.stopTyping(true);
-    return message.channel.send(`${ConfigService.config.prefix}say [message]`, { code: 'asciidoc' })
-
-  } else {
-    return sender();
-  }
-
-
 };
 
-exports.description = 'Allows admins to send a message as the bot.'
+exports.description = 'Allows admins to send a message as the bot.';
