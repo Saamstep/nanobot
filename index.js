@@ -31,9 +31,9 @@ fs.readdir('./events/', (err, files) => {
 const compare = new Set();
 function twitch(message) {
   // List of streamers to get notifications for
-  var streamers = ['nullpointer128', 'fitzyhere', 'saamstep'];
 
-  streamers.forEach(function(element) {
+
+  ConfigService.config.streamers.forEach(function (element) {
     // Allows request to be made
 
     let options = {
@@ -41,12 +41,12 @@ function twitch(message) {
       method: 'GET',
       headers: {
         'User-Agent': 'D.js-Bot-Dev',
-        'Client-ID': `${config.twitchID}`,
+        'Client-ID': `${ConfigService.config.twitchID}`,
         'content-type': 'application/json'
       }
     };
     // Makes request
-    request(options, function(error, response, body) {
+    request(options, function (error, response, body) {
       body = JSON.parse(body);
       if (body._total < 1) {
         return;
@@ -86,9 +86,7 @@ function twitch(message) {
         // Add streamer name to a set
         compare.add(element);
 
-        if (compare.has(element)) {
-          console.log('Compare has element!');
-        }
+
 
         // Finds channel and sends msg to channel
         client.guilds.map(guild => {
@@ -112,9 +110,9 @@ function twitch(message) {
 }
 
 // Starts checking for Twitch channels live on launch
-// client.on('ready', ready => {
-//   setInterval(twitch, 2000);
-// });
+client.on('ready', ready => {
+  setInterval(twitch, 2000);
+});
 
 // End of Twitch Streamer Notifier
 

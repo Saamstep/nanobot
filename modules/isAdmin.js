@@ -4,10 +4,7 @@ module.exports = function isAdmin(user, message) {
     'name',
     `${ConfigService.config.adminrolename}`
   );
-  let mod = message.member.roles.find(
-    'name',
-    `${ConfigService.config.modrolename}`
-  );
+
   let error = require('../modules/errorMod.js');
   try {
     if (message.member.roles.has(admin.id)) {
@@ -16,10 +13,7 @@ module.exports = function isAdmin(user, message) {
       return false;
     }
   } catch {
-    if (
-      message.author.id == ConfigService.config.ownerid ||
-      message.member.roles.has(mod.id)
-    ) {
+    if (message.author.id == ConfigService.config.ownerid) {
       return true;
     } else {
       let role = ConfigService.config.adminrolename;

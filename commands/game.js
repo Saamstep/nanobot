@@ -16,8 +16,6 @@ exports.run = (client, message, args) => {
       client.user
         .setPresence({ game: { name: game, type: 0 } })
         .catch(console.error);
-
-      configChange(game);
       message.channel.send(
         ':gear: | Successfully changed the game to: ' + '`' + game + '`'
       );

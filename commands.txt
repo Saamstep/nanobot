@@ -1,40 +1,40 @@
-?_fortnite - undefined
-?accept - Allows mods to accept members.
-?boot - undefined
+?_fortnite - Un-functional Fortnite command.
 ?bitcoin - Find the current price of Bitcoin.
+?boot - Allows admins to boot users from the voice channel.
+?bot - Shows info about the bot.
 ?catfact - Get a random cat fact.
 ?catimg - Get a random cat image.
+?cc - Allows admins to add/remove custom commands.
 ?choose - Choose between two listed things.
 ?cmd - Allows you to run MC Server commands using Remote Console
 ?consoleclear - Lets the owner clear the console.
 ?deny - Allows mods to deny members.
 ?discord - Checks Discord status.
-?dogimg - Get a random dog image.
+?accept - Allows mods to accept members.
 ?flip - Flips a coin.
 ?game - Allows admins to change the game.
 ?help - Shows all commands.
+?ar - Allows admins to add role to a user.
 ?interview - Allows admins to setup interviews.
-?mojang - Gets Mojang server status.
 ?owstats - Grab simple Overwatch stats for a user.
-?ping - Pings the bot.
+?dogimg - Get a random dog image.
 ?qotd - Allows moderators to ask a formatted question of the day.
 ?random - Chooses a random number between 1 and 100.
-?cc - Allows admins to add/remove custom commands.
+?reload - Allows Mods to reload a command.
 ?report - Lets you report a user.
-?roll - Rolls a dice.
 ?rps - (Non functional) Rock, paper, scissors.
 ?rr - Allows admins to remove role from a user.
 ?say - Allows admins to send a message as the bot.
-?reload - Allows Mods to reload a command.
+?server - Get server status for said Minecraft server.
 ?set - Allows admins to change the bot's settings.
 ?shutdown - Allows owner to force shutdown the bot.
-?status - Find the status of the server.
+?ping - Pings the bot.
 ?stype - Forces the stop typing command if it is in an infinite loop.
 ?vote - Allows mods to send a message with reactions to take a poll.
 ?website - Shows the website of Dev.
-?bot - Shows info about the bot.
-?hello = [Custom Command]
-?ar - Allows admins to add role to a user.
 ?Custom = [Custom Command]
-?server - Get server status for said Minecraft server.
+?hello = [Custom Command]
 ?test = [Custom Command]
+?roll - Rolls a dice.
+?status - Find the status of the server.
+?mojang - Gets Mojang server status.

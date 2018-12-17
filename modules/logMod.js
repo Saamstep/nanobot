@@ -1,9 +1,12 @@
 module.exports = function logEvent(event, reason, color, message) {
   const ConfigService = require('../config.js');
 
+  var dateFormat = require('dateformat');
+  let now = new Date();
+  let timeFormat = dateFormat(now, 'dddd, mmmm dS, yyyy, h:MM:ss TT');
+
   const embed = {
     color: color,
-    timestamp: '2018-02-23T20:06:55.686Z',
     footer: {
       icon_url: 'http://logonoid.com/images/mod-logo.png',
       text: `${ConfigService.config.serverName} Action Logger`
@@ -25,9 +28,6 @@ module.exports = function logEvent(event, reason, color, message) {
   };
 
   let guild = message.guild;
-  var dateFormat = require('dateformat');
-  let now = new Date();
-  let timeFormat = dateFormat(now);
 
   let logchannel = guild.channels.find('name', `${ConfigService.config.log}`);
   logchannel.send({ embed });

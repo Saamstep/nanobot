@@ -37,7 +37,7 @@ exports.run = (client, message, args) => {
         if (newPort == null) {
           return message.channel.send(
             `${
-              ConfigService.config.prefix
+            ConfigService.config.prefix
             }set port reset/[port]\nReset will make the port blank.`,
             {
               code: 'ascidoc'
@@ -168,10 +168,27 @@ exports.run = (client, message, args) => {
           );
         }
         break;
-      case 'defaultgame':
-        let newGame = args[1];
-        ConfigService.setConfigProperty('defaultGame', newGame);
-        message.channel.send(`Default game changed to \`${newGame}\``);
+      case 'game':
+        let newGame = args.join(' ').slice(5);
+        if (newGame == null) {
+          return message.channel.send(
+            `${ConfigService.config.prefix}set game [Game Value]`,
+            {
+              code: 'asciidoc'
+            }
+          );
+        }
+        if (newGame.length <= 10) {
+          client.user.setPresence({ game: { name: `${newGame}`, type: 0 } });
+          ConfigService.setConfigProperty('defaultGame', newGame);
+          message.channel.send(
+            'Updated the game status to: ' + '`' + newGame + '`'
+          );
+        } else {
+          if (newGame.length > 10) {
+            return error(`\`${newGame}\` is too long`, message);
+          }
+        }
         logEvent(
           'Default Game Update',
           `Default Game has been changed to **${newGame}**`,
@@ -239,50 +256,76 @@ exports.run = (client, message, args) => {
         break;
       case 'urls':
         if (args[1] == 'add') {
-          let path = ConfigService.config.urls;
-          // ConfigService.setConfigProperty('urls', args.join(' ').slice(8));
-          path.push(`${args.join(' ').slice(8)}`).catch(err => console.err);
+          //   config.urls
+          //     .push(`${args.join(' ').slice(8)}`)
+          //     .catch(err => console.err);
+          // }
+          // ConfigService.setConfigProperty('urls', args[2]);
+          let config = require('../config.json');
+          ConfigService.config.urls.push(JSON.stringify(args[2]));
+        }
+        break;
+      case 'twitchmention':
+        if (args[1].includes('@')) {
+          let role = args[1];
+          ConfigService.setConfigProperty('mentionNotify', role);
+          message.channel.send(`Twitch mention role updated to ${role}`);
+        } else {
+          error('This time, mention the role.', message);
+        }
+        break;
+      case 'twitchchannel':
+        if (!args[1].includes('#')) {
+          let newChannel = args[1];
+          ConfigService.setConfigProperty('twitchChannel', newChannel);
+          message.channel.send(`Twitch channel updated to #${newChannel}`);
+        } else {
+          error('Just write the name of the channel.', message);
         }
         break;
       default:
         //usage
         message.channel.send(
           `['Bot_Settings']\n\n"You can edit these values with '${
-            ConfigService.config.prefix
+          ConfigService.config.prefix
           }set [option] [new value]'\nOptions are the names in gold with with no spaces and no caps!\nEx: ?set logchannel logger"` +
-            `\n\n'General_Usage'\nPrefix: '${
-              ConfigService.config.prefix
-            }'\nLog Channel: "#${ConfigService.config.log}"\n\Poll Channel: "#${
-              ConfigService.config.pollchannel
-            }"\nJoin Channel: "#${ConfigService.config.joinCh}"\nDebug: "${
-              ConfigService.config.debug
-            }"` +
-            `\n'MC_Server'\nServer Name: "${
-              ConfigService.config.serverName
-            }"\nAccept Message: "${ConfigService.config.acceptMessage}"\nIP: "${
-              ConfigService.config.mcIP
-            }"\nPort: "${
-              ConfigService.config.mcPort
-            } (Leave empty if none)"\nWebsite: "${
-              ConfigService.config.website
-            }"\nSupport Channel "${
-              ConfigService.config.supportChannelid
-            }"\nSupport Channel Tags: "${
-              ConfigService.config.supportTags
-            }"\n'Text'\nJoin Message: "${
-              ConfigService.config.joinMsg
-            }"\nLeave Message: "${
-              ConfigService.config.leaveMsg
-            }"\nNickname Channel: "${
-              ConfigService.config.nickChannelid
-            }"\nDefault Game: "${ConfigService.config.defaultGame}"` +
-            `\nThumbs Up URLs: "${
-              ConfigService.config.urls
-            }"\n'Roles'\nMod Role: "${
-              ConfigService.config.modrolename
-            }"\nAdmin Role: "${
-              ConfigService.config.adminrolename
-            }"\nMember Role: "${ConfigService.config.memberrole}"\n`,
+          `\n\n'General_Usage'\nPrefix: '${
+          ConfigService.config.prefix
+          }'\nLog Channel: "#${ConfigService.config.log}"\n\Poll Channel: "#${
+          ConfigService.config.pollchannel
+          }"\nJoin Channel: "#${
+          ConfigService.config.joinCh
+          }"\nTwitch Channel: "#${
+          ConfigService.config.twitchChannel
+          }"\nDebug: "${ConfigService.config.debug}"` +
+          `\n'MC_Server'\nServer Name: "${
+          ConfigService.config.serverName
+          }"\nAccept Message: "${ConfigService.config.acceptMessage}"\nIP: "${
+          ConfigService.config.mcIP
+          }"\nPort: "${
+          ConfigService.config.mcPort
+          } (Leave empty if none)"\nWebsite: "${
+          ConfigService.config.website
+          }"\nSupport Channel "${
+          ConfigService.config.supportChannelid
+          }"\nSupport Channel Tags: "${
+          ConfigService.config.supportTags
+          }"\n'Text'\nJoin Message: "${
+          ConfigService.config.joinMsg
+          }"\nLeave Message: "${
+          ConfigService.config.leaveMsg
+          }"\nNickname Channel: "${
+          ConfigService.config.nickChannelid
+          }"\nGame: "${ConfigService.config.defaultGame}"` +
+          `\nThumbs Up URLs: "${
+          ConfigService.config.urls
+          }"\n'Roles'\nMod Role: "${
+          ConfigService.config.modrolename
+          }"\nAdmin Role: "${
+          ConfigService.config.adminrolename
+          }"\nMember Role: "${
+          ConfigService.config.memberrole
+          }"\nTwitch Mention: "${ConfigService.config.mentionNotify}"`,
           { code: 'ml' }
         );
     }
