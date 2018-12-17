@@ -1,40 +1,40 @@
 ?_fortnite - Un-functional Fortnite command.
 ?bitcoin - Find the current price of Bitcoin.
 ?boot - Allows admins to boot users from the voice channel.
-?bot - Shows info about the bot.
 ?accept - Allows mods to accept members.
-?catimg - Get a random cat image.
+?ar - Allows admins to add role to a user.
 ?cc - Allows admins to add/remove custom commands.
 ?choose - Choose between two listed things.
 ?cmd - Allows you to run MC Server commands using Remote Console
 ?consoleclear - Lets the owner clear the console.
-?catfact - Get a random cat fact.
+?deny - Allows mods to deny members.
 ?discord - Checks Discord status.
 ?dogimg - Get a random dog image.
 ?flip - Flips a coin.
 ?game - Allows admins to change the game.
 ?help - Shows all commands.
+?catfact - Get a random cat fact.
+?catimg - Get a random cat image.
+?bot - Shows info about the bot.
 ?interview - Allows admins to setup interviews.
 ?mojang - Gets Mojang server status.
-?deny - Allows mods to deny members.
+?owstats - Grab simple Overwatch stats for a user.
 ?ping - Pings the bot.
 ?qotd - Allows moderators to ask a formatted question of the day.
 ?random - Chooses a random number between 1 and 100.
-?reload - Allows Mods to reload a command.
 ?report - Lets you report a user.
 ?roll - Rolls a dice.
-?ar - Allows admins to add role to a user.
-?rr - Allows admins to remove role from a user.
+?reload - Allows Mods to reload a command.
 ?say - Allows admins to send a message as the bot.
 ?server - Get server status for said Minecraft server.
 ?set - Allows admins to change the bot's settings.
-?shutdown - Allows owner to force shutdown the bot.
 ?status - Find the status of the server.
 ?stype - Forces the stop typing command if it is in an infinite loop.
-?rps - (Non functional) Rock, paper, scissors.
-?website - Shows the website of Dev.
+?vote - Allows mods to send a message with reactions to take a poll.
+?website - Shows the website of VC Robotics.
 ?Custom = [Custom Command]
 ?hello = [Custom Command]
 ?test = [Custom Command]
-?vote - Allows mods to send a message with reactions to take a poll.
-?owstats - Grab simple Overwatch stats for a user.
+?rps - (Non functional) Rock, paper, scissors.
+?shutdown - Allows owner to force shutdown the bot.
+?rr - Allows admins to remove role from a user.

@@ -4,13 +4,13 @@ exports.run = (client, message, args) => {
     message.delete(0);
     let msgSender = args.join(' ');
     message.channel.send(msgSender);
-    message.channel.stopTyping(true);
+
   }
   const ConfigService = require('../config.js');
   let isAdmin = require('../modules/isAdmin.js');
   if (isAdmin(message.author, message)) {
     if (args[0] == null) {
-      message.channel.stopTyping(true);
+
       return message.channel.send(
         `${ConfigService.config.prefix}say [message]`,
         { code: 'asciidoc' }
@@ -19,6 +19,7 @@ exports.run = (client, message, args) => {
       return sender();
     }
   }
+  message.channel.stopTyping(true);
 };
 
 exports.description = 'Allows admins to send a message as the bot.';

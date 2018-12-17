@@ -13,12 +13,12 @@ exports.run = (client, message, args) => {
       return errorMod('Please mention a user', message);
     }
 
-    if (user.roles.has(role.id)) {
+    if (user.roles.has(role)) {
       message.delete(0);
       return errorMod('That user already has **' + role.name + '**!', message);
     }
     message.delete(0);
-    user.addRole(role.id);
+    user.addRole(role);
   }
 };
 

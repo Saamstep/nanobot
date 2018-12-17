@@ -256,13 +256,17 @@ exports.run = (client, message, args) => {
         break;
       case 'urls':
         if (args[1] == 'add') {
-          //   config.urls
-          //     .push(`${args.join(' ').slice(8)}`)
-          //     .catch(err => console.err);
+          message.channel.send(`Adding \`${args[2]}\` to the list of URLS...`)
+          return ConfigService.setConfigProperty("urls", (ConfigService.config.urls || []).concat(args[2]))
+        } else if (args[1] === 'del') {
+
+          // if (ConfigService.config.urls.indexOf(args[2]) != -1) {
+          ConfigService.config.urls.splice(ConfigService.config.urls.indexOf(args[2]), 1)
+          ConfigService.setConfigProperty("urls", ConfigService.config.urls)
           // }
-          // ConfigService.setConfigProperty('urls', args[2]);
-          let config = require('../config.json');
-          ConfigService.config.urls.push(JSON.stringify(args[2]));
+        }
+        if (args[1] !== 'add' || 'del') {
+          return message.channel.send(`${ConfigService.config.prefix}set urls [add/del] [A URL]`, { code: 'asciidoc' })
         }
         break;
       case 'twitchmention':
@@ -298,7 +302,7 @@ exports.run = (client, message, args) => {
           }"\nTwitch Channel: "#${
           ConfigService.config.twitchChannel
           }"\nDebug: "${ConfigService.config.debug}"` +
-          `\n'MC_Server'\nServer Name: "${
+          `\nStreamers: "${ConfigService.config.streamers}"\n'MC_Server'\nServer Name: "${
           ConfigService.config.serverName
           }"\nAccept Message: "${ConfigService.config.acceptMessage}"\nIP: "${
           ConfigService.config.mcIP
