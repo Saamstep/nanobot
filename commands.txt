@@ -2,39 +2,39 @@
 ?bitcoin - Find the current price of Bitcoin.
 ?boot - Allows admins to boot users from the voice channel.
 ?bot - Shows info about the bot.
-?catfact - Get a random cat fact.
+?accept - Allows mods to accept members.
 ?catimg - Get a random cat image.
 ?cc - Allows admins to add/remove custom commands.
 ?choose - Choose between two listed things.
 ?cmd - Allows you to run MC Server commands using Remote Console
 ?consoleclear - Lets the owner clear the console.
-?deny - Allows mods to deny members.
+?catfact - Get a random cat fact.
 ?discord - Checks Discord status.
-?accept - Allows mods to accept members.
+?dogimg - Get a random dog image.
 ?flip - Flips a coin.
 ?game - Allows admins to change the game.
 ?help - Shows all commands.
-?ar - Allows admins to add role to a user.
 ?interview - Allows admins to setup interviews.
-?owstats - Grab simple Overwatch stats for a user.
-?dogimg - Get a random dog image.
+?mojang - Gets Mojang server status.
+?deny - Allows mods to deny members.
+?ping - Pings the bot.
 ?qotd - Allows moderators to ask a formatted question of the day.
 ?random - Chooses a random number between 1 and 100.
 ?reload - Allows Mods to reload a command.
 ?report - Lets you report a user.
-?rps - (Non functional) Rock, paper, scissors.
+?roll - Rolls a dice.
+?ar - Allows admins to add role to a user.
 ?rr - Allows admins to remove role from a user.
 ?say - Allows admins to send a message as the bot.
 ?server - Get server status for said Minecraft server.
 ?set - Allows admins to change the bot's settings.
 ?shutdown - Allows owner to force shutdown the bot.
-?ping - Pings the bot.
+?status - Find the status of the server.
 ?stype - Forces the stop typing command if it is in an infinite loop.
-?vote - Allows mods to send a message with reactions to take a poll.
+?rps - (Non functional) Rock, paper, scissors.
 ?website - Shows the website of Dev.
 ?Custom = [Custom Command]
 ?hello = [Custom Command]
 ?test = [Custom Command]
-?roll - Rolls a dice.
-?status - Find the status of the server.
-?mojang - Gets Mojang server status.
+?vote - Allows mods to send a message with reactions to take a poll.
+?owstats - Grab simple Overwatch stats for a user.
