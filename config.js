@@ -1,14 +1,26 @@
 const fs = require('fs');
+const colors = require('colors');
 const CONFIG_PATH = './config.json';
+
+const failAndExit = () => {
+  console.error('config.js: Error loading Nano config file. Please make a config.json at the root directory and try again.'.underline.red);
+  process.exit(1);
+}
 
 // Singleton structure in JS
 var ConfigService = (function () {
 
-  const data = fs.readFileSync(require.resolve(CONFIG_PATH));
+  var data;
+  try {
+    data = fs.readFileSync(CONFIG_PATH);
+  } catch {
+    failAndExit();
+  }
+
   if (data) { 
     this.config = JSON.parse(data);
   } else {
-    console.error('Error loading Nano config file. Please make a config.json at the root directory and try again.');
+    failAndExit();
   }
 
   this.setConfigProperty = (property, value) => {

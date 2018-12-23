@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
+    "dev": "node .",
     "updater": "echo \"\n\n\n\n\n\n\n\n\n\n\n>>Updating all NPM packages\n\n\n\n>>Run npm start after updater complete.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\nWe do know what we're doing so we're fine :)\" && npm update --save/--save-dev -f"
   },
   "author": "Samstep",
@@ -14,6 +15,7 @@
     "dateformat": "^3.0.3",
     "discord.js": "^11.1.0",
     "fs": "0.0.1-security",
+    "moment": "^2.23.0",
     "request": "^2.88.0"
   }
 }
