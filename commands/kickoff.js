@@ -4,7 +4,7 @@ const moment = require('moment');
 exports.run = (client, message, args) => {
   const kickoff = moment(ConfigService.config.kickoff);
 
-  if (args[0] === 'set') {
+  if (args[0] === 'set' && isOwner(message)) {
     const inputDate = moment(args[1], 'MM/DD/YYYY', true);
     if (inputDate.isValid()) {
       ConfigService.setConfigProperty('kickoff', inputDate.toISOString());
