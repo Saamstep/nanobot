@@ -3,7 +3,7 @@ exports.run = (client, message, args) => {
     let roll = Math.floor((Math.random() * 6) + 1);
     await message.channel.startTyping();
     await message.reply(":game_die: | You rolled a " + roll);
-    await message.channel.stopTyping();
+    await message.channel.stopTyping(true);
   }
 
   cmd();

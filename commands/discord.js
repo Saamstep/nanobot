@@ -1,17 +1,14 @@
 const ConfigService = require('../config.js');
-var request = require('request');
-var errorEvent = require('../modules/errorMod.js');
+var errorMod = require('../modules/errorMod.js');
+const fetch = require('node-fetch');
 
-exports.run = (client, message, args) => {
+exports.run = async (client, message, args) => {
   message.channel.startTyping();
   var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json';
 
-  request(url, function (err, response, body) {
-    if (err) {
-      // console.log(err);
-      return errorEvent('Could not fetch Discord status', message);
-    }
-    body = JSON.parse(body);
+  try {
+    const response = await fetch(url);
+    const body = await response.json();
     var indicator = body.status.indicator;
     var desc = body.status.description;
 
@@ -24,8 +21,11 @@ exports.run = (client, message, args) => {
         'Indicator: **' + indicator + '**\n' + 'Message: **' + desc + '**'
       );
     }
-  });
-  message.channel.stopTyping();
+  } catch(e) {
+    return errorMod('Could not fetch Discord status', message);
+  }
+
+  message.channel.stopTyping(true);
 };
 
 

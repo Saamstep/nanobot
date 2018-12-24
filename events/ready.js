@@ -1,138 +1,96 @@
 const ConfigService = require('../config.js');
-exports.run = (client, member, message) => {
-  var colors = require('colors');
-  var request = require('request');
-  const guildNames = client.guilds.map(g => g.name).join('\n');
-  let bar = '+===========================================+';
-  const errorMod = require('../modules/errorMod.js');
-  const testFolder = './commands/';
-  const ccFolder = './commands/cc/';
-  const fs = require('fs');
-  var path = '../NanoBot/commands.txt';
+const colors = require('colors');
+const fetch = require('node-fetch');
+const commandsFolder = './commands/';
+const ccFolder = './commands/cc/';
+const CommandList = require('../commandList.js');
+const fs = require('fs').promises;
 
+let bar = '+===========================================+';
+
+exports.run = async function(client, member, message) {
+  const guildNames = client.guilds.map(g => g.name).join('\n');
   client.user
     .setPresence({
       game: { name: `${ConfigService.config.defaultGame}`, type: 0 }
     })
     .catch(console.error);
 
+  // Iterate over all commands in command folder and add to CommandList
+  try {
+    const commands = await fs.readdir(commandsFolder);
+    commands.forEach(file => {
+      if (file === 'cc') {
+        return;
+      }
+      if (file.startsWith('.')) {
+        return;
+      } else {
+        let cmdfiles = require(`../commands/${file}`);
+        CommandList.addCommand(file.toString().replace('.js', ''), false, cmdfiles.description);
+      }
+    });
+  } catch(e) {
+    console.log(e);
+    console.error('No commands found, please make a commands folder and put some commands in there my man'.red.bold);
+    process.exit(1);
+  }
+
+  // Add custom commands to command list
+  try {
+    const customCommands = await fs.readdir(ccFolder);
+    customCommands.forEach(file => {
+      if (file.startsWith('.')) {
+        return;
+      } else {
+        let cmdfiles = require(`../commands/cc/${file}`);
+        CommandList.addCommand(file.toString().replace('.js', ''), true, cmdfiles.description);          
+      }
+    });
+  } catch(e) {
+    console.error('No custom file directory exists, please create a cc folder in the commands directory'.red);
+  }
+
+
+  // Discord status URL
   var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json/';
 
-  // DISCORD_STATUS_REQUEST
+  // Start discord status
+  const response = await fetch(url);
 
-  request(url, function(err, response, body) {
-    if (err) {
-      return console.log(
-        'Error: DISCORD_STATUS_REQUEST. Please tell the bot author.'.red.bold
-      );
-    }
+  const body = await response.json();
 
-    body = JSON.parse(body);
-    var indicator = body.status.indicator;
-    var desc = body.status.description;
-
-    if (body.status.description == 'All Systems Operational') {
-      console.log(bar.yellow);
-      console.log('[Discord Status] All Systems Operational\n'.green);
-    } else {
-      console.log(bar.yellow);
-      console.log(
-        '[Discord Status] There seems to be an error within Discord. Double check https://status.discordapp.com/ \n'
-          .red
-      );
-    }
-  });
-
-  if (fs.existsSync('./commands.txt')) {
-    fs.unlinkSync('./commands.txt');
+  if (!response.ok) {
+    throw Error('Error: DISCORD_STATUS_REQUEST. Please tell the bot author.');
   }
 
-  async function RD() {
-    await fs.readdir(testFolder, (err, files) => {
-      console.log('Updating help file...'.red);
-      files.forEach(file => {
-        if (file === 'cc') {
-          return;
-        }
-        if (file.startsWith('.')) {
-          return;
-        } else {
-          let cmdfiles = require(`../commands/${file}`);
-          const ConfigService = require('../config.js');
-          fs.appendFile(
-            'commands.txt',
-            `${ConfigService.config.prefix}` +
-              file.toString().replace('.js', ` - ${cmdfiles.description}\n`),
-            function(err, written, buffer) {
-              if (err) {
-                return;
-              }
-            }
-          );
-        }
-      });
-    });
+  var indicator = body.status.indicator;
+  var desc = body.status.description;
 
-    await fs.readdir(ccFolder, (err, files) => {
-      console.log('Updating help file...'.red);
-      if (!files) return;
-      files.forEach(file => {
-        if (file.startsWith('.')) {
-          return;
-        } else {
-          let cmdfiles = require(`../commands/cc/${file}`);
-          const ConfigService = require('../config.js');
-
-          fs.appendFile(
-            'commands.txt',
-            `${ConfigService.config.prefix}` +
-              file.toString().replace('.js', ` = [Custom Command]\n`),
-            function(err, written, buffer) {
-              if (err) {
-                return;
-              }
-            }
-          );
-        }
-      });
-    });
-  }
-
-  RD();
-
-  // DISCORD_T-O_FUNCTION
-
-  setTimeout(() => {
-    console.log(
-      `${ConfigService.config.serverName}`.underline.cyan +
-        ' bot is online!\n'.cyan +
-        `\nConnected to:`.cyan +
-        `\n${guildNames}`.italic.cyan
-    );
-    console.log(
-      '\n[IMPORTANT] KEEP THIS WINDOW OPEN FOR BOT TO STAY ONLINE'.bold.red
-    );
+  if (body.status.description == 'All Systems Operational') {
     console.log(bar.yellow);
+    console.log('[Discord Status] All Systems Operational\n'.green);
+  } else {
+    console.log(bar.yellow);
+    console.log(
+      '[Discord Status] There seems to be an error within Discord. Double check https://status.discordapp.com/ \n'
+      .red
+    );
+  }
+  // End discord status
 
-    if (ConfigService.config.debug === 'on') {
-      console.log('\nErrors will appear below.\n'.italic.green);
-    }
-  }, 500);
+  console.log(
+    `${ConfigService.config.serverName}`.underline.cyan +
+      ' bot is online!\n'.cyan +
+      `\nConnected to:`.cyan +
+      `\n${guildNames}`.italic.cyan
+  );
+  console.log(
+    '\n[IMPORTANT] KEEP THIS WINDOW OPEN FOR BOT TO STAY ONLINE'.bold.red
+  );
+  console.log(bar.yellow);
 
-  // if (fs.existsSync('./commands.txt')) {
-  //   fs.unlinkSync('./commands.txt');
-  // }
-  // fs.readdir(ccFolder, (err, files) => {
-  //   files.forEach(file => {
-  //     let cmdfiles = require(`../commands/cc/${file}`);
-  //     const ConfigService = require('../config.js');
-  //     fs.appendFile(
-  //       'commands.txt',
-  //       `${ConfigService.configprefix}` +
-  //       file.toString().replace('.js', `\n`, function (err) {
-  //         if (err) return;
-  //       })
-  //     );
-  //   });
-  // });
+  if (ConfigService.config.debug === 'on') {
+    console.log('\nErrors will appear below.\n'.italic.green);
+  }
 };

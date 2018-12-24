@@ -1,32 +1,33 @@
 const config = require('../config.json');
-var request = require('request');
-var dateFormat = require('dateformat');
-var now = new Date();
+const fetch = require('node-fetch');
+const dateFormat = require('dateformat');
 
-exports.run = (client, message, args) => {
+exports.run = async (client, message, args) => {
   if (message.content === '$btc') {
     message.react('✅');
   }
 
+  const now = new Date();
+
   var url = 'https://api.coinbase.com/v2/prices/spot?currency=USD';
 
-  request(url, function(err, response, body) {
-    if (err) {
-      return console.log(err);
-    }
-    body = JSON.parse(body);
-    let day = dateFormat(now, '**mmmm dS, yyyy h:MM:ss TT**');
-    message.channel.send(
-      day +
-        ' | ' +
-        ':hash: Current value of the Bitcoin:' +
-        ' **$' +
-        body.data.amount +
-        '**'
-    );
+  const response = await fetch(url);
 
-    console.log(`${config.prefix}btc used`);
-  });
+  if (!response.ok) {
+    message.channel.send('Could not reach CoinBase');
+    return;
+  }
+
+  const body = await response.json();
+  let day = dateFormat(now, '**mmmm dS, yyyy h:MM:ss TT**');
+  message.channel.send(
+    day +
+      ' | ' +
+      ':hash: Current value of the Bitcoin:' +
+      ' **$' +
+      body.data.amount +
+      '**'
+  );
 };
 
 exports.description = 'Find the current price of Bitcoin.';

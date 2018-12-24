@@ -1,39 +1,27 @@
 const ConfigService = require('../config.js');
-var request = require('request');
+var fetch = require('node-fetch');
 
-exports.run = (client, message, args) => {
-  message.channel.startTyping()
+exports.run = async (client, message, args) => {
+  message.channel.startTyping();
 
-  var url = "https://status.mojang.com/check"
-
-  request(url, function (err, response, body) {
-    if (err) {
-      console.log(err);
-      return message.reply('Error getting Mojang status.');
-    }
-    body = JSON.parse(body);
-
+  try {
+    const request = await fetch('https://status.mojang.com/check');
+    const body = await request.json();
     var mcnet = body[0]['minecraft.net'];
-    // console.log(body);
-    // console.log(mcnet);
 
-    var responseString = "";
-
+    var responseString = '';
+  
     for (status in body) {
       var domain = Object.keys(body[status])[0]
       var connected = body[status][domain];
-      // console.log(domain);
-      // console.log(values);
-
-      responseString += `\n**${domain}:** ${connected ? ':white_check_mark:\n' : ':x:\n'}`;
-
-
-
+  
+      responseString += `**${domain}:** ${connected ? ':white_check_mark:\n' : ':x:\n'}`;
     }
     message.channel.send(responseString)
-    message.channel.stopTyping();
-
-  })
+    message.channel.stopTyping(true);
+  } catch(e) {
+    return errorMod('Error getting Mojang status', message);
+  }
 }
 
 exports.description = 'Gets Mojang server status.'

@@ -22,7 +22,7 @@ exports.run = (client, message, args) => {
   if (reportType > 7) {
     message.delete(0);
     message.channel.send("`" + reportType + "` is not a correct report! Do \`" + ConfigService.config.prefix + "report types\` to see options.").then(setTimeout(function (sentMessage) { sentMessage.delete(0) }, 3000)).catch(err => console.error);
-    message.channel.stopTyping();
+    message.channel.stopTyping(true);
   }
   if (reportOptions === "types") {
     message.channel.send('', {
@@ -68,13 +68,13 @@ exports.run = (client, message, args) => {
       }
     }
     );
-    message.channel.stopTyping();
+    message.channel.stopTyping(true);
   }
 
   if (reportOptions == null) {
     async function nothing() {
       message.channel.send(`${ConfigService.config.prefix}report types\n${ConfigService.config.prefix}report [@user] [reason #]`, { code: 'aciidoc' });
-      await message.channel.stopTyping();
+      await message.channel.stopTyping(true);
     }
     return nothing();
   }
@@ -83,7 +83,7 @@ exports.run = (client, message, args) => {
     message.delete(0);
     reportSys(reportedUser, reportType);
     message.author.send(":printer: | Your report about " + reportedUser + " for **" + reportTypeConverted + "** has been recived. If the issue does become more serious please Direct message a moderator and report ALL abuse to discord (https://support.discordapp.com/hc/en-us/articles/115002334127-Contacting-Abuse-Support). You can also change your privacy config (https://support.discordapp.com/hc/en-us/articles/217916488-Blocking-Privacy-Settings).");
-    message.channel.stopTyping();
+    message.channel.stopTyping(true);
   }
 };
 

@@ -1,18 +1,18 @@
 //file vars
 
-const config = require('../config.json');
-var request = require('request');
-var errorEvent = require('../modules/errorMod.js');
+const ConfigService = require('../config.js');
+const errorEvent = require('../modules/errorMod.js');
+const fetch = require('node-fetch');
 
-exports.run = (client, message, args) => {
+exports.run = async (client, message, args) => {
   message.channel.startTyping();
 
   //vars
 
   if (!args[0]) {
     return message.channel.send(
-      `${config.prefix}ow [user#0000] [region] [platform]\n${
-        config.prefix
+      `${ConfigService.config.prefix}ow [user#0000] [region] [platform]\n${
+        ConfigService.config.prefix
       }ow [user-0000] (Defaults region/platform to PC)`,
       { code: 'asciidoc' }
     );
@@ -27,15 +27,17 @@ exports.run = (client, message, args) => {
   //syntax command
   if (args[0] == 'help') {
     return message.channel.send(
-      `${config.prefix}ow [user-0000] [region] [platform]\n${
-        config.prefix
+      `${ConfigService.config.prefix}ow [user-0000] [region] [platform]\n${
+        ConfigService.config.prefix
       }ow [user-0000] (Defaults region/platform to PC)`,
       { code: 'asciidoc' }
     );
   }
   if (args[0].includes('#')) {
-    request(url, function(err, response, body) {
-      body = JSON.parse(body);
+    try {
+      const request = await fetch(url);
+      const body = await request.json();
+
       if (body.error) {
         errorEvent(body.error, message);
         return message.channel.stopTyping(true);
@@ -83,7 +85,7 @@ exports.run = (client, message, args) => {
             }
           ]
         };
-
+  
         return message.channel.send({ embed });
       } else {
         let lvl = body.prestige * 100 + body.level;
@@ -96,7 +98,7 @@ exports.run = (client, message, args) => {
           (body.competitiveStats.careerStats.allHeroes.game.gamesWon /
             body.competitiveStats.careerStats.allHeroes.game.gamesPlayed) *
           100;
-
+  
         const embed = {
           description: `OverBuff for: [${hashuser}](${overbuffUSA})`,
           url: `${overbuffUSA}`,
@@ -137,15 +139,17 @@ exports.run = (client, message, args) => {
             }
           ]
         };
-
+  
         message.channel.send({ embed });
-        message.channel.stopTyping();
+        message.channel.stopTyping(true);
       }
-    });
+    } catch(e) {
+      return errorEvent('Could not reach OW Stats API', message);
+    }    
   } else {
     message.channel.send(
-      `${config.prefix}ow [user-0000] [region] [platform]\n${
-        config.prefix
+      `${ConfigService.config.prefix}ow [user-0000] [region] [platform]\n${
+        ConfigService.config.prefix
       }ow [user-0000] (Defaults region/platform to PC)`,
       { code: 'asciidoc' }
     );

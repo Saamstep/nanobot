@@ -1,17 +1,9 @@
 const Discord = require('discord.js');
 const client = new Discord.Client({ autoReconnect: true });
-const bot = new Discord.Client({ autoReconnect: true });
 const ConfigService = require('./config.js');
-client.login(ConfigService.config.token);
 const fs = require('fs');
-const request = require('request');
 
-// client.on("ready", () => {
-//   client.user.setPresence({game: {name: "Minecraft", type: 0} }).catch(console.error);
-//   console.log(`\n\n[${ConfigService.configserverName} ] bot is online!`.green)
-//   console.log(`\n\nBot successfully running. Keep this window open!\n\n`.red)
-//   console.log(`Prefix: ${ConfigService.configprefix}`.blue);
-// });
+client.login(ConfigService.config.token);
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
@@ -29,25 +21,21 @@ fs.readdir('./events/', (err, files) => {
 
 //Twitch Streamer Notifier
 const compare = new Set();
-function twitch(message) {
+async function twitch(message) {
   // List of streamers to get notifications for
 
 
-  ConfigService.config.streamers.forEach(function (element) {
-    // Allows request to be made
-
-    let options = {
-      url: `https://api.twitch.tv/kraken/streams?channel=${element}`,
-      method: 'GET',
-      headers: {
-        'User-Agent': 'D.js-Bot-Dev',
-        'Client-ID': `${ConfigService.config.twitchID}`,
-        'content-type': 'application/json'
-      }
-    };
+  ConfigService.config.streamers.forEach(async (element) => {
     // Makes request
-    request(options, function (error, response, body) {
-      body = JSON.parse(body);
+    try {
+      const request = await fetch(`https://api.twitch.tv/kraken/streams?channel=${element}`, {
+        headers: {
+          'User-Agent': 'D.js-Bot-Dev',
+          'Client-ID': `${ConfigService.config.twitchID}`,
+          'content-type': 'application/json'
+        }
+      });
+      const body = await request.json();
       if (body._total < 1) {
         return;
       } else if (!compare.has(element)) {
@@ -105,7 +93,9 @@ function twitch(message) {
         compare.delete(element);
         return;
       }
-    });
+    } catch(e) {
+      return;
+    }
   });
 }
 

@@ -23,7 +23,7 @@ exports.run = (client, message, args) => {
 
   //     if (body.error) {
   //       error(body.error, message);
-  //       return message.channel.stopTyping();
+  //       return message.channel.stopTyping(true);
   //     }
   //     message.channel.send(
   //       '**Username**' +
@@ -36,14 +36,14 @@ exports.run = (client, message, args) => {
   //       'Either there was a fatal error or there were invalid paramaters.',
   //       message
   //     );
-  //     return message.channel.stopTyping();
+  //     return message.channel.stopTyping(true);
   //   }
 
   //   if (error) {
   //     return console.log(error);
   //   }
   // });
-  // message.channel.stopTyping();
+  // message.channel.stopTyping(true);
 
   message.reply(';)');
 };
