@@ -15,7 +15,15 @@ exports.run = (client, message, args) => {
     }
   } else {
     const now = moment();
-    message.channel.send(Math.abs(now.diff(kickoff, 'days')) + 1 + ' days left till kick-off');
+    const daysTill = kickoff.diff(now, 'days');
+    
+    if (daysTill == 0) {
+      message.channel.send('Kick-off is today!');
+    } else if (daysTill < 0) {
+      message.channel.send(Math.abs(daysTill) + ' days since kick-off happened');
+    } else {
+      message.channel.send(Math.abs(now.diff(kickoff, 'days')) + 1 + ' days left till kick-off');
+    }
   }
 };
   
