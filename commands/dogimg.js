@@ -3,6 +3,9 @@ const errorMod = require('../modules/errorMod.js');
 const fetch = require('node-fetch');
 
 exports.run = async (client, message, args) => {
+  const cooldown = require('../index.js');
+
+  async function cmd() {
   message.channel.startTyping();
   try {
     const response = await fetch('https://api.thedogapi.com/v1/images/search', {
@@ -16,6 +19,8 @@ exports.run = async (client, message, args) => {
     errorMod('Could not reach Dog API, contact the bot owner', message);
   }
   message.channel.stopTyping(true);
+}
+cooldown(message, cmd);
 };
 
 exports.description = 'Get a random dog image.';

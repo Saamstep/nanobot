@@ -19,6 +19,8 @@ fs.readdir('./events/', (err, files) => {
   });
 });
 
+
+
 //Twitch Streamer Notifier
 const compare = new Set();
 async function twitch(message) {
@@ -93,7 +95,7 @@ async function twitch(message) {
         compare.delete(element);
         return;
       }
-    } catch(e) {
+    } catch (e) {
       return;
     }
   });
@@ -106,7 +108,29 @@ client.on('ready', ready => {
 
 // End of Twitch Streamer Notifier
 
+
+//cooldown
+const talkedRecently = new Set()
+module.exports = function cooldown(message, code) {
+  const error = require('./modules/errorMod.js');
+
+  if (talkedRecently.has(message.author.id)) {
+    return error("Wait 6 seconds before typing this again.", message);
+  } else {
+    code()
+
+    talkedRecently.add(message.author.id);
+    setTimeout(() => {
+      talkedRecently.delete(message.author.id);
+    }, 6000);
+  }
+
+}
+
 client.on('message', message => {
+
+
+
   // YT video like system
 
   let urls = ConfigService.config.urls;
@@ -118,7 +142,7 @@ client.on('message', message => {
 
   try {
     if (message.channel.id === ConfigService.config.nickChannelid) {
-      if (message.content !== '.iam') {
+      if (message.content !== `${ConfigService.config.prefix}iam`) {
         message.delete(0);
       }
     }
