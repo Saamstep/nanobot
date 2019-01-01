@@ -13,7 +13,7 @@ var ConfigService = (function () {
   var data;
   try {
     data = fs.readFileSync(CONFIG_PATH);
-  } catch {
+  } catch(e) {
     failAndExit();
   }
 

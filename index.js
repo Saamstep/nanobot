@@ -203,7 +203,7 @@ client.on('message', message => {
   // Custom command file manager
   try {
     let commandFile = require(`./commands/cc/${command}.js`);
-    commandFile.run(client, message, args, set);
+    commandFile.run(client, message, args);
   } catch (err) {
     if (config.debug === true) {
       console.log(err);

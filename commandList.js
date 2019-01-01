@@ -7,7 +7,7 @@ var commandList = (function () {
       isCustom: isCustom,
       description: description
     };
-    console.log(`Command ${command} registered!`.green);
+    
   }
 
   this.helpString = () => {

@@ -2,6 +2,8 @@ const errorMod = require('../modules/errorMod');
 const fetch = require('node-fetch');
 
 exports.run = async (client, message, args) => {
+  const cooldown = require('../index.js');
+  async function cmd() {
   let url = 'https://catfact.ninja/fact';
   message.channel.startTyping();
 
@@ -14,6 +16,8 @@ exports.run = async (client, message, args) => {
   }
 
   message.channel.stopTyping(true);
+}
+cooldown(message, cmd);
 };
 
 exports.description = 'Get a random cat fact.';

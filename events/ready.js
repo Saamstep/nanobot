@@ -6,10 +6,9 @@ const ccFolder = './commands/cc/';
 const CommandList = require('../commandList.js');
 const fs = require('fs').promises;
 
-let bar = '+===========================================+';
 
 exports.run = async function(client, member, message) {
-  const guildNames = client.guilds.map(g => g.name).join('\n');
+  const guildNames = client.guilds.map(g => g.name).join(', ');
   client.user
     .setPresence({
       game: { name: `${ConfigService.config.defaultGame}`, type: 0 }
@@ -32,7 +31,7 @@ exports.run = async function(client, member, message) {
     });
   } catch(e) {
     console.log(e);
-    console.error('No commands found, please make a commands folder and put some commands in there my man'.red.bold);
+    console.error('No commands were found to load! If you see this error you likely cloned the bot incorrectly and left some files behind!'.red.bold);
     process.exit(1);
   }
 
@@ -48,7 +47,7 @@ exports.run = async function(client, member, message) {
       }
     });
   } catch(e) {
-    console.error('No custom file directory exists, please create a cc folder in the commands directory'.red);
+    console.error('No custom commands file directory exists, please create a folder in the commands directory called \'cc\''.red);
   }
 
 
@@ -68,29 +67,21 @@ exports.run = async function(client, member, message) {
   var desc = body.status.description;
 
   if (body.status.description == 'All Systems Operational') {
-    console.log(bar.yellow);
-    console.log('[Discord Status] All Systems Operational\n'.green);
+    console.log('\nAll Discord systems operational!\n'.green.dim);
   } else {
-    console.log(bar.yellow);
     console.log(
-      '[Discord Status] There seems to be an error within Discord. Double check https://status.discordapp.com/ \n'
+      'There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/ \n'
       .red
     );
   }
   // End discord status
-
+ const cmds = await fs.readdir(commandsFolder);
+  const ccmds = await fs.readdir(ccFolder);
+ console.log("Loading ".green + cmds.length + " commands".green + " and ".green + ccmds.length + " custom commands".green);
   console.log(
-    `${ConfigService.config.serverName}`.underline.cyan +
-      ' bot is online!\n'.cyan +
-      `\nConnected to:`.cyan +
-      `\n${guildNames}`.italic.cyan
-  );
-  console.log(
-    '\n[IMPORTANT] KEEP THIS WINDOW OPEN FOR BOT TO STAY ONLINE'.bold.red
-  );
-  console.log(bar.yellow);
-
+    `${ConfigService.config.serverName}`.underline.magenta +
+      ' online!\n'.magenta.reset + "Connected to: ".cyan + guildNames.white + " guilds".cyan);
   if (ConfigService.config.debug === 'on') {
-    console.log('\nErrors will appear below.\n'.italic.green);
+    console.log('\n');
   }
 };

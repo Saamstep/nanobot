@@ -1,1 +1,0 @@
-exports.run = (client, message, args) => { const ConfigService = require('../../config.js'); let guild = message.guild; message.channel.send(` Command`); };
