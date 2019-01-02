@@ -3,7 +3,8 @@ const client = new Discord.Client({ autoReconnect: true });
 const ConfigService = require('./config.js');
 const fs = require('fs');
 
-client.login(ConfigService.config.token);
+
+
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
@@ -102,11 +103,73 @@ async function twitch(message) {
 }
 
 // Starts checking for Twitch channels live on launch
-client.on('ready', ready => {
-  setInterval(twitch, 2000);
-});
+
 
 // End of Twitch Streamer Notifier
+
+
+
+
+//mail notifier
+var MailListener = require("mail-listener2");
+
+var mailListener = new MailListener({
+  username: ``,
+  password: ``,
+  host: "imap.gmail.com",
+  port: 993, // imap port
+  tls: true,
+  connTimeout: 10000, // Default by node-imap
+  authTimeout: 5000, // Default by node-imap,
+  debug: console.log, // Or your custom function with only one incoming argument. Default: null
+  tlsOptions: { rejectUnauthorized: false },
+  mailbox: "INBOX", // mailbox to monitor
+  searchFilter: ["UNSEEN"], // the search filter being used after an IDLE notification has been retrieved
+  markSeen: true, // all fetched email willbe marked as seen and not fetched next time
+  fetchUnreadOnStart: true, // use it only if you want to get all unread email on lib start. Default is `false`,
+  mailParserOptions: { streamAttachments: true }, // options to be passed to mailParser lib.
+  attachments: true, // download attachments as they are encountered to the project directory
+  attachmentOptions: { directory: "attachments/" } // specify a download directory for attachments
+});
+
+client.login(ConfigService.config.token);
+if (ConfigService.config.mailNotify == true) {
+  mailListener.start()
+}
+
+
+mailListener.on("server:connected", function () {
+  console.log("imapConnected");
+});
+
+mailListener.on("server:disconnected", function () {
+  console.log("imapDisconnected");
+});
+
+mailListener.on("error", function (err) {
+  return;
+});
+
+mailListener.on("mail", function (mail, seqno, attributes) {
+
+  client.guilds.map(guild => {
+    if (guild.available) {
+      let channel = guild.channels.find(
+        channel => channel.name === `${config.twitchChannel}`
+      );
+      if (channel) {
+        channel.send("**" + mail.subject + "**\n" + mail.text + " " + mail.from[0].address);
+      }
+    }
+  });
+
+  console.log("\nMail recieved!".green);
+
+
+});
+
+
+
 
 
 //cooldown
