@@ -5,7 +5,7 @@ exports.run = (client, message, args) => {
   const config = require('../config.json');
   let updatedport = Number(config.rconPort);
   const Rcon = require('modern-rcon');
-  const rcon = new Rcon(`${config.mcIP}`, (port = updatedport), 'itsz3nder');
+  const rcon = new Rcon(`${config.mcIP}`, (port = updatedport), '');
   let cmd = args.join(' ');
 
   let isAdmin = require('../modules/isAdmin.js');

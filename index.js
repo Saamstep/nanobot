@@ -83,7 +83,7 @@ async function twitch(message) {
         client.guilds.map(guild => {
           if (guild.available) {
             let channel = guild.channels.find(
-              channel => channel.name === `${config.twitchChannel}`
+              channel => channel.name === `${ConfigService.config.twitchChannel}`
             );
             if (channel) {
               channel.send(config.mentionNotify, {
@@ -114,8 +114,8 @@ async function twitch(message) {
 var MailListener = require("mail-listener2");
 
 var mailListener = new MailListener({
-  username: ``,
-  password: ``,
+  username: `${ConfigService.config.user}`,
+  password: `${ConfigService.config.pass}`,
   host: "imap.gmail.com",
   port: 993, // imap port
   tls: true,
@@ -151,19 +151,35 @@ mailListener.on("error", function (err) {
 });
 
 mailListener.on("mail", function (mail, seqno, attributes) {
-
-  client.guilds.map(guild => {
-    if (guild.available) {
-      let channel = guild.channels.find(
-        channel => channel.name === `${config.twitchChannel}`
-      );
-      if (channel) {
-        channel.send("**" + mail.subject + "**\n" + mail.text + " " + mail.from[0].address);
+  let whitelist = ConfigService.config.whitelist;
+  if (whitelist.some(wl => mail.from[0].address === wl)) {
+    client.guilds.map(guild => {
+      if (guild.available) {
+        let channel = guild.channels.find(
+          channel => channel.name === `${ConfigService.config.mailAnnounce}`
+        );
+        if (channel) {
+          channel.send("**" + mail.subject + "**\n" + mail.text);
+        }
       }
-    }
-  });
+    });
 
-  console.log("\nMail recieved!".green);
+    console.log("\nMail recieved!".green);
+  } else {
+    client.guilds.map(guild => {
+      if (guild.available) {
+        let channel = guild.channels.find(
+          channel => channel.name === `${ConfigService.config.log}`
+        );
+        if (channel) {
+          channel.send(":warning: **" + mail.from[0].address + "** sent an email to *vcrobotics.discord@gmail.com* and they are not whitelisted!");
+        }
+      }
+    });
+
+    console.log("\nMail recieved from a non-whitelisted user.".red);
+  }
+
 
 
 });
