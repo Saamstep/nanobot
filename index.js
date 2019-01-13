@@ -2,7 +2,9 @@ const Discord = require('discord.js');
 const client = new Discord.Client({ autoReconnect: true });
 const ConfigService = require('./config.js');
 const fs = require('fs');
-
+const log = require('./modules/consoleMod.js');
+const logger = require('./modules/logMod.js');
+const fetch = require('node-fetch');
 
 
 
@@ -77,8 +79,6 @@ async function twitch(message) {
         // Add streamer name to a set
         compare.add(element);
 
-
-
         // Finds channel and sends msg to channel
         client.guilds.map(guild => {
           if (guild.available) {
@@ -97,18 +97,11 @@ async function twitch(message) {
         return;
       }
     } catch (e) {
+      console.warn(e);
       return;
     }
   });
 }
-
-// Starts checking for Twitch channels live on launch
-
-
-// End of Twitch Streamer Notifier
-
-
-
 
 //mail notifier
 var MailListener = require("mail-listener2");
@@ -121,7 +114,7 @@ var mailListener = new MailListener({
   tls: true,
   connTimeout: 10000, // Default by node-imap
   authTimeout: 5000, // Default by node-imap,
-  debug: console.log, // Or your custom function with only one incoming argument. Default: null
+  debug: console.warn, // Or your custom function with only one incoming argument. Default: null
   tlsOptions: { rejectUnauthorized: false },
   mailbox: "INBOX", // mailbox to monitor
   searchFilter: ["UNSEEN"], // the search filter being used after an IDLE notification has been retrieved
@@ -134,20 +127,33 @@ var mailListener = new MailListener({
 
 client.login(ConfigService.config.token);
 if (ConfigService.config.mailNotify == true) {
-  mailListener.start()
+
+  log("Starting Mail listener...".red);
+  mailListener.start();
+
 }
+//twitch notify
+client.on('ready', ready => {
+  log("Checking for Twitch streams".blue);
+  twitch();
 
+});
 
+//mail notifiactions
 mailListener.on("server:connected", function () {
-  console.log("imapConnected");
+  log("imapConnected".red);
 });
 
 mailListener.on("server:disconnected", function () {
-  console.log("imapDisconnected");
+  log("imapDisconnected");
+  mailListener.stop();
+  mailListener.start();
 });
 
 mailListener.on("error", function (err) {
-  return;
+  log("imap restarted due to an error".red);
+  mailListener.stop();
+  mailListener.start();
 });
 
 mailListener.on("mail", function (mail, seqno, attributes) {
@@ -164,7 +170,7 @@ mailListener.on("mail", function (mail, seqno, attributes) {
       }
     });
 
-    console.log("\nMail recieved!".green);
+    log("\nMail recieved!".green);
   } else {
     client.guilds.map(guild => {
       if (guild.available) {
@@ -172,12 +178,12 @@ mailListener.on("mail", function (mail, seqno, attributes) {
           channel => channel.name === `${ConfigService.config.log}`
         );
         if (channel) {
-          channel.send(":warning: **" + mail.from[0].address + "** sent an email to *vcrobotics.discord@gmail.com* and they are not whitelisted!");
+          logger("Non-Whitelisted Email Received", `${mail.from[0].address} sent an email to ${ConfigService.config.user} and they are not whitelisted!`)
         }
       }
     });
 
-    console.log("\nMail recieved from a non-whitelisted user.".red);
+    log("\nMail recieved from a non-whitelisted user.".red);
   }
 
 
@@ -275,7 +281,7 @@ client.on('message', message => {
     commandFile.run(client, message, args);
   } catch (err) {
     if (config.debug === true) {
-      console.log(err);
+      console.warn(err);
     }
   }
 
@@ -285,7 +291,7 @@ client.on('message', message => {
     commandFile.run(client, message, args);
   } catch (err) {
     if (config.debug === true) {
-      console.log(err);
+      console.warn(err);
     } else {
       return;
     }

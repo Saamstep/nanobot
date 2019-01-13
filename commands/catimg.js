@@ -12,7 +12,7 @@ exports.run = async (client, message, args) => {
     });
     const body = await response.json();
     message.channel.send(' ', { file: body[0].url });
-  } catch(e) {
+  } catch (e) {
     errorMod('Could not reach Cat API, contact the bot owner', message);
   }
   message.channel.stopTyping(true);
