@@ -165,7 +165,7 @@ mailListener.on("mail", function (mail, seqno, attributes) {
           channel => channel.name === `${ConfigService.config.mailAnnounce}`
         );
         if (channel) {
-          channel.send("**" + mail.subject + "**\n" + mail.text);
+          channel.send("**" + mail.subject + "**\n" + mail.text + "\n<@&462515278983462912>");
         }
       }
     });
@@ -213,7 +213,6 @@ module.exports = function cooldown(message, code) {
 }
 
 client.on('message', message => {
-
 
 
   // YT video like system

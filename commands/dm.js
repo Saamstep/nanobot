@@ -2,8 +2,9 @@ exports.run = (client, message, args) => {
   message.channel.startTyping();
   function sender() {
     message.delete(0);
-    let msgSender = args.join(' ');
-    message.channel.send(msgSender);
+    let member = message.guild.member(message.mentions.users.first());
+    let msgSender = args.join(' ').replace(`${member}`, '\n');
+    member.send(msgSender);
     message.channel.stopTyping();
   }
   const ConfigService = require('../config.js');
@@ -12,14 +13,18 @@ exports.run = (client, message, args) => {
     if (args[0] == null) {
 
       return message.channel.send(
-        `${ConfigService.config.prefix}say [message]`,
+        `${ConfigService.config.prefix}dm [@user] [message]`,
         { code: 'asciidoc' }
       );
     } else {
-      return sender();
+      try {
+        return sender();
+      } catch (e) {
+        error('There was an error sending that DM', message)
+      }
     }
   }
 
 };
 
-exports.description = 'Allows admins to send a message as the bot.';
+exports.description = 'Allows admins to send a message as the bot to a specific user.';

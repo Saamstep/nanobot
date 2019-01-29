@@ -1,7 +1,9 @@
 exports.run = (client, message, args) => {
   let guild = message.guild;
-  let role = message.guild.roles.find('name', `${args.join(' ').slice(3)}`);
   let user = message.guild.member(message.mentions.users.first());
+  let role = message.guild.roles.find('name', `${args.join(' ').replace(user, '')}`);
+  let string = `"${args.join(' ').replace(user, '')}"`
+  let trimmed = string.trim();
   const errorMod = require('../modules/errorMod.js');
 
   const ConfigService = require('../config.js');
@@ -18,6 +20,7 @@ exports.run = (client, message, args) => {
       return errorMod('That user already has **' + role.name + '**!', message);
     }
     message.delete(0);
+    console.log("STRING: " + trimmed);
     user.addRole(role);
   }
 };
