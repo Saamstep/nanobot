@@ -33,6 +33,7 @@ async function twitch(message) {
   ConfigService.config.streamers.forEach(async (element) => {
     // Makes request
     try {
+      console.log("Fetching Twitch streams from API.".blue);
       const request = await fetch(`https://api.twitch.tv/kraken/streams?channel=${element}`, {
         headers: {
           'User-Agent': 'D.js-Bot-Dev',
@@ -89,6 +90,7 @@ async function twitch(message) {
               channel.send(config.mentionNotify, {
                 embed
               });
+              console.log("Found a channel to announce and I announced it!".blue)
             }
           }
         });
@@ -135,7 +137,12 @@ if (ConfigService.config.mailNotify == true) {
 //twitch notify
 client.on('ready', ready => {
   log("Checking for Twitch streams".blue);
-  twitch();
+
+  try {
+    setInterval(twitch, 180000);
+  } catch (e) {
+    console.error(e);
+  }
 
 });
 
