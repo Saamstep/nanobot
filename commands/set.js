@@ -353,7 +353,7 @@ exports.run = (client, message, args) => {
           }set [option] [new value]'\nOptions are the names in gold with with no spaces and no caps!\nEx: ?set logchannel logger"` +
           `\n\n\n'General'\nPrefix: "${
           ConfigService.config.prefix
-          }"\nDebug: "${ConfigService.config.debug}"\n'Modules'\nMail Notifications: "${ConfigService.config.mailNotify}"\n'Channels'\nLog Channel: "#${ConfigService.config.log}"\n\Poll Channel: "#${
+          }"\nDebug: "${ConfigService.config.debug}"\n'Channels'\nLog Channel: "#${ConfigService.config.log}"\n\Poll Channel: "#${
           ConfigService.config.pollchannel
           }"\nJoin Channel: "#${
           ConfigService.config.joinCh
@@ -380,7 +380,7 @@ exports.run = (client, message, args) => {
           ConfigService.config.urls
           }"\nStreamers: "${ConfigService.config.streamers.join(', ')}"\n'MC_Server'\nServer Name: "${
           ConfigService.config.serverName
-          }"\nEmail Whitelist: "${ConfigService.config.whitelist.join(', ')}"\n'Roles'\nMod Role: "${
+          }"\n'Roles'\nMod Role: "${
           ConfigService.config.modrolename
           }"\nAdmin Role: "${
           ConfigService.config.adminrolename
