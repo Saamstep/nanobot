@@ -105,35 +105,9 @@ async function twitch(message) {
   });
 }
 
-//mail notifier
-var MailListener = require("mail-listener2");
-
-var mailListener = new MailListener({
-  username: `${ConfigService.config.user}`,
-  password: `${ConfigService.config.pass}`,
-  host: "imap.gmail.com",
-  port: 993, // imap port
-  tls: true,
-  connTimeout: 10000, // Default by node-imap
-  authTimeout: 5000, // Default by node-imap,
-  debug: console.warn, // Or your custom function with only one incoming argument. Default: null
-  tlsOptions: { rejectUnauthorized: false },
-  mailbox: "INBOX", // mailbox to monitor
-  searchFilter: ["UNSEEN"], // the search filter being used after an IDLE notification has been retrieved
-  markSeen: true, // all fetched email willbe marked as seen and not fetched next time
-  fetchUnreadOnStart: true, // use it only if you want to get all unread email on lib start. Default is `false`,
-  mailParserOptions: { streamAttachments: true }, // options to be passed to mailParser lib.
-  attachments: true, // download attachments as they are encountered to the project directory
-  attachmentOptions: { directory: "attachments/" } // specify a download directory for attachments
-});
 
 client.login(ConfigService.config.token);
-if (ConfigService.config.mailNotify == true) {
 
-  log("Starting Mail listener...".red);
-  mailListener.start();
-
-}
 //twitch notify
 client.on('ready', ready => {
   log("Checking for Twitch streams".blue);
@@ -145,59 +119,6 @@ client.on('ready', ready => {
   }
 
 });
-
-//mail notifiactions
-mailListener.on("server:connected", function () {
-  log("imapConnected".red);
-});
-
-mailListener.on("server:disconnected", function () {
-  log("imapDisconnected");
-  mailListener.stop();
-  mailListener.start();
-});
-
-mailListener.on("error", function (err) {
-  log("imap restarted due to an error".red);
-  mailListener.stop();
-  mailListener.start();
-});
-
-mailListener.on("mail", function (mail, seqno, attributes) {
-  let whitelist = ConfigService.config.whitelist;
-  if (whitelist.some(wl => mail.from[0].address === wl)) {
-    client.guilds.map(guild => {
-      if (guild.available) {
-        let channel = guild.channels.find(
-          channel => channel.name === `${ConfigService.config.mailAnnounce}`
-        );
-        if (channel) {
-          channel.send("**" + mail.subject + "**\n" + mail.text + "\n<@&462515278983462912>");
-        }
-      }
-    });
-
-    log("\nMail recieved!".green);
-  } else {
-    client.guilds.map(guild => {
-      if (guild.available) {
-        let channel = guild.channels.find(
-          channel => channel.name === `${ConfigService.config.log}`
-        );
-        if (channel) {
-          logger("Non-Whitelisted Email Received", `${mail.from[0].address} sent an email to ${ConfigService.config.user} and they are not whitelisted!`)
-        }
-      }
-    });
-
-    log("\nMail recieved from a non-whitelisted user.".red);
-  }
-
-
-
-});
-
-
 
 
 
