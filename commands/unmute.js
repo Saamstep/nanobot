@@ -14,7 +14,7 @@ exports.run = async (client, message, args) => {
 
         }
       }
-      message.react('👌')
+      message.react('👌');
 
     }
   } catch (e) {
