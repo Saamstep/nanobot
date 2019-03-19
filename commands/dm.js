@@ -18,7 +18,8 @@ exports.run = (client, message, args) => {
       );
     } else {
       try {
-        return sender();
+        sender();
+        message.channel.stopTyping();
       } catch (e) {
         error('There was an error sending that DM', message)
       }

@@ -200,12 +200,14 @@ client.on('message', message => {
   client.config = config;
   let args = message.content.split(' ').slice(1);
 
+
   // The list of if/else is replaced with those simple 2 lines:
 
   // Regular command file manager
   try {
     let commandFile = require(`./commands/${command}.js`);
     commandFile.run(client, message, args);
+    message.channel.stopTyping();
   } catch (err) {
     if (config.debug === true) {
       console.warn(err);
