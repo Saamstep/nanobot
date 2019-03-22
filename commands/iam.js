@@ -12,7 +12,7 @@ exports.run = (client, message, args) => {
       let name = args[0];
       message.guild.fetchMember(message.author)
         .then(member => {
-          member.setNickname(name);
+          member.setNickname(message.author.username + " (" + name + ")");
         })
     } catch (err) {
       return;

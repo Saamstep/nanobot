@@ -5,7 +5,7 @@ exports.run = (client, message, args) => {
   const ConfigService = require('../config.js');
 
   let isOwner = require('../modules/isOwner.js');
-  if (isOwner(message)) {
+  if (isOwner(message, true)) {
     console.log(
       '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
     );

@@ -207,7 +207,7 @@ client.on('message', message => {
   try {
     let commandFile = require(`./commands/${command}.js`);
     commandFile.run(client, message, args);
-    message.channel.stopTyping();
+    message.channel.stopTyping(true);
   } catch (err) {
     if (config.debug === true) {
       console.warn(err);

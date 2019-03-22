@@ -12,7 +12,7 @@ exports.run = (client, message, args) => {
       fs.writeFile(
         `./commands/cc/${args[1]}.js`,
         `exports.run = (client, message, args) => { const ConfigService = require('../../config.js'); let guild = message.guild; message.channel.send(\`${newerMsg}\`); };`,
-        function(err) {
+        function (err) {
           if (err) throw err;
         }
       );
@@ -27,13 +27,13 @@ exports.run = (client, message, args) => {
         fs.unlink(`./commands/cc/${args[1]}.js`, err => {
           if (err) throw err;
           message.channel.send(
-            `Deleted \`${ConfigService.configprefix}${args[1]}\``
+            `Deleted \`${ConfigService.config.prefix}${args[1]}\``
           );
         });
       } else {
         return error(
           `Command \`${ConfigService.config.prefix}${
-            args[1]
+          args[1]
           }\` does not exist!`,
           message
         );
@@ -43,7 +43,7 @@ exports.run = (client, message, args) => {
     if (!args[0]) {
       message.channel.send(
         `${
-          ConfigService.config.prefix
+        ConfigService.config.prefix
         }cc [add | OR | del] [commandname] [text if adding command]`,
         { code: 'asciidoc' }
       );

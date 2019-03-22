@@ -1,9 +1,10 @@
 exports.run = (client, message, args) => {
   let guild = message.guild;
-  let user = message.guild.member(message.mentions.users.first());
-  let role = message.guild.roles.find('name', `${args.join(' ').replace(user, '')}`);
-  let string = `"${args.join(' ').replace(user, '')}"`
-  let trimmed = string.trim();
+  let user = message.mentions.members.first();
+  let string = `${args.join(' ').replace(user, '')}`
+  string = string.trim();
+  let role = message.guild.roles.find('name', `${string}`);
+
   const errorMod = require('../modules/errorMod.js');
 
   const ConfigService = require('../config.js');
@@ -12,16 +13,12 @@ exports.run = (client, message, args) => {
   if (isAdmin(message.author, message)) {
     if (message.mentions.users.size === 0) {
       message.delete(0);
-      return errorMod('Please mention a user', message);
+      return errorMod('Please mention a user', message).then(setTimeout(function () { message.delete(0) }, 5000)).catch(err => console.error);
     }
 
-    if (user.roles.has(role)) {
-      message.delete(0);
-      return errorMod('That user already has **' + role.name + '**!', message);
-    }
     message.delete(0);
-    console.log("STRING: " + trimmed);
     user.addRole(role);
+    message.channel.send(`**+** ${string} for user sucessfully!`)
   }
 };
 

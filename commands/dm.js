@@ -5,7 +5,7 @@ exports.run = (client, message, args) => {
     let member = message.guild.member(message.mentions.users.first());
     let msgSender = args.join(' ').replace(`${member}`, '\n');
     member.send(msgSender);
-    message.channel.stopTyping();
+    message.channel.stopTyping(true);
   }
   const ConfigService = require('../config.js');
   let isAdmin = require('../modules/isAdmin.js');
@@ -19,7 +19,7 @@ exports.run = (client, message, args) => {
     } else {
       try {
         sender();
-        message.channel.stopTyping();
+        message.channel.stopTyping(true);
       } catch (e) {
         error('There was an error sending that DM', message)
       }

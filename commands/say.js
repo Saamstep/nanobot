@@ -4,7 +4,7 @@ exports.run = (client, message, args) => {
     message.delete(0);
     let msgSender = args.join(' ');
     message.channel.send(msgSender);
-    message.channel.stopTyping();
+    message.channel.stopTyping(true);
   }
   const ConfigService = require('../config.js');
   let isAdmin = require('../modules/isAdmin.js');
