@@ -6,8 +6,6 @@ const log = require('./modules/consoleMod.js');
 const logger = require('./modules/logMod.js');
 const fetch = require('node-fetch');
 
-
-
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
   if (err) return console.error(err);
@@ -22,25 +20,25 @@ fs.readdir('./events/', (err, files) => {
   });
 });
 
-
-
 //Twitch Streamer Notifier
 const compare = new Set();
 async function twitch(message) {
   // List of streamers to get notifications for
 
-
-  ConfigService.config.streamers.forEach(async (element) => {
+  ConfigService.config.streamers.forEach(async element => {
     // Makes request
     try {
-      console.log("Fetching Twitch streams from API.".blue);
-      const request = await fetch(`https://api.twitch.tv/kraken/streams?channel=${element}`, {
-        headers: {
-          'User-Agent': 'D.js-Bot-Dev',
-          'Client-ID': `${ConfigService.config.twitchID}`,
-          'content-type': 'application/json'
+      console.log('Fetching Twitch streams from API.'.blue);
+      const request = await fetch(
+        `https://api.twitch.tv/kraken/streams?channel=${element}`,
+        {
+          headers: {
+            'User-Agent': 'D.js-Bot-Dev',
+            'Client-ID': `${ConfigService.config.twitchID}`,
+            'content-type': 'application/json'
+          }
         }
-      });
+      );
       const body = await request.json();
       if (body._total < 1) {
         return;
@@ -84,13 +82,16 @@ async function twitch(message) {
         client.guilds.map(guild => {
           if (guild.available) {
             let channel = guild.channels.find(
-              channel => channel.name === `${ConfigService.config.twitchChannel}`
+              channel =>
+                channel.name === `${ConfigService.config.twitchChannel}`
             );
             if (channel) {
               channel.send(config.mentionNotify, {
                 embed
               });
-              console.log("Found a channel to announce and I announced it!".blue)
+              console.log(
+                'Found a channel to announce and I announced it!'.blue
+              );
             }
           }
         });
@@ -105,45 +106,151 @@ async function twitch(message) {
   });
 }
 
+// // enmap settings
+// const Enmap = require('enmap');
+// client.settings = new Enmap({
+//   name: 'settings',
+//   fetchAll: false,
+//   autoFetch: true,
+//   cloneLevel: 'deep'
+// });
+
+// const settings = {
+//   debug: false,
+//   prefix: '?',
+//   roles: {
+//     mod: '_Mod',
+//     admin: '_Admin',
+//     member: '_Member',
+//     interview: '',
+//     iam: ''
+//   },
+//   channel: {
+//     log: 'logger',
+//     qotd: '',
+//     join: '',
+//     support: '',
+//     iam: ''
+//   },
+//   mc: {
+//     serverName: '',
+//     acceptMessage: 'You were accepted! Congratulations!',
+//     denyMessage: '',
+//     website: '',
+//     ip: '',
+//     port: ''
+//   },
+//   msg: {
+//     join: '',
+//     leave: ''
+//   },
+//   reactPrompts: ['youtu.be'],
+//   supportTags: ['[Addition]', '[Request]', '[Removal]'],
+//   streamers: ['firstupdatesnow', 'emongg', 'nullpointer128']
+// };
+
+// end bot configuration
 
 client.login(ConfigService.config.token);
 
 //twitch notify
 client.on('ready', ready => {
-  log("Checking for Twitch streams".blue);
+  log('Checking for Twitch streams'.blue);
 
   try {
     setInterval(twitch, 180000);
   } catch (e) {
     console.error(e);
   }
-
 });
 
-
-
 //cooldown
-const talkedRecently = new Set()
+const talkedRecently = new Set();
 module.exports = function cooldown(message, code) {
   const error = require('./modules/errorMod.js');
 
   if (talkedRecently.has(message.author.id)) {
-    return error("Wait 6 seconds before typing this again.", message);
+    return error('Wait 6 seconds before typing this again.', message);
   } else {
-    code()
+    code();
 
     talkedRecently.add(message.author.id);
     setTimeout(() => {
       talkedRecently.delete(message.author.id);
     }, 6000);
   }
+};
 
-}
+// mc to discord
+
+const http = require('http');
+
+const regex = new RegExp('\\[Server thread/INFO\\]: <([^>]*)> (.*)');
+
+const server = http.createServer(function(request, response) {
+  console.dir(request.param);
+
+  if (request.method == 'POST') {
+    var body = '';
+    request.on('data', function(data) {
+      body += data;
+    });
+    request.on('end', function() {
+      const regBody = body.match(regex);
+      const username = regBody[1].replace(/(§[A-Z-a-z0-9])/g, '');
+      const message = regBody[2];
+      response.writeHead(200, { 'Content-Type': 'text/html' });
+      response.end(username + ': ' + message);
+      client.guilds.map(guild => {
+        if (guild.available) {
+          let channel = guild.channels.find(
+            channel => channel.name === `mc-channel`
+          );
+          if (channel) {
+            channel.send('<' + username + '> ' + message);
+          }
+        }
+      });
+    });
+  }
+});
+
+let port = Number(ConfigService.config.mcwebPort);
+const host = ConfigService.config.mcwebhost;
+server.listen(port, host);
+console.log(`MC --> Discord | Listening at http://${host}:${port}`);
+
+// end of mc to discord
+
+//mc
+var Rcon = require('rcon');
+var updatedport = Number(ConfigService.config.rconPort);
+var conn = new Rcon(
+  `${ConfigService.config.mcIP}`,
+  updatedport,
+  `${ConfigService.config.rconPass}`
+);
+
+conn.on('auth', function() {
+  console.log('Authed!');
+});
+conn.on('end', function() {
+  console.log('Socket closed!');
+});
+
+conn.connect();
 
 client.on('message', message => {
-
-
   // YT video like system
+  if (message.channel.id === `${ConfigService.config.mcChannel}`) {
+    if (message.author.bot) return;
+    let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${
+      message.content
+    }","color":"aqua"}]`;
+    conn.send(msg);
+  }
+
+  //end mc
 
   let urls = ConfigService.config.urls;
   if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
@@ -169,8 +276,6 @@ client.on('message', message => {
     message.react(`✅`);
   }
 
-  let guild = message.guild;
-
   // Support Channel Code
   async function pMreact() {
     await message.react('☑');
@@ -191,17 +296,13 @@ client.on('message', message => {
   }
 
   // Command file manager code
-
-  if (message) if (message.author.bot) return;
-  if (!message.content.startsWith(config.prefix)) return;
+  if (!message.guild || message.author.bot) return;
+  if (!message.content.includes(ConfigService.config.prefix)) return;
 
   let command = message.content.split(' ')[0];
   command = command.slice(config.prefix.length);
   client.config = config;
   let args = message.content.split(' ').slice(1);
-
-
-  // The list of if/else is replaced with those simple 2 lines:
 
   // Regular command file manager
   try {

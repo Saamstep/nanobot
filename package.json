@@ -6,17 +6,26 @@
   "scripts": {
     "start": "node .",
     "dev": "node .",
-    "updater": "echo \"\n\n\n\n\n\n\n\n\n\n\n>>Updating all NPM packages\n\n\n\n>>Run npm start after updater complete.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\nWe do know what we're doing so we're fine :)\" && npm update --save/--save-dev -f"
+    "updater": "echo \"\n\n\n\n\n\n\n\n\n\n\n>>Updating all NPM packages\n\n\n\n>>Run npm start after updater complete.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\nWe do know what we're doing so we're fine :)\" && npm update"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/saamstep/nanobot"
   },
   "author": "Samstep",
   "license": "MIT",
   "dependencies": {
     "@pm2/io": "^3.0.0",
+    "better-sqlite-pool": "^0.2.2",
     "colors": "^1.3.3",
     "dateformat": "^3.0.3",
     "discord.js": "^11.1.0",
+    "enmap": "^4.8.2",
+    "http": "0.0.0",
     "mail-listener2": "^0.3.1",
+    "minecraft-protocol": "^1.8.3",
     "moment": "^2.23.0",
-    "node-fetch": "^2.3.0"
+    "node-fetch": "^2.3.0",
+    "rcon": "^1.0.3"
   }
 }

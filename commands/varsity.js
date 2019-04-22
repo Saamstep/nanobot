@@ -150,7 +150,7 @@ exports.run = (client, message, args) => {
       tourneyCmd()
       break;
     default:
-      message.channel.send(`\`\`\`${ConfigService.config.prefix}varsity [club/roster/tournemtn] [club ID/roster ID/game search]\`\`\``)
+      message.channel.send(`\`\`\`${ConfigService.config.prefix}varsity [club/roster/tournament] [club ID/roster ID/game search]\`\`\``)
       break;
   }
 
