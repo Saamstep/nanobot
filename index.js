@@ -307,7 +307,7 @@ client.on('message', message => {
   // Regular command file manager
   try {
     let commandFile = require(`./commands/${command}.js`);
-    commandFile.run(client, message, args);
+    commandFile.run(client, message, args, conn);
     message.channel.stopTyping(true);
   } catch (err) {
     if (config.debug === true) {
