@@ -3,7 +3,7 @@ exports.run = (client, message, args) => {
   const cM = require('../modules/consoleMod.js');
   const log = require('../modules/logMod.js');
   const config = require('../config.json');
-  const ConfigService = require('./config.js');
+  const ConfigService = require('../config.js');
   var Rcon = require('rcon');
   var updatedport = Number(ConfigService.config.rconPort);
   var conn = new Rcon(
