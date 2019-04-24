@@ -261,7 +261,7 @@ const server = http.createServer(function(request, response) {
 
 let port = Number(ConfigService.config.mcwebPort);
 const host = ConfigService.config.mcwebhost;
-// server.listen(port, host);
+server.listen(port, host);
 console.log(`MC --> Discord | Listening at http://${host}:${port}`);
 
 // end of mc to discord
