@@ -153,6 +153,48 @@ async function twitch(message) {
 
 client.login(ConfigService.config.token);
 
+async function topic() {
+  // mc channel topic:
+  const fetch = require('node-fetch');
+  try {
+    const response = await fetch(
+      `http://mcapi.us/server/status?ip=${ConfigService.config.mcIP}&port=${
+        ConfigService.config.mcPort
+      }`
+    );
+
+    const body = await response.json();
+
+    if (body.online === false) {
+      client.guilds.map(guild => {
+        let channel = guild.channels.find(
+          channel => channel.name === `mc-channel`
+        );
+        if (channel) {
+          channel.setTopic('Server Offline');
+        }
+      });
+    }
+    if (body.online === true) {
+      client.guilds.map(guild => {
+        let channel = guild.channels.find(
+          channel => channel.name === `mc-channel`
+        );
+        if (channel) {
+          channel.setTopic(
+            `${ConfigService.config.serverName} | ${body.server.name} | ${
+              body.players.now
+            }/${body.players.max} online`
+          );
+          console.log('Set topic!');
+        }
+      });
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 //twitch notify
 client.on('ready', ready => {
   log('Checking for Twitch streams'.blue);
@@ -162,6 +204,8 @@ client.on('ready', ready => {
   } catch (e) {
     console.error(e);
   }
+
+  setInterval(topic, 300000);
 });
 
 //cooldown
@@ -217,7 +261,7 @@ const server = http.createServer(function(request, response) {
 
 let port = Number(ConfigService.config.mcwebPort);
 const host = ConfigService.config.mcwebhost;
-server.listen(port, host);
+// server.listen(port, host);
 console.log(`MC --> Discord | Listening at http://${host}:${port}`);
 
 // end of mc to discord
@@ -270,7 +314,7 @@ client.on('message', message => {
   }
 
   if (
-    message.content.includes(`${ConfigService.configmcIP}`) &&
+    message.content.includes(`${ConfigService.config.mcIP}`) &&
     !message.author.bot
   ) {
     message.react(`✅`);
