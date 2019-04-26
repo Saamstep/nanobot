@@ -292,7 +292,7 @@ conn.connect();
 
 client.on('message', message => {
   //mc console cmds
-  if (message.channel.name === 'mc-channel') {
+  if (message.channel.name === 'mc-console') {
     if (message.author.bot) return;
     conn.send('/' + message);
   }
