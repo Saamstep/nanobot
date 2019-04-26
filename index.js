@@ -257,7 +257,7 @@ const server = http.createServer(function(request, response) {
             channel => channel.name === `mc-console`
           );
           if (cnsl) {
-            channel.send(body);
+            cnsl.send(body);
           }
         }
       });
@@ -294,7 +294,7 @@ client.on('message', message => {
   //mc console cmds
   if (message.channel.name === 'mc-console') {
     if (message.author.bot) return;
-    conn.send('/' + message);
+    conn.send('/' + message.content);
   }
   if (message.channel.id === `${ConfigService.config.mcChannel}`) {
     // YT video like system
