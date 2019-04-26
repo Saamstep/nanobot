@@ -253,6 +253,12 @@ const server = http.createServer(function(request, response) {
           if (channel) {
             channel.send('<' + username + '> ' + message);
           }
+          let cnsl = guild.channels.find(
+            channel => channel.name === `mc-console`
+          );
+          if (cnsl) {
+            channel.send(body);
+          }
         }
       });
     });
@@ -266,7 +272,7 @@ console.log(`MC --> Discord | Listening at http://${host}:${port}`);
 
 // end of mc to discord
 
-//mc
+//mc rcon
 var Rcon = require('rcon');
 var updatedport = Number(ConfigService.config.rconPort);
 var conn = new Rcon(
@@ -285,8 +291,13 @@ conn.on('end', function() {
 conn.connect();
 
 client.on('message', message => {
-  // YT video like system
+  //mc console cmds
+  if (message.channel.name === 'mc-channel') {
+    if (message.author.bot) return;
+    conn.send('/' + message);
+  }
   if (message.channel.id === `${ConfigService.config.mcChannel}`) {
+    // YT video like system
     if (message.author.bot) return;
     let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${
       message.content
@@ -294,8 +305,7 @@ client.on('message', message => {
     conn.send(msg);
   }
 
-  //end mc
-
+  // thumbs up url system
   let urls = ConfigService.config.urls;
   if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
     return message.react(`👍`);
@@ -313,6 +323,7 @@ client.on('message', message => {
     return;
   }
 
+  // mc ip thumbs up system
   if (
     message.content.includes(`${ConfigService.config.mcIP}`) &&
     !message.author.bot
@@ -326,6 +337,7 @@ client.on('message', message => {
     await message.react('🇽');
   }
 
+  //support channel code
   if (
     message.channel.id === `${ConfigService.config.supportChannelid}` &&
     !message.author.bot
