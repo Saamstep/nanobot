@@ -28,7 +28,7 @@ async function twitch(message) {
   ConfigService.config.streamers.forEach(async element => {
     // Makes request
     try {
-      console.log('Fetching Twitch streams from API.'.blue);
+      log('Fetching Twitch streams from API.'.magenta.dim);
       const request = await fetch(
         `https://api.twitch.tv/kraken/streams?channel=${element}`,
         {
@@ -40,8 +40,8 @@ async function twitch(message) {
         }
       );
       const body = await request.json();
-      if (body._total < 1) {
-        return;
+      if (body._total === 0) {
+        return log('Twitch Notifier: stream not live.'.magenta.dim.dim);
       } else if (!compare.has(element)) {
         // Message formatter for the notificiations
         const embed = {
@@ -89,8 +89,9 @@ async function twitch(message) {
               channel.send(config.mentionNotify, {
                 embed
               });
-              console.log(
-                'Found a channel to announce and I announced it!'.blue
+              log(
+                'Found a channel to announce and I announced it!'.magenta.dim
+                  .dim
               );
             }
           }
@@ -186,7 +187,7 @@ async function topic() {
               body.players.now
             }/${body.players.max} online`
           );
-          console.log('Set topic!');
+          log('Set topic!');
         }
       });
     }
@@ -197,7 +198,7 @@ async function topic() {
 
 //twitch notify
 client.on('ready', ready => {
-  log('Checking for Twitch streams'.blue);
+  log('Checking for Twitch streams'.magenta.dim.dim);
 
   try {
     setInterval(twitch, 180000);
@@ -267,8 +268,8 @@ const server = http.createServer(function(request, response) {
 
 let port = Number(ConfigService.config.mcwebPort);
 const host = ConfigService.config.mcwebhost;
-server.listen(port, host);
-console.log(`MC --> Discord | Listening at http://${host}:${port}`);
+// server.listen(port, host);
+log(`MC --> Discord | Listening at http://${host}:${port}`.green);
 
 // end of mc to discord
 
@@ -282,10 +283,10 @@ var conn = new Rcon(
 );
 
 conn.on('auth', function() {
-  console.log('Authed!');
+  log('Authed!'.green);
 });
 conn.on('end', function() {
-  console.log('Socket closed!');
+  log('Socket closed!'.green);
 });
 
 conn.connect();
@@ -363,6 +364,7 @@ client.on('message', message => {
   // Regular command file manager
   try {
     let commandFile = require(`./commands/${command}.js`);
+    message.channel.startTyping(1);
     commandFile.run(client, message, args, conn);
     message.channel.stopTyping(true);
   } catch (err) {

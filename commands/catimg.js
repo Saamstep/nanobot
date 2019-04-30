@@ -3,7 +3,7 @@ const errorMod = require('../modules/errorMod.js');
 const fetch = require('node-fetch');
 
 exports.run = async (client, message, args) => {
-  message.channel.startTyping();
+  message.channel.startTyping(1);
   try {
     const response = await fetch('https://api.thecatapi.com/v1/images/search', {
       headers: {

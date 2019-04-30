@@ -3,9 +3,8 @@ var errorMod = require('../modules/errorMod.js');
 const fetch = require('node-fetch');
 
 exports.run = async (client, message, args) => {
-
   async function cmd() {
-    message.channel.startTyping();
+    message.channel.startTyping(1);
     var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json';
 
     try {
@@ -30,9 +29,7 @@ exports.run = async (client, message, args) => {
     message.channel.stopTyping(true);
   }
 
-
   cooldown(message, cmd);
 };
 
-
-exports.description = 'Checks Discord status.'
+exports.description = 'Checks Discord status.';

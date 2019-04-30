@@ -1,7 +1,7 @@
 exports.run = (client, message, args) => {
   // const request = require('request');
 
-  // message.channel.startTyping();
+  // message.channel.startTyping(1);
 
   // // START
   // var platform = args[0];

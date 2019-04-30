@@ -6,13 +6,16 @@ exports.run = async (client, message, args) => {
   const cooldown = require('../index.js');
 
   async function cmd() {
-    message.channel.startTyping();
+    message.channel.startTyping(1);
     try {
-      const response = await fetch('https://api.thedogapi.com/v1/images/search', {
-        headers: {
-          'x-api-key': `${ConfigService.config.catAPI}`
+      const response = await fetch(
+        'https://api.thedogapi.com/v1/images/search',
+        {
+          headers: {
+            'x-api-key': `${ConfigService.config.catAPI}`
+          }
         }
-      });
+      );
       const body = await response.json();
       message.channel.send(' ', { file: body[0].url });
     } catch (e) {

@@ -1,5 +1,5 @@
 exports.run = (client, message, args) => {
-  message.channel.startTyping();
+  message.channel.startTyping(1);
   function sender() {
     message.delete(0);
     let member = message.guild.member(message.mentions.users.first());
@@ -11,7 +11,6 @@ exports.run = (client, message, args) => {
   let isAdmin = require('../modules/isAdmin.js');
   if (isAdmin(message.author, message)) {
     if (args[0] == null) {
-
       return message.channel.send(
         `${ConfigService.config.prefix}dm [@user] [message]`,
         { code: 'asciidoc' }
@@ -21,11 +20,11 @@ exports.run = (client, message, args) => {
         sender();
         message.channel.stopTyping(true);
       } catch (e) {
-        error('There was an error sending that DM', message)
+        error('There was an error sending that DM', message);
       }
     }
   }
-
 };
 
-exports.description = 'Allows admins to send a message as the bot to a specific user.';
+exports.description =
+  'Allows admins to send a message as the bot to a specific user.';

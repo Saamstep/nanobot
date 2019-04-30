@@ -5,7 +5,7 @@ const fetch = require('node-fetch');
 exports.run = async (client, message, args) => {
   const cooldown = require('../index.js');
   async function cmd() {
-    message.channel.startTyping();
+    message.channel.startTyping(1);
 
     var mcIP = args[0] ? args[0] : `${ConfigService.config.mcIP}`; // Your MC server IP
     var queryPort = args[1] ? args[1] : `${ConfigService.config.queryPort}`; // Your MC server port

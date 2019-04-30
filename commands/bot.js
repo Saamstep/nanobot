@@ -2,7 +2,7 @@ exports.run = (client, message, args) => {
   const pkg = require('../package.json');
 
   async function cmd() {
-    await message.channel.startTyping();
+    await message.channel.startTyping(1);
 
     let embed = {
       color: 3447003,

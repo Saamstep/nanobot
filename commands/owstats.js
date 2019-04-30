@@ -7,14 +7,14 @@ const fetch = require('node-fetch');
 exports.run = async (client, message, args) => {
   const cooldown = require('../index.js');
   async function cmd() {
-    message.channel.startTyping();
+    message.channel.startTyping(1);
 
     //vars
 
     if (!args[0]) {
       return message.channel.send(
         `${ConfigService.config.prefix}ow [user#0000] [region] [platform]\n${
-        ConfigService.config.prefix
+          ConfigService.config.prefix
         }ow [user-0000] (Defaults region/platform to PC)`,
         { code: 'asciidoc' }
       );
@@ -30,7 +30,7 @@ exports.run = async (client, message, args) => {
     if (args[0] == 'help') {
       return message.channel.send(
         `${ConfigService.config.prefix}ow [user-0000] [region] [platform]\n${
-        ConfigService.config.prefix
+          ConfigService.config.prefix
         }ow [user-0000] (Defaults region/platform to PC)`,
         { code: 'asciidoc' }
       );
@@ -151,7 +151,7 @@ exports.run = async (client, message, args) => {
     } else {
       message.channel.send(
         `${ConfigService.config.prefix}ow [user-0000] [region] [platform]\n${
-        ConfigService.config.prefix
+          ConfigService.config.prefix
         }ow [user-0000] (Defaults region/platform to PC)`,
         { code: 'asciidoc' }
       );
