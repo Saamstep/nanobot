@@ -202,7 +202,7 @@ client.on('ready', ready => {
   log('Checking for Twitch streams'.magenta.dim.dim);
 
   try {
-    setInterval(twitch, 1000);
+    setInterval(twitch, 180000);
   } catch (e) {
     console.error(e);
   }
