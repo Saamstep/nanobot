@@ -8,7 +8,7 @@ const fetch = require('node-fetch');
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
-  if (err) return console.error(err);
+  if (err) return log(err);
   files.forEach(file => {
     if (file.startsWith('.')) {
       return;
@@ -102,7 +102,7 @@ async function twitch(message) {
         return;
       }
     } catch (e) {
-      console.warn(e);
+      log(e);
       return;
     }
   });
@@ -193,7 +193,7 @@ async function topic() {
       });
     }
   } catch (e) {
-    console.error(e);
+    log(e);
   }
 }
 
@@ -204,7 +204,7 @@ client.on('ready', ready => {
   try {
     setInterval(twitch, 180000);
   } catch (e) {
-    console.error(e);
+    log(e);
   }
 
   setInterval(topic, 300000);
@@ -255,12 +255,6 @@ const server = http.createServer(function(request, response) {
           if (channel) {
             channel.send('<' + username + '> ' + message);
           }
-          let cnsl = guild.channels.find(
-            channel => channel.name === `mc-console`
-          );
-          if (cnsl) {
-            cnsl.send(body);
-          }
         }
       });
     });
@@ -269,7 +263,7 @@ const server = http.createServer(function(request, response) {
 
 let port = Number(ConfigService.config.mcwebPort);
 const host = ConfigService.config.mcwebhost;
-// server.listen(port, host);
+server.listen(port, host);
 log(`MC --> Discord | Listening at http://${host}:${port}`.green);
 
 // end of mc to discord
@@ -293,11 +287,6 @@ conn.on('end', function() {
 conn.connect();
 
 client.on('message', message => {
-  //mc console cmds
-  if (message.channel.name === 'mc-console') {
-    if (message.author.bot) return;
-    conn.send('/' + message.content);
-  }
   if (message.channel.id === `${ConfigService.config.mcChannel}`) {
     // YT video like system
     if (message.author.bot) return;
@@ -335,8 +324,8 @@ client.on('message', message => {
 
   // Support Channel Code
   async function pMreact() {
-    await message.react('☑');
-    await message.react('🇽');
+    await message.react('⬆');
+    await message.react('⬇');
   }
 
   //support channel code
@@ -370,7 +359,7 @@ client.on('message', message => {
     message.channel.stopTyping(true);
   } catch (err) {
     if (config.debug === true) {
-      console.warn(err);
+      log(err);
     }
   }
 
@@ -380,7 +369,7 @@ client.on('message', message => {
     commandFile.run(client, message, args);
   } catch (err) {
     if (config.debug === true) {
-      console.warn(err);
+      log(err);
     } else {
       return;
     }
