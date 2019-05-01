@@ -28,7 +28,7 @@ async function twitch(message) {
   ConfigService.config.streamers.forEach(async element => {
     // Makes request
     try {
-      log('Fetching Twitch streams from API.'.magenta.dim);
+      log('Fetching Twitch streamer status: ' + element.magenta.dim);
       const request = await fetch(
         `https://api.twitch.tv/kraken/streams?channel=${element}`,
         {
@@ -40,9 +40,10 @@ async function twitch(message) {
         }
       );
       const body = await request.json();
-      if (body._total === 0) {
-        return log('Twitch Notifier: stream not live.'.magenta.dim.dim);
-      } else if (!compare.has(element)) {
+      if (body._total == 0) {
+        return log('Twitch Notifier: ' + element.magenta.dim + ' is not live');
+      }
+      if (!compare.has(element)) {
         // Message formatter for the notificiations
         const embed = {
           description: '**' + body.streams[0].channel.status + '**',
@@ -201,7 +202,7 @@ client.on('ready', ready => {
   log('Checking for Twitch streams'.magenta.dim.dim);
 
   try {
-    setInterval(twitch, 180000);
+    setInterval(twitch, 1000);
   } catch (e) {
     console.error(e);
   }
