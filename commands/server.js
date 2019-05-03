@@ -8,54 +8,66 @@ exports.run = async (client, message, args) => {
     message.channel.startTyping(1);
 
     var mcIP = args[0] ? args[0] : `${ConfigService.config.mcIP}`; // Your MC server IP
-    var queryPort = args[1] ? args[1] : `${ConfigService.config.queryPort}`; // Your MC server port
-    var mcPort = args[1] ? args[1] : `${ConfigService.config.mcPort}`; // Your MC server port
-    var Queryurl =
-      'http://mcapi.us/server/query?ip=' + mcIP + '&port=' + queryPort;
-    var Staturl =
-      'http://mcapi.us/server/image?ip=' +
-      mcIP +
-      '&port=' +
-      mcPort +
-      `&theme=dark&title=${ConfigService.config.serverName}`;
-
+    var statusURL = 'https://api.mcsrvstat.us/2/' + mcIP;
     try {
-      const response = await fetch(Queryurl);
-      const body = await response.json();
-
-      if (body.online == false) {
-        if (mcIP == ConfigService.config.mcIP) {
-          const embed = {
-            color: 12118406,
-            image: {
-              url:
-                'https://mcapi.us/server/image?ip=' +
-                mcIP +
-                '&port=' +
-                mcPort +
-                '&theme=dark&title=' +
-                ConfigService.config.serverName.replace(' ', '%20')
+      const response = await fetch(statusURL);
+      const stats = await response.json();
+      if (args[0] === ConfigService.config.mcIP) {
+        const embed = {
+          url: 'https://discordapp.com',
+          color: 10276707,
+          timestamp: '2019-05-02T18:27:39.294Z',
+          footer: {
+            icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+            text: 'Server Status'
+          },
+          thumbnail: {
+            url: 'icon'
+          },
+          author: {
+            name: 'Server Status',
+            url: 'https://discordapp.com',
+            icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png'
+          },
+          fields: [
+            {
+              name: '',
+              value: 'some of these properties have certain limits...'
             }
-          };
-          message.channel.send({ embed });
-        } else {
+          ]
+        };
+        channel.send({ embed });
+      } else {
+        if (stats.online == true) {
           const embed = {
-            color: 12118406,
-            image: {
-              url: 'https://mcapi.us/server/image?ip=' + args[0] + '&theme=dark'
-            }
+            url: 'https://discordapp.com',
+            color: 10276707,
+            timestamp: '2019-05-02T18:27:39.294Z',
+            footer: {
+              icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+              text: 'Server Status'
+            },
+            thumbnail: {
+              url: 'icon'
+            },
+            author: {
+              name: 'Server Status',
+              url: 'https://discordapp.com',
+              icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png'
+            },
+            fields: [
+              {
+                name: '',
+                value: 'some of these properties have certain limits...'
+              }
+            ]
           };
-          message.channel.send({ embed });
+          channel.send({ embed });
         }
       }
-      if (body.online == true) {
-        console.log(body);
-      }
-
-      message.channel.stopTyping(true);
     } catch (e) {
       console.log(e);
-      return errorMod('Error getting Minecraft server status...', message);
+      return errorMod('Error getting Minecraft server status.', message);
     }
   }
   // cooldown(message, cmd);

@@ -5,6 +5,7 @@ const fs = require('fs');
 const log = require('./modules/consoleMod.js');
 const logger = require('./modules/logMod.js');
 const fetch = require('node-fetch');
+const isAdmin = require('./modules/isAdmin.js');
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
@@ -91,8 +92,9 @@ async function twitch(message) {
                 embed
               });
               log(
-                'Found a channel to announce and I announced it!'.magenta.dim
-                  .dim
+                'Found ' +
+                  element.magenta.dim +
+                  ' is live! Sending the announcement...'
               );
             }
           }
@@ -228,43 +230,51 @@ module.exports = function cooldown(message, code) {
 };
 
 // mc to discord
+if (ConfigService.config.discordToMC == true) {
+  try {
+    const http = require('http');
 
-const http = require('http');
+    const regex = new RegExp('\\[Server thread/INFO\\]: <([^>]*)> (.*)');
 
-const regex = new RegExp('\\[Server thread/INFO\\]: <([^>]*)> (.*)');
+    const server = http.createServer(function(request, response) {
+      console.dir(request.param);
 
-const server = http.createServer(function(request, response) {
-  console.dir(request.param);
-
-  if (request.method == 'POST') {
-    var body = '';
-    request.on('data', function(data) {
-      body += data;
+      if (request.method == 'POST') {
+        var body = '';
+        request.on('data', function(data) {
+          body += data;
+        });
+        request.on('end', function() {
+          const regBody = body.match(regex);
+          const username = regBody[1].replace(/(§[A-Z-a-z0-9])/g, '');
+          const message = regBody[2];
+          response.writeHead(200, { 'Content-Type': 'text/html' });
+          response.end(username + ': ' + message);
+          client.guilds.map(guild => {
+            if (guild.available) {
+              let channel = guild.channels.find(
+                channel => channel.name === `mc-channel`
+              );
+              if (channel) {
+                channel.send('<' + username + '> ' + message);
+              }
+            }
+          });
+        });
+      }
     });
-    request.on('end', function() {
-      const regBody = body.match(regex);
-      const username = regBody[1].replace(/(§[A-Z-a-z0-9])/g, '');
-      const message = regBody[2];
-      response.writeHead(200, { 'Content-Type': 'text/html' });
-      response.end(username + ': ' + message);
-      client.guilds.map(guild => {
-        if (guild.available) {
-          let channel = guild.channels.find(
-            channel => channel.name === `mc-channel`
-          );
-          if (channel) {
-            channel.send('<' + username + '> ' + message);
-          }
-        }
-      });
-    });
+
+    let port = Number(ConfigService.config.mcwebPort);
+    const host = ConfigService.config.mcwebhost;
+
+    server.listen(port, host);
+    log(`MC --> Discord | Listening at http://${host}:${port}`.green);
+  } catch (error) {
+    return log(`MC --> Discord | Disabled! ${error}`.green);
   }
-});
-
-let port = Number(ConfigService.config.mcwebPort);
-const host = ConfigService.config.mcwebhost;
-server.listen(port, host);
-log(`MC --> Discord | Listening at http://${host}:${port}`.green);
+} else {
+  return log(`MC --> Discord | Disabled!`.green);
+}
 
 // end of mc to discord
 
@@ -329,6 +339,7 @@ client.on('message', message => {
   }
 
   //support channel code
+
   if (
     message.channel.id === `${ConfigService.config.supportChannelid}` &&
     !message.author.bot
@@ -337,6 +348,30 @@ client.on('message', message => {
 
     if (tag.some(word => message.content.includes(word))) {
       return pMreact();
+    } else if (isAdmin(message.author, message)) {
+      if (message.content.startsWith('check')) {
+        let args = message.content.split(' ').slice(1);
+        message.channel.fetchMessage(args[0]).then(msg => {
+          msg.react('✅');
+        });
+        message.delete(0);
+      }
+      if (message.content.startsWith('delete')) {
+        let args = message.content.split(' ').slice(1);
+        let reason = args.join(' ');
+        reason = reason.replace(args[0], '\n');
+        message.delete(0);
+        message.channel.fetchMessage(args[0]).then(msg => {
+          msg.delete(0);
+          msg.author.send(
+            'Your suggestion `' +
+              msg.content +
+              '` was removed by an admin for: ```' +
+              reason +
+              '```'
+          );
+        });
+      }
     } else {
       return message.delete();
     }

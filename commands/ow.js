@@ -1,7 +1,7 @@
 exports.run = async (client, message, args) => {
   // ---Variables---
   const fetch = require('node-fetch');
-  const error = require('../modules/errorMod.js');
+
   let errorMsg =
     'There was an error contacting the API or your BattleTag is invalid.';
 
