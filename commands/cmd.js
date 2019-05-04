@@ -11,12 +11,6 @@ exports.run = (client, message, args, conn) => {
   if (isAdmin(message.author, message)) {
     conn.send(cmd);
   }
-
-  conn.on('response', function(str) {
-    if (str) {
-      message.channel.send(str);
-    }
-  });
 };
 
 exports.description =

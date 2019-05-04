@@ -29,7 +29,7 @@ async function twitch(message) {
   ConfigService.config.streamers.forEach(async element => {
     // Makes request
     try {
-      log('Fetching Twitch streamer status: ' + element.magenta.dim);
+      log('Twitch | Getting streamer status: ' + element.magenta.dim);
       const request = await fetch(
         `https://api.twitch.tv/kraken/streams?channel=${element}`,
         {
@@ -42,7 +42,7 @@ async function twitch(message) {
       );
       const body = await request.json();
       if (body._total == 0) {
-        return log('Twitch Notifier: ' + element.magenta.dim + ' is not live');
+        return log('Twitch | Found ' + element.magenta.dim + ' is not live');
       }
       if (!compare.has(element)) {
         // Message formatter for the notificiations
@@ -92,7 +92,7 @@ async function twitch(message) {
                 embed
               });
               log(
-                'Found ' +
+                'Twitch | Found ' +
                   element.magenta.dim +
                   ' is live! Sending the announcement...'
               );
@@ -190,7 +190,7 @@ async function topic() {
               body.players.now
             }/${body.players.max} online`
           );
-          log('Set topic!');
+          log('MC --> Discord | Set topic!');
         }
       });
     }
@@ -201,15 +201,11 @@ async function topic() {
 
 //twitch notify
 client.on('ready', ready => {
-  log('Checking for Twitch streams'.magenta.dim.dim);
-
   try {
     setInterval(twitch, 180000);
   } catch (e) {
     log(e);
   }
-
-  setInterval(topic, 300000);
 });
 
 //cooldown
@@ -270,10 +266,10 @@ if (ConfigService.config.discordToMC == true) {
     server.listen(port, host);
     log(`MC --> Discord | Listening at http://${host}:${port}`.green);
   } catch (error) {
-    return log(`MC --> Discord | Disabled! ${error}`.green);
+    log(`MC --> Discord | Disabled! ${error}`.green);
   }
 } else {
-  return log(`MC --> Discord | Disabled!`.green);
+  log(`MC --> Discord | Disabled!`.green);
 }
 
 // end of mc to discord
@@ -288,15 +284,29 @@ var conn = new Rcon(
 );
 
 conn.on('auth', function() {
-  log('Authed!'.green);
+  log('RCON | Authed!'.green);
 });
 conn.on('end', function() {
-  log('Socket closed!'.green);
+  log('RCON | Socket closed!'.green);
 });
 
-conn.connect();
+if (!ConfigService.config.rconPort == '') {
+  conn.connect();
+  log(
+    'RCON | Connecting to server @ ' +
+      JSON.stringify(conn.host + ':' + conn.port).green
+  );
+} else {
+  log('RCON | Disabled!'.green);
+}
 
 client.on('message', message => {
+  client.on('typingStart', ready => {
+    if (client.user) {
+      message.channel.stopTyping(true);
+    }
+  });
+
   if (message.channel.id === `${ConfigService.config.mcChannel}`) {
     // YT video like system
     if (message.author.bot) return;
@@ -305,6 +315,11 @@ client.on('message', message => {
     }","color":"aqua"}]`;
     conn.send(msg);
   }
+  conn.on('response', function(str) {
+    if (str) {
+      return message.channel.send(str);
+    }
+  });
 
   // thumbs up url system
   let urls = ConfigService.config.urls;
@@ -345,9 +360,8 @@ client.on('message', message => {
     !message.author.bot
   ) {
     const tag = ConfigService.config.supportTags;
-
     if (tag.some(word => message.content.includes(word))) {
-      return pMreact();
+      pMreact();
     } else if (isAdmin(message.author, message)) {
       if (message.content.startsWith('check')) {
         let args = message.content.split(' ').slice(1);
@@ -373,7 +387,7 @@ client.on('message', message => {
         });
       }
     } else {
-      return message.delete();
+      message.delete();
     }
   }
 
@@ -389,12 +403,11 @@ client.on('message', message => {
   // Regular command file manager
   try {
     let commandFile = require(`./commands/${command}.js`);
-    message.channel.startTyping(1);
     commandFile.run(client, message, args, conn);
     message.channel.stopTyping(true);
   } catch (err) {
     if (config.debug === true) {
-      log(err);
+      console.error(err);
     }
   }
 
@@ -404,7 +417,7 @@ client.on('message', message => {
     commandFile.run(client, message, args);
   } catch (err) {
     if (config.debug === true) {
-      log(err);
+      console.error(err);
     } else {
       return;
     }

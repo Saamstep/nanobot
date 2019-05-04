@@ -8,26 +8,30 @@ exports.run = async (client, message, args) => {
     message.channel.startTyping(1);
 
     var mcIP = args[0] ? args[0] : `${ConfigService.config.mcIP}`; // Your MC server IP
-    var statusURL = 'https://api.mcsrvstat.us/2/' + mcIP;
+    var mcPort = ConfigService.config.mcPort;
+    var statusURL = 'https://api.mcsrvstat.us/2/' + mcIP + ':' + mcPort;
     try {
       const response = await fetch(statusURL);
       const stats = await response.json();
+      console.log(stats);
       if (args[0] === ConfigService.config.mcIP) {
         const embed = {
-          url: 'https://discordapp.com',
+          url: 'https://mcsrvstat.us/',
           color: 10276707,
-          timestamp: '2019-05-02T18:27:39.294Z',
+          timestamp: Date.now(),
           footer: {
-            icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+            icon_url:
+              'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png',
             text: 'Server Status'
           },
           thumbnail: {
-            url: 'icon'
+            url: stats.icon
           },
           author: {
             name: 'Server Status',
-            url: 'https://discordapp.com',
-            icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png'
+            url: 'https://mcsrvstat.us/',
+            icon_url:
+              'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
           },
           fields: [
             {
@@ -36,33 +40,39 @@ exports.run = async (client, message, args) => {
             }
           ]
         };
-        channel.send({ embed });
+        message.channel.send({ embed });
       } else {
         if (stats.online == true) {
           const embed = {
-            url: 'https://discordapp.com',
+            url: 'https://mcsrvstat.us/',
             color: 10276707,
-            timestamp: '2019-05-02T18:27:39.294Z',
+            timestamp: Date.now(),
             footer: {
-              icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png',
+              icon_url:
+                'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png',
               text: 'Server Status'
             },
             thumbnail: {
-              url: 'icon'
+              url: stats.icon
             },
             author: {
               name: 'Server Status',
               url: 'https://discordapp.com',
-              icon_url: 'https://cdn.discordapp.com/embed/avatars/0.png'
+              icon_url:
+                'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
             },
             fields: [
               {
-                name: '',
-                value: 'some of these properties have certain limits...'
+                name: 'Online',
+                value: stats.players.online + '/' + stats.players.max
+              },
+              {
+                name: 'MOTD',
+                value: stats.motd.clean.join(' ')
               }
             ]
           };
-          channel.send({ embed });
+          message.channel.send({ embed });
         }
       }
     } catch (e) {
