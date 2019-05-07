@@ -1,6 +1,9 @@
 const ConfigService = require('../config.js');
 const errorMod = require('../modules/errorMod');
 const fetch = require('node-fetch');
+const fs = require('fs');
+const logger = require('../modules/consoleMod.js');
+const colors = require('colors');
 
 exports.run = async (client, message, args) => {
   const cooldown = require('../index.js');
@@ -13,51 +16,88 @@ exports.run = async (client, message, args) => {
     try {
       const response = await fetch(statusURL);
       const stats = await response.json();
-      console.log(stats);
-      if (args[0] === ConfigService.config.mcIP) {
+
+      // image decoder
+      // let serverIcon = new Buffer.from(
+      //   stats.icon.split(';base64').pop(),
+      //   'base64'
+      // );
+      // let icon = mcIP.replace('.', '-') + '.png';
+      // if (fs.existsSync(icon)) {
+      //   fs.unlink(icon, err => {
+      //     if (err) logger('Could not delete '.red + icon.red.bold + '\n' + err);
+      //   });
+      // }
+      // fs.writeFile(icon, serverIcon, err => {
+      //   if (err) {
+      //     logger(
+      //       'Server Stats | Server Icon could not be created.\n'.red + err
+      //     );
+      //   }
+      // });
+
+      //playerlist
+      let playerList = '';
+      if (!stats.players.list) {
+        playerList = 'N/A';
+      } else if (!stats.players.list.length > 0) {
+        playerList = 'Nobody is playing.';
+      } else if (stats.players.list.length > 0) {
+        playerList = stats.players.list.join('\n');
+      }
+
+      if (args[0] === ConfigService.config.mcIP || !args[0]) {
+        // MC SMP COMMAND STATS
         const embed = {
           url: 'https://mcsrvstat.us/',
           color: 10276707,
           timestamp: Date.now(),
           footer: {
-            icon_url:
-              'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png',
+            icon_url: client.user.avatarURL,
             text: 'Server Status'
           },
-          thumbnail: {
-            url: stats.icon
-          },
+          // thumbnail: {
+          //   url: 'attachment://mc-samstep.ga.png'
+          // },
           author: {
-            name: 'Server Status',
+            name: ConfigService.config.serverName + ' SMP',
             url: 'https://mcsrvstat.us/',
             icon_url:
               'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
           },
           fields: [
             {
-              name: '',
-              value: 'some of these properties have certain limits...'
+              name: 'Online',
+              value: stats.players.online + '/' + stats.players.max
+            },
+            {
+              name: 'MOTD',
+              value: stats.motd.clean.join(' ')
+            },
+            {
+              name: 'Players',
+              value: playerList
             }
           ]
         };
         message.channel.send({ embed });
       } else {
+        // ALL OTHER SERVERS
         if (stats.online == true) {
           const embed = {
             url: 'https://mcsrvstat.us/',
             color: 10276707,
             timestamp: Date.now(),
             footer: {
-              icon_url:
-                'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png',
+              icon_url: client.user.avatarURL,
               text: 'Server Status'
             },
-            thumbnail: {
-              url: stats.icon
-            },
+            // thumbnail: {
+            //   url: icon
+            // },
             author: {
-              name: 'Server Status',
-              url: 'https://discordapp.com',
+              name: args[0],
+              url: 'https://mcsrvstat.us/',
               icon_url:
                 'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
             },
@@ -69,6 +109,10 @@ exports.run = async (client, message, args) => {
               {
                 name: 'MOTD',
                 value: stats.motd.clean.join(' ')
+              },
+              {
+                name: 'Players',
+                value: playerList
               }
             ]
           };

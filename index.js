@@ -336,7 +336,7 @@ client.on('message', message => {
       }
     }
   } catch (err) {
-    return;
+    console.error(err);
   }
 
   // mc ip thumbs up system
