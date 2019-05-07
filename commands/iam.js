@@ -21,7 +21,12 @@ exports.run = (client, message, args) => {
     }
   }
 
-  message.member.addRole(addRole);
+  message.member.addRole(addRole).then(
+    setTimeout(function() {
+      message.delete(0);
+    }, 1000)
+  );
+  // .catch(err => console.error);
 };
 
 exports.description = 'Set your real name when you join for the first time.';

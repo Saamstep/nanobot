@@ -340,13 +340,14 @@ client.on('message', message => {
   }
 
   // mc ip thumbs up system
-  if (
-    message.content.includes(`${ConfigService.config.mcIP}`) &&
-    !message.author.bot
-  ) {
-    message.react(`✅`);
+  if (ConfigService.config.mcIP !== '') {
+    if (
+      message.content.includes(`${ConfigService.config.mcIP}`) &&
+      !message.author.bot
+    ) {
+      message.react(`✅`);
+    }
   }
-
   // Support Channel Code
   async function pMreact() {
     await message.react('⬆');
