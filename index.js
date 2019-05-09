@@ -323,7 +323,6 @@ client.on('message', message => {
     }","color":"aqua"}]`;
     conn.send(msg);
   }
-  });
 
   // thumbs up url system
   let urls = ConfigService.config.urls;
