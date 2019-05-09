@@ -206,6 +206,14 @@ client.on('ready', ready => {
   } catch (e) {
     log(e);
   }
+
+  try {
+    if (ConfigService.config.discordToMC == true) {
+      setInterval(topic, 180000);
+    }
+  } catch (e) {
+    log(e);
+  }
 });
 
 //cooldown
