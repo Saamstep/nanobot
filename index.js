@@ -323,10 +323,6 @@ client.on('message', message => {
     }","color":"aqua"}]`;
     conn.send(msg);
   }
-  conn.on('response', function(str) {
-    if (str) {
-      return message.channel.send(str);
-    }
   });
 
   // thumbs up url system
