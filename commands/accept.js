@@ -1,18 +1,17 @@
 const ConfigService = require('../config.js');
 const errorMod = require('../modules/errorMod.js');
 exports.run = (client, message, args) => {
-  let acceptMember = message.guild.member(message.mentions.users.first());
-  let guild = message.guild.id;
-  let memberRole = message.guild.roles.find(
+  const acceptMember = message.guild.member(message.mentions.users.first());
+  const memberRole = message.guild.roles.find(
     'name',
     `${ConfigService.config.memberrole}`
   );
 
-  let intRole = message.guild.roles.find(
+  const intRole = message.guild.roles.find(
     'name',
     `${ConfigService.config.introlename}`
   );
-  let appRole = message.guild.roles.find('name', `Application`);
+  const appRole = message.guild.roles.find('name', 'Application');
 
   const isAdmin = require('../modules/isAdmin.js');
 
