@@ -366,7 +366,7 @@ client.on('message', message => {
     const tag = ConfigService.config.supportTags;
     if (tag.some(word => message.content.includes(word))) {
       pMreact();
-    } else if (isAdmin(message.author, message)) {
+    } else if (isAdmin(message.author, message, false)) {
       if (message.content.startsWith('check')) {
         let args = message.content.split(' ').slice(1);
         message.channel.fetchMessage(args[0]).then(msg => {
