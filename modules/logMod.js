@@ -1,19 +1,18 @@
-module.exports = function logEvent(event, reason, color, message) {
+module.exports = function logEvent(event, reason, color, message, client) {
   const ConfigService = require('../config.js');
 
-  var dateFormat = require('dateformat');
   let now = new Date();
-  let timeFormat = dateFormat(now, 'dddd, mmmm dS, yyyy, h:MM:ss TT');
 
   const embed = {
     color: color,
     footer: {
-      icon_url: 'http://logonoid.com/images/mod-logo.png',
-      text: `${ConfigService.config.serverName} Action Logger`
+      icon_url: client.user.avatarURL,
+      text: `${ConfigService.config.serverName} Action Logger`,
+      timestamp: Date.now()
     },
     author: {
       name: `${event}`,
-      icon_url: 'http://logonoid.com/images/mod-logo.png'
+      icon_url: 'http://chittagongit.com/download/13059'
     },
     fields: [
       {

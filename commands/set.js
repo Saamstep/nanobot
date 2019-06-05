@@ -29,7 +29,8 @@ exports.run = (client, message, args) => {
           'IP Updated',
           `IP has been changed to **${newIP}**`,
           16776960,
-          message
+          message,
+          client
         );
         break;
       case 'port':
@@ -37,7 +38,7 @@ exports.run = (client, message, args) => {
         if (newPort == null) {
           return message.channel.send(
             `${
-            ConfigService.config.prefix
+              ConfigService.config.prefix
             }set port reset/[port]\nReset will make the port blank.`,
             {
               code: 'ascidoc'
@@ -51,7 +52,8 @@ exports.run = (client, message, args) => {
             'Port Reset',
             `The current port has been removed`,
             16776960,
-            message
+            message,
+            client
           );
         } else {
           ConfigService.setConfigProperty('mcPort', newPort);
@@ -60,7 +62,8 @@ exports.run = (client, message, args) => {
             'New Port',
             `Port has been changed to **${newPort}**`,
             16776960,
-            message
+            message,
+            client
           );
         }
         break;
@@ -75,7 +78,8 @@ exports.run = (client, message, args) => {
           'Accept Message',
           `Accept Message has been changed to **${newAcceptMessage}**`,
           16776960,
-          message
+          message,
+          client
         );
         break;
       case 'logchannel':
@@ -89,7 +93,8 @@ exports.run = (client, message, args) => {
             'Log Channel Update',
             `Log Channel has been changed to **${newLog}**`,
             16776960,
-            message
+            message,
+            client
           );
         }
         break;
@@ -101,7 +106,8 @@ exports.run = (client, message, args) => {
           'Server Name',
           `Server Name has been changed to **${newServerName}**`,
           16776960,
-          message
+          message,
+          client
         );
         break;
       case 'debug':
@@ -164,7 +170,8 @@ exports.run = (client, message, args) => {
             'Join Channel Update',
             `Join channel has been changed to **${chJoin}**`,
             16776960,
-            message
+            message,
+            client
           );
         }
         break;
@@ -187,7 +194,8 @@ exports.run = (client, message, args) => {
           'Default Game Update',
           `Default Game has been changed to **${newGame}**`,
           16776960,
-          message
+          message,
+          client
         );
         break;
       case 'joinmessage':
@@ -198,7 +206,8 @@ exports.run = (client, message, args) => {
           'Join Message Update',
           `Join message changed to \`${newJoin}\``,
           16776960,
-          message
+          message,
+          client
         );
         break;
       case 'supportchannel':
@@ -215,7 +224,8 @@ exports.run = (client, message, args) => {
             'Support Channel Update',
             `The support channel was changed to <#${newID}>.`,
             16776960,
-            message
+            message,
+            client
           );
         }
         break;
@@ -224,7 +234,8 @@ exports.run = (client, message, args) => {
         if (nickID.includes('#')) {
           return error(
             'Just write the numerical ID. (Do not mention the channel).',
-            message
+            message,
+            client
           );
         } else {
           ConfigService.setConfigProperty('nickChannelid', nickID);
@@ -233,7 +244,8 @@ exports.run = (client, message, args) => {
             'Nickname Channel Update',
             `The nickname channel was changed to <#${nickID}>.`,
             16776960,
-            message
+            message,
+            client
           );
         }
         break;
@@ -245,47 +257,67 @@ exports.run = (client, message, args) => {
           'Leave Message Update',
           `Leave message changed to \`${newLeave}\``,
           16776960,
-          message
+          message,
+          client
         );
         break;
       case 'urls':
         if (args[1] == 'add') {
-          message.channel.send(`Adding \`${args[2]}\` to the list of URLS...`)
-          return ConfigService.setConfigProperty("urls", (ConfigService.config.urls || []).concat(args[2]))
+          message.channel.send(`Adding \`${args[2]}\` to the list of URLS...`);
+          return ConfigService.setConfigProperty(
+            'urls',
+            (ConfigService.config.urls || []).concat(args[2])
+          );
         } else if (args[1] === 'del') {
           const urlIndex = ConfigService.config.urls.indexOf(args[2]);
 
           if (urlIndex < 0) {
-            return error("URL not found");
+            return error('URL not found');
           }
 
           ConfigService.config.urls.splice(urlIndex, 1);
-          ConfigService.setConfigProperty("urls", ConfigService.config.urls);
+          ConfigService.setConfigProperty('urls', ConfigService.config.urls);
           return message.channel.send(`Removed ${args[2]} from the urls list`);
         }
 
         if (args[1] !== 'add' && args[1] !== 'del') {
-          return message.channel.send(`${ConfigService.config.prefix}set urls [add/del] [url]`, { code: 'asciidoc' })
+          return message.channel.send(
+            `${ConfigService.config.prefix}set urls [add/del] [url]`,
+            { code: 'asciidoc' }
+          );
         }
         break;
       case 'supporttags':
         if (args[1] == 'add') {
-          message.channel.send(`Adding \`${args[2]}\` to the list of support tags...`)
-          return ConfigService.setConfigProperty("supportTags", (ConfigService.config.supportTags || []).concat(args[2]))
+          message.channel.send(
+            `Adding \`${args[2]}\` to the list of support tags...`
+          );
+          return ConfigService.setConfigProperty(
+            'supportTags',
+            (ConfigService.config.supportTags || []).concat(args[2])
+          );
         } else if (args[1] === 'del') {
           const tagIndex = ConfigService.config.supportTags.indexOf(args[2]);
 
           if (tagIndex < 0) {
-            return error("Tag not found");
+            return error('Tag not found');
           }
 
           ConfigService.config.supportTags.splice(tagIndex, 1);
-          ConfigService.setConfigProperty("supportTags", ConfigService.config.supportTags);
-          return message.channel.send(`Removed ${args[2]} from the support tags list`);
+          ConfigService.setConfigProperty(
+            'supportTags',
+            ConfigService.config.supportTags
+          );
+          return message.channel.send(
+            `Removed ${args[2]} from the support tags list`
+          );
         }
 
         if (args[1] !== 'add' && args[1] !== 'del') {
-          return message.channel.send(`${ConfigService.config.prefix}set supporttags [add/del] [tag]`, { code: 'asciidoc' })
+          return message.channel.send(
+            `${ConfigService.config.prefix}set supporttags [add/del] [tag]`,
+            { code: 'asciidoc' }
+          );
         }
         break;
       case 'twitchmention':
@@ -308,85 +340,116 @@ exports.run = (client, message, args) => {
         break;
       case 'streamers':
         if (args[1] === 'add') {
-          message.channel.send(`Adding \`${args[2]}\` to the list of streamers...`)
-          return ConfigService.setConfigProperty("streamers", (ConfigService.config.streamers || []).concat(args[2]))
+          message.channel.send(
+            `Adding \`${args[2]}\` to the list of streamers...`
+          );
+          return ConfigService.setConfigProperty(
+            'streamers',
+            (ConfigService.config.streamers || []).concat(args[2])
+          );
         } else if (args[1] === 'del') {
           const streamerIndex = ConfigService.config.streamers.indexOf(args[2]);
 
           if (streamerIndex < 0) {
-            return error("Streamer not found");
+            return error('Streamer not found');
           }
 
           ConfigService.config.streamers.splice(streamerIndex, 1);
-          ConfigService.setConfigProperty("streamers", ConfigService.config.streamers);
-          return message.channel.send(`Removed ${args[2]} from the streamer list`);
+          ConfigService.setConfigProperty(
+            'streamers',
+            ConfigService.config.streamers
+          );
+          return message.channel.send(
+            `Removed ${args[2]} from the streamer list`
+          );
         }
 
         if (args[1] !== 'add' && args[1] !== 'del') {
-          return message.channel.send(`${ConfigService.config.prefix}set streamers [add/del] [twitch username]`, { code: 'asciidoc' })
+          return message.channel.send(
+            `${
+              ConfigService.config.prefix
+            }set streamers [add/del] [twitch username]`,
+            { code: 'asciidoc' }
+          );
         }
       case 'whitelist':
         if (args[1] == 'add') {
-          message.channel.send(`Adding \`${args[2]}\` to the email whitelist...`)
-          return ConfigService.setConfigProperty("whitelist", (ConfigService.config.whitelist || []).concat(args[2]))
+          message.channel.send(
+            `Adding \`${args[2]}\` to the email whitelist...`
+          );
+          return ConfigService.setConfigProperty(
+            'whitelist',
+            (ConfigService.config.whitelist || []).concat(args[2])
+          );
         } else if (args[1] === 'del') {
           const wlIndex = ConfigService.config.whitelist.indexOf(args[2]);
 
           if (wlIndex < 0) {
-            return error("Email not found");
+            return error('Email not found');
           }
 
           ConfigService.config.streamers.splice(wlIndex, 1);
-          ConfigService.setConfigProperty("whitelist", ConfigService.config.whitelist);
+          ConfigService.setConfigProperty(
+            'whitelist',
+            ConfigService.config.whitelist
+          );
           return message.channel.send(`Removed ${args[2]} from the whitelist`);
         }
 
         if (args[1] !== 'add' && args[1] !== 'del') {
-          return message.channel.send(`${ConfigService.config.prefix}set whitelist [add/del] [email]`, { code: 'asciidoc' })
+          return message.channel.send(
+            `${ConfigService.config.prefix}set whitelist [add/del] [email]`,
+            { code: 'asciidoc' }
+          );
         }
         break;
       default:
         //usage
         message.channel.send(
           `['Bot_Settings']\n\n"You can edit these values with '${
-          ConfigService.config.prefix
+            ConfigService.config.prefix
           }set [option] [new value]'\nOptions are the names in gold with with no spaces and no caps!\nEx: ?set logchannel logger"` +
-          `\n\n\n'General'\nPrefix: "${
-          ConfigService.config.prefix
-          }"\nDebug: "${ConfigService.config.debug}"\n'Channels'\nLog Channel: "#${ConfigService.config.log}"\n\Poll Channel: "#${
-          ConfigService.config.pollchannel
-          }"\nJoin Channel: "#${
-          ConfigService.config.joinCh
-          }"\nTwitch Channel: "#${
-          ConfigService.config.twitchChannel}"` +
-          `\nAccept Message: "${ConfigService.config.acceptMessage}"\nIP: "${
-          ConfigService.config.mcIP
-          }"\nPort: "${
-          ConfigService.config.mcPort
-          } (Leave empty if none)"\nWebsite: "${
-          ConfigService.config.website
-          }"\nSupport Channel "${
-          ConfigService.config.supportChannelid
-          }"\nSupport Tags: "${
-          ConfigService.config.supportTags.join(', ')
-          }"\n'Text'\nJoin Message: "${
-          ConfigService.config.joinMsg
-          }"\nLeave Message: "${
-          ConfigService.config.leaveMsg
-          }"\nNickname Channel: "${
-          ConfigService.config.nickChannelid
-          }"\nGame: "${ConfigService.config.defaultGame}"` +
-          `\nThumbs Up URLs: "${
-          ConfigService.config.urls
-          }"\nStreamers: "${ConfigService.config.streamers.join(', ')}"\n'MC_Server'\nServer Name: "${
-          ConfigService.config.serverName
-          }"\n'Roles'\nMod Role: "${
-          ConfigService.config.modrolename
-          }"\nAdmin Role: "${
-          ConfigService.config.adminrolename
-          }"\nMember Role: "${
-          ConfigService.config.memberrole
-          }"\nTwitch Mention: "${ConfigService.config.mentionNotify}"`,
+            `\n\n\n'General'\nPrefix: "${
+              ConfigService.config.prefix
+            }"\nDebug: "${
+              ConfigService.config.debug
+            }"\n'Channels'\nLog Channel: "#${
+              ConfigService.config.log
+            }"\n\Poll Channel: "#${
+              ConfigService.config.pollchannel
+            }"\nJoin Channel: "#${
+              ConfigService.config.joinCh
+            }"\nTwitch Channel: "#${ConfigService.config.twitchChannel}"` +
+            `\nAccept Message: "${ConfigService.config.acceptMessage}"\nIP: "${
+              ConfigService.config.mcIP
+            }"\nPort: "${
+              ConfigService.config.mcPort
+            } (Leave empty if none)"\nWebsite: "${
+              ConfigService.config.website
+            }"\nSupport Channel "${
+              ConfigService.config.supportChannelid
+            }"\nSupport Tags: "${ConfigService.config.supportTags.join(
+              ', '
+            )}"\n'Text'\nJoin Message: "${
+              ConfigService.config.joinMsg
+            }"\nLeave Message: "${
+              ConfigService.config.leaveMsg
+            }"\nNickname Channel: "${
+              ConfigService.config.nickChannelid
+            }"\nGame: "${ConfigService.config.defaultGame}"` +
+            `\nThumbs Up URLs: "${
+              ConfigService.config.urls
+            }"\nStreamers: "${ConfigService.config.streamers.join(
+              ', '
+            )}"\n'MC_Server'\nServer Name: "${
+              ConfigService.config.serverName
+            }"\n'Roles'\nMod Role: "${
+              ConfigService.config.modrolename
+            }"\nAdmin Role: "${
+              ConfigService.config.adminrolename
+            }"\nMember Role: "${
+              ConfigService.config.memberrole
+            }"\nTwitch Mention: "${ConfigService.config.mentionNotify}"`,
           { code: 'ml' }
         );
     }

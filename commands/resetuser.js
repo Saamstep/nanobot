@@ -13,6 +13,6 @@ exports.run = (client, message, args) => {
   if (isAdmin(message.author, message)) {
     member.setNickname('');
     member.removeRole(addRole);
-    log('User Reset', `${member} was reset`, 2942691, message);
+    log('User Reset', `${member} was reset`, 2942691, message, client);
   }
 };

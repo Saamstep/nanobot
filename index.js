@@ -2,14 +2,19 @@ const Discord = require('discord.js');
 const client = new Discord.Client({ autoReconnect: true });
 const ConfigService = require('./config.js');
 const fs = require('fs');
-const log = require('./modules/consoleMod.js');
-const logger = require('./modules/logMod.js');
 const fetch = require('node-fetch');
-const isAdmin = require('./modules/isAdmin.js');
+
+//modules init.
+client.isAdmin = require('./modules/isAdmin.js');
+client.isMod = require('./modules/isMod.js');
+client.isOwner = require('./modules/isOwner.js');
+client.error = require('./modules/errorMod.js');
+client.console = require('./modules/consoleMod.js');
+client.log = require('./modules/logMod.js');
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
-  if (err) return log(err);
+  if (err) return client.console(err);
   files.forEach(file => {
     if (file.startsWith('.')) {
       return;
@@ -29,7 +34,9 @@ async function twitch(message) {
   ConfigService.config.streamers.forEach(async element => {
     // Makes request
     try {
-      log('Twitch | Getting streamer status: ' + element.magenta.dim);
+      client.console(
+        'Twitch | Getting streamer status: ' + element.magenta.dim
+      );
       const request = await fetch(
         `https://api.twitch.tv/kraken/streams?channel=${element}`,
         {
@@ -42,7 +49,9 @@ async function twitch(message) {
       );
       const body = await request.json();
       if (body._total == 0) {
-        return log('Twitch | Found ' + element.magenta.dim + ' is not live');
+        return client.console(
+          'Twitch | Found ' + element.magenta.dim + ' is not live'
+        );
       }
       if (!compare.has(element)) {
         // Message formatter for the notificiations
@@ -91,7 +100,7 @@ async function twitch(message) {
               channel.send(config.mentionNotify, {
                 embed
               });
-              log(
+              client.console(
                 'Twitch | Found ' +
                   element.magenta.dim +
                   ' is live! Sending the announcement...'
@@ -104,56 +113,11 @@ async function twitch(message) {
         return;
       }
     } catch (e) {
-      log(e);
+      client.console(e);
       return;
     }
   });
 }
-
-// // enmap settings
-// const Enmap = require('enmap');
-// client.settings = new Enmap({
-//   name: 'settings',
-//   fetchAll: false,
-//   autoFetch: true,
-//   cloneLevel: 'deep'
-// });
-
-// const settings = {
-//   debug: false,
-//   prefix: '?',
-//   roles: {
-//     mod: '_Mod',
-//     admin: '_Admin',
-//     member: '_Member',
-//     interview: '',
-//     iam: ''
-//   },
-//   channel: {
-//     log: 'logger',
-//     qotd: '',
-//     join: '',
-//     support: '',
-//     iam: ''
-//   },
-//   mc: {
-//     serverName: '',
-//     acceptMessage: 'You were accepted! Congratulations!',
-//     denyMessage: '',
-//     website: '',
-//     ip: '',
-//     port: ''
-//   },
-//   msg: {
-//     join: '',
-//     leave: ''
-//   },
-//   reactPrompts: ['youtu.be'],
-//   supportTags: ['[Addition]', '[Request]', '[Removal]'],
-//   streamers: ['firstupdatesnow', 'emongg', 'nullpointer128']
-// };
-
-// end bot configuration
 
 client.login(ConfigService.config.token);
 
@@ -190,12 +154,12 @@ async function topic() {
               body.players.now
             }/${body.players.max} online`
           );
-          log('MC --> Discord | Set topic!');
+          client.console('MC --> Discord | Set topic!');
         }
       });
     }
   } catch (e) {
-    log(e);
+    client.console(e);
   }
 }
 
@@ -204,7 +168,7 @@ client.on('ready', ready => {
   try {
     setInterval(twitch, 180000);
   } catch (e) {
-    log(e);
+    client.console(e);
   }
 
   try {
@@ -212,7 +176,7 @@ client.on('ready', ready => {
       setInterval(topic, 180000);
     }
   } catch (e) {
-    log(e);
+    client.console(e);
   }
 });
 
@@ -272,12 +236,14 @@ if (ConfigService.config.discordToMC == true) {
     const host = ConfigService.config.mcwebhost;
 
     server.listen(port, host);
-    log(`MC --> Discord | Listening at http://${host}:${port}`.green);
+    client.console(
+      `MC --> Discord | Listening at http://${host}:${port}`.green
+    );
   } catch (error) {
-    log(`MC --> Discord | Disabled! ${error}`.green);
+    client.console(`MC --> Discord | Disabled! ${error}`.green);
   }
 } else {
-  log(`MC --> Discord | Disabled!`.green);
+  client.console(`MC --> Discord | Disabled!`.green);
 }
 
 // end of mc to discord
@@ -292,20 +258,20 @@ var conn = new Rcon(
 );
 
 conn.on('auth', function() {
-  log('RCON | Authed!'.green);
+  client.console('RCON | Authed!'.green);
 });
 conn.on('end', function() {
-  log('RCON | Socket closed!'.green);
+  client.console('RCON | Socket closed!'.green);
 });
 
 if (!ConfigService.config.rconPort == '') {
   conn.connect();
-  log(
+  client.console(
     'RCON | Connecting to server @ ' +
       JSON.stringify(conn.host + ':' + conn.port).green
   );
 } else {
-  log('RCON | Disabled!'.green);
+  client.console('RCON | Disabled!'.green);
 }
 
 client.on('message', message => {

@@ -25,7 +25,8 @@ exports.run = (client, message, args) => {
       'User Reported',
       `**${reportedUser}** was reported for **${reportTypeConverted}**`,
       0x8b0000,
-      message
+      message,
+      client
     );
   };
 
