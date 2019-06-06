@@ -283,6 +283,69 @@ client.on('message', message => {
     }
   });
 
+  //Verification System (Email Code)
+  //check if veriifcation channel is used
+  if (message.channel.id == client.ConfigService.config.channel.nickID) {
+    var nodemailer = require('nodemailer');
+    var transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: '<hidden>',
+        pass: '<hidden>'
+      }
+    });
+
+    //generates our random string to verify users
+    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+    var string_length = 8;
+    var randomstring = '';
+    for (var i = 0; i < string_length; i++) {
+      var rnum = Math.floor(Math.random() * chars.length);
+      randomstring += chars.substring(rnum, rnum + 1);
+    }
+    //message and info sent in email
+    var mailOptions = {
+      from: 'DiscordBot',
+      to: `${message.content}`,
+      subject: 'Discord Server Verification',
+      text: `Here is your unique verification code, paste this into the Discord channel to gain access. ${randomstring}`
+    };
+    // enmap and data storage object
+    const Enmap = require('enmap');
+    const veriEnmap = new Enmap({
+      name: 'verification',
+      autoFetch: true,
+      fetchAll: false
+    });
+
+    //default structure schema (do not write this directly or vars wont work!)
+    const data = {
+      discord: '',
+      email: '',
+      code: ''
+    };
+    // checks if db is ready then writes to it data from new user
+    veriEnmap.defer.then(() => {
+      veriEnmap.set(`${message.author.id}`, {
+        discord: `${message.author.tag}`,
+        email: `${message.content}`,
+        code: `${randomstring}`
+      });
+    });
+    // finally sends the email to the user with the code so they know what it is!
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        client.console(veriEnmap.get(`${message.author.id}`)); //delete the secondary duplicate data lol (ran test twice)
+        client.console(veriEnmap.fetchEverything()); //find out how to parse object and see if it works
+        console.log('Email sent: ' + info.response);
+      }
+    });
+
+    // *** MUST ADD >> email dupe usage check. && warriorlife only check && DM to remind users to verify on join
+  }
+
   //MC Bridge
   if (
     message.channel.id === `${client.ConfigService.config.channel.mcBridge}`
@@ -403,7 +466,7 @@ client.on('message', message => {
   // Regular command file manager
   try {
     let commandFile = require(`./commands/${command}.js`);
-    commandFile.run(client, message, args, conn);
+    commandFile.run(client, message, args);
     message.channel.stopTyping(true);
   } catch (err) {
     if (config.debug === true) {
