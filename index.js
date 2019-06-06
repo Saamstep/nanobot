@@ -11,6 +11,7 @@ client.isOwner = require('./modules/isOwner.js');
 client.error = require('./modules/errorMod.js');
 client.console = require('./modules/consoleMod.js');
 client.log = require('./modules/logMod.js');
+client.ConfigService = require('./config.js');
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
@@ -42,7 +43,7 @@ async function twitch(message) {
         {
           headers: {
             'User-Agent': 'D.js-Bot-Dev',
-            'Client-ID': `${ConfigService.config.twitchID}`,
+            'Client-ID': `${client.ConfigService.config.apis.twitch}`,
             'content-type': 'application/json'
           }
         }
@@ -126,9 +127,9 @@ async function topic() {
   const fetch = require('node-fetch');
   try {
     const response = await fetch(
-      `http://mcapi.us/server/status?ip=${ConfigService.config.mcIP}&port=${
-        ConfigService.config.mcPort
-      }`
+      `http://mcapi.us/server/status?ip=${
+        client.ConfigService.config.minecraft.IP
+      }&port=${client.ConfigService.config.minecraft.port}`
     );
 
     const body = await response.json();
@@ -136,7 +137,8 @@ async function topic() {
     if (body.online === false) {
       client.guilds.map(guild => {
         let channel = guild.channels.find(
-          channel => channel.name === `mc-channel`
+          channel =>
+            channel.name === `${client.ConfigService.config.channel.mcBridge}`
         );
         if (channel) {
           channel.setTopic('Server Offline');
@@ -172,7 +174,7 @@ client.on('ready', ready => {
   }
 
   try {
-    if (ConfigService.config.discordToMC == true) {
+    if (client.ConfigService.config.minecraft.discordToMC == true) {
       setInterval(topic, 180000);
     }
   } catch (e) {
@@ -198,7 +200,7 @@ module.exports = function cooldown(message, code) {
 };
 
 // mc to discord
-if (ConfigService.config.discordToMC == true) {
+if (client.ConfigService.config.minecraft.discordToMC == true) {
   try {
     const http = require('http');
 
@@ -232,8 +234,8 @@ if (ConfigService.config.discordToMC == true) {
       }
     });
 
-    let port = Number(ConfigService.config.mcwebPort);
-    const host = ConfigService.config.mcwebhost;
+    let port = Number(client.ConfigService.config.minecraft.webPort);
+    const host = client.ConfigService.config.minecraft.webhost;
 
     server.listen(port, host);
     client.console(
@@ -250,11 +252,11 @@ if (ConfigService.config.discordToMC == true) {
 
 //mc rcon
 var Rcon = require('rcon');
-var updatedport = Number(ConfigService.config.rconPort);
+var updatedport = Number(client.ConfigService.config.minecraft.rcon.port);
 var conn = new Rcon(
-  `${ConfigService.config.mcIP}`,
+  `${client.ConfigService.config.minecraft.IP}`,
   updatedport,
-  `${ConfigService.config.rconPass}`
+  `${client.ConfigService.config.minecraft.rcon.pass}`
 );
 
 conn.on('auth', function() {
@@ -281,13 +283,41 @@ client.on('message', message => {
     }
   });
 
-  if (message.channel.id === `${ConfigService.config.mcChannel}`) {
-    // YT video like system
+  //MC Bridge
+  if (
+    message.channel.id === `${client.ConfigService.config.channel.mcBridge}`
+  ) {
     if (message.author.bot) return;
     let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${
       message.content
     }","color":"aqua"}]`;
     conn.send(msg);
+  }
+
+  // ModMail System
+  if (message.channel.type == 'dm' && !message.author.bot) {
+    const embed = {
+      description: `${message.content}`,
+      color: 11929975,
+      timestamp: Date.now(),
+      footer: {
+        icon_url: client.user.avatarURL,
+        text: client.ConfigService.config.minecraft.serverName
+      },
+      thumbnail: {
+        url: 'http://icon-park.com/imagefiles/paper_plane_navy_blue.png'
+      },
+      author: {
+        name: `ModMail: ${message.author.tag}`,
+        icon_url: `${message.author.avatarURL}`
+      }
+    };
+    // >> For now these values need to be modified manually :(
+    let guild = client.guilds.get('519603949431554048');
+    if (guild) {
+      let channel = guild.channels.get(`519604414151917569`);
+      channel.send({ embed });
+    }
   }
 
   // thumbs up url system
@@ -299,7 +329,7 @@ client.on('message', message => {
   // Nicknamer
 
   try {
-    if (message.channel.id === ConfigService.config.nickChannelid) {
+    if (message.channel.id === client.ConfigService.config.channel.nickID) {
       if (message.content !== `${ConfigService.config.prefix}iam`) {
         message.delete(0);
       }
@@ -309,9 +339,9 @@ client.on('message', message => {
   }
 
   // mc ip thumbs up system
-  if (ConfigService.config.mcIP !== '') {
+  if (client.ConfigService.config.mcIP !== '') {
     if (
-      message.content.includes(`${ConfigService.config.mcIP}`) &&
+      message.content.includes(`${client.ConfigService.config.minecraft.IP}`) &&
       !message.author.bot
     ) {
       message.react(`✅`);
@@ -326,10 +356,10 @@ client.on('message', message => {
   //support channel code
 
   if (
-    message.channel.id === `${ConfigService.config.supportChannelid}` &&
+    message.channel.id === `${client.ConfigService.config.channel.supportID}` &&
     !message.author.bot
   ) {
-    const tag = ConfigService.config.supportTags;
+    const tag = client.ConfigService.config.supportTags;
     if (tag.some(word => message.content.includes(word))) {
       pMreact();
     } else if (isAdmin(message.author, message, false)) {
