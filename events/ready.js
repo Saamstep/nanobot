@@ -6,7 +6,6 @@ const ccFolder = './commands/cc/';
 const CommandList = require('../commandList.js');
 const fs = require('fs').promises;
 
-
 exports.run = async function(client, member, message) {
   const guildNames = client.guilds.map(g => g.name).join(', ');
   client.user
@@ -26,12 +25,19 @@ exports.run = async function(client, member, message) {
         return;
       } else {
         let cmdfiles = require(`../commands/${file}`);
-        CommandList.addCommand(file.toString().replace('.js', ''), false, cmdfiles.description);
+        CommandList.addCommand(
+          file.toString().replace('.js', ''),
+          false,
+          cmdfiles.description
+        );
       }
     });
-  } catch(e) {
+  } catch (e) {
     console.log(e);
-    console.error('No commands were found to load! If you see this error you likely cloned the bot incorrectly and left some files behind!'.red.bold);
+    console.error(
+      'No commands were found to load! If you see this error you likely cloned the bot incorrectly and left some files behind!'
+        .red.bold
+    );
     process.exit(1);
   }
 
@@ -43,13 +49,19 @@ exports.run = async function(client, member, message) {
         return;
       } else {
         let cmdfiles = require(`../commands/cc/${file}`);
-        CommandList.addCommand(file.toString().replace('.js', ''), true, cmdfiles.description);          
+        CommandList.addCommand(
+          file.toString().replace('.js', ''),
+          true,
+          cmdfiles.description
+        );
       }
     });
-  } catch(e) {
-    console.error('No custom commands file directory exists, please create a folder in the commands directory called \'cc\''.red);
+  } catch (e) {
+    console.error(
+      "No custom commands file directory exists, please create a folder in the commands directory called 'cc'"
+        .red
+    );
   }
-
 
   // Discord status URL
   var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json/';
@@ -71,16 +83,27 @@ exports.run = async function(client, member, message) {
   } else {
     console.log(
       'There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/ \n'
-      .red
+        .red
     );
   }
   // End discord status
- const cmds = await fs.readdir(commandsFolder);
+  const cmds = await fs.readdir(commandsFolder);
   const ccmds = await fs.readdir(ccFolder);
- console.log("Loading ".green + cmds.length + " commands".green + " and ".green + ccmds.length + " custom commands".green);
   console.log(
-    `${ConfigService.config.serverName}`.underline.magenta +
-      ' online!\n'.magenta.reset + "Connected to: ".cyan + guildNames.white + " guilds".cyan);
+    'Loading '.green +
+      cmds.length +
+      ' commands'.green +
+      ' and '.green +
+      ccmds.length +
+      ' custom commands'.green
+  );
+  console.log(
+    `${client.user.username}`.underline.magenta +
+      ' online!\n'.magenta.reset +
+      'Connected to: '.cyan +
+      guildNames.white +
+      ' guilds'.cyan
+  );
   if (ConfigService.config.debug === 'on') {
     console.log('\n');
   }

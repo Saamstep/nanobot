@@ -3,6 +3,7 @@ const client = new Discord.Client({ autoReconnect: true });
 const ConfigService = require('./config.js');
 const fs = require('fs');
 const fetch = require('node-fetch');
+const Enmap = require('enmap');
 
 //modules init.
 client.isAdmin = require('./modules/isAdmin.js');
@@ -12,6 +13,7 @@ client.error = require('./modules/errorMod.js');
 client.console = require('./modules/consoleMod.js');
 client.log = require('./modules/logMod.js');
 client.ConfigService = require('./config.js');
+client.login(ConfigService.config.token);
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
@@ -95,10 +97,10 @@ async function twitch(message) {
           if (guild.available) {
             let channel = guild.channels.find(
               channel =>
-                channel.name === `${ConfigService.config.twitchChannel}`
+                channel.name === `${client.ConfigService.config.channel.twitch}`
             );
             if (channel) {
-              channel.send(config.mentionNotify, {
+              channel.send(client.ConfigService.config.twitchMentionNotify, {
                 embed
               });
               client.console(
@@ -120,11 +122,76 @@ async function twitch(message) {
   });
 }
 
-client.login(ConfigService.config.token);
+const owl = new Enmap({
+  name: 'OWL',
+  autoFetch: true,
+  fetchAll: false
+});
 
+//OWL News
+async function owlNews() {
+  client.console('Checking for OWL news...'.yellow);
+
+  //we use try incase the api doesn't exist and the bot crashes :P
+  try {
+    owl.set('latest', '');
+    //fetch news from official API
+    const response = await fetch('https://api.overwatchleague.com/news');
+    const body = await response.json();
+    //check to see if we already announced the lastest article
+    owl.defer.then(() => {
+      if (owl.get('latest') === body.blogs[0].blogId) {
+        //if announced, skip it (:
+        return client.console(
+          `Already announced ${body.blogs[0].blogId}`.yellow
+        );
+      } else {
+        owl.set('latest', body.blogs[0].blogId);
+        //it wasn't announced, so we annoucne it with this code
+        // Finds channel and sends msg to channel
+        client.guilds.map(guild => {
+          if (guild.available) {
+            let channel = guild.channels.find(
+              channel =>
+                channel.name === `${client.ConfigService.config.channel.owl}`
+            );
+            if (channel) {
+              const embed = {
+                description: `**${body.blogs[0].title}**\n${
+                  body.blogs[0].summary
+                }\n\n[Read more](${body.blogs[0].defaultUrl})`,
+                url: `${body.blogs[0].defaultUrl}`,
+                color: 16752385,
+                timestamp: body.blogs[0].publish,
+                footer: {
+                  text: `Author: ${body.blogs[0].author}`
+                },
+                image: {
+                  url: `${body.blogs[0].thumbnail.url.replace(
+                    '//',
+                    'https://'
+                  )}`
+                },
+                author: {
+                  name: 'OverwatchLeague News',
+                  url: `${body.blogs[0].defaultUrl}`,
+                  icon_url:
+                    'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+                }
+              };
+              channel.send({ embed });
+            }
+          }
+        });
+      }
+    });
+  } catch (e) {
+    client.console(e);
+  }
+}
+
+// mc channel topic:
 async function topic() {
-  // mc channel topic:
-  const fetch = require('node-fetch');
   try {
     const response = await fetch(
       `http://mcapi.us/server/status?ip=${
@@ -180,6 +247,8 @@ client.on('ready', ready => {
   } catch (e) {
     client.console(e);
   }
+
+  setInterval(owlNews, 1000);
 });
 
 //cooldown
@@ -284,14 +353,23 @@ client.on('message', message => {
   });
 
   //Verification System (Email Code)
+
+  // enmap and data storage object
+
+  const veriEnmap = new Enmap({
+    name: 'verification',
+    autoFetch: true,
+    fetchAll: false
+  });
+
   //check if veriifcation channel is used
+
   if (message.channel.id == client.ConfigService.config.channel.nickID) {
     var nodemailer = require('nodemailer');
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: '<hidden>',
-        pass: '<hidden>'
+        //hidden
       }
     });
 
@@ -310,13 +388,6 @@ client.on('message', message => {
       subject: 'Discord Server Verification',
       text: `Here is your unique verification code, paste this into the Discord channel to gain access. ${randomstring}`
     };
-    // enmap and data storage object
-    const Enmap = require('enmap');
-    const veriEnmap = new Enmap({
-      name: 'verification',
-      autoFetch: true,
-      fetchAll: false
-    });
 
     //default structure schema (do not write this directly or vars wont work!)
     const data = {
@@ -327,7 +398,7 @@ client.on('message', message => {
     // checks if db is ready then writes to it data from new user
     veriEnmap.defer.then(() => {
       veriEnmap.set(`${message.author.id}`, {
-        discord: `${message.author.tag}`,
+        name: `${message.author.tag}`, //figure out how this is achieved
         email: `${message.content}`,
         code: `${randomstring}`
       });
@@ -337,13 +408,42 @@ client.on('message', message => {
       if (error) {
         console.log(error);
       } else {
-        client.console(veriEnmap.get(`${message.author.id}`)); //delete the secondary duplicate data lol (ran test twice)
-        client.console(veriEnmap.fetchEverything()); //find out how to parse object and see if it works
+        client.console(JSON.stringify(veriEnmap.get(`${message.author.id}`))); //delete the secondary duplicate data lol (ran test twice)
         console.log('Email sent: ' + info.response);
       }
     });
 
     // *** MUST ADD >> email dupe usage check. && warriorlife only check && DM to remind users to verify on join
+  }
+  if (message.content.startsWith('!data')) {
+    veriEnmap.defer.then(() => {
+      message.channel.send(
+        '```json\n' +
+          JSON.stringify(veriEnmap.get(`${message.author.id}`), null, 4) +
+          '```'
+      );
+    });
+  }
+
+  if (message.content.startsWith('!cleardata')) {
+    veriEnmap.defer.then(() => {
+      veriEnmap.deleteAll();
+      message.channel.send('```json\n' + '{ "cleared": "true", }' + '```');
+    });
+  }
+
+  if (message.content.startsWith('!alldata')) {
+    veriEnmap.defer.then(() => {
+      message.channel.send(JSON.stringify(veriEnmap.getEverything()));
+    });
+  }
+
+  if (message.content.startsWith('!emailchecker')) {
+    veriEnmap.defer.then(() => {
+      if (veriEnmap.has(`${message.author.id}`, `email`)) {
+        message.channel.send(`${message.author.id} found in Database.`);
+      }
+    });
   }
 
   //MC Bridge
@@ -355,32 +455,6 @@ client.on('message', message => {
       message.content
     }","color":"aqua"}]`;
     conn.send(msg);
-  }
-
-  // ModMail System
-  if (message.channel.type == 'dm' && !message.author.bot) {
-    const embed = {
-      description: `${message.content}`,
-      color: 11929975,
-      timestamp: Date.now(),
-      footer: {
-        icon_url: client.user.avatarURL,
-        text: client.ConfigService.config.minecraft.serverName
-      },
-      thumbnail: {
-        url: 'http://icon-park.com/imagefiles/paper_plane_navy_blue.png'
-      },
-      author: {
-        name: `ModMail: ${message.author.tag}`,
-        icon_url: `${message.author.avatarURL}`
-      }
-    };
-    // >> For now these values need to be modified manually :(
-    let guild = client.guilds.get('519603949431554048');
-    if (guild) {
-      let channel = guild.channels.get(`519604414151917569`);
-      channel.send({ embed });
-    }
   }
 
   // thumbs up url system
