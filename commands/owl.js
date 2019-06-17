@@ -146,10 +146,121 @@ exports.run = async (client, message, args) => {
       }
       break;
     case 'team':
-      message.reply('WIP');
+      try {
+        const response = await fetch('https://api.overwatchleague.com/teams');
+        const body = await response.json();
+        for (j in body.competitors) {
+          if (body.competitors[j].competitor.name.includes(args[1])) {
+            let players = '';
+            for (i in body.competitors[j].competitor.players) {
+              players += `\:flag_${body.competitors[j].competitor.players[
+                i
+              ].player.nationality.toLowerCase()}: ${
+                body.competitors[j].competitor.players[i].player.name
+              }\n`;
+            }
+            let media = '';
+            for (k in body.competitors[j].competitor.accounts) {
+              media += `[${
+                body.competitors[j].competitor.accounts[k].accountType
+              }](${body.competitors[j].competitor.accounts[k].value})\n`;
+            }
+            const embed = {
+              url: 'https://discordapp.com',
+              color: parseInt(body.competitors[j].competitor.primaryColor, 16),
+              footer: {
+                text: 'OverwatchLeague Team Search'
+              },
+              thumbnail: {
+                url: `${body.competitors[j].competitor.logo}`
+              },
+              author: {
+                name: `${body.competitors[j].competitor.name}`,
+                icon_url: `https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png`
+              },
+              fields: [
+                {
+                  name: 'Home Location',
+                  value: `${body.competitors[j].competitor.homeLocation}`
+                },
+                {
+                  name: 'Players',
+                  value: `${players}`
+                },
+                {
+                  name: 'Social Media',
+                  value: `${media}`
+                }
+              ]
+            };
+            message.channel.send({ embed });
+          }
+        }
+      } catch (e) {
+        console.error(e);
+      }
       break;
     case 'player':
-      message.reply('WIP');
+      const response = await fetch('https://api.overwatchleague.com/players');
+      const body = await response.json();
+      function role(output) {
+        const emoji = client.emojis.find(emoji => emoji.name === `${output}`);
+        return emoji;
+      }
+      for (j in body.content) {
+        let media = '';
+        for (k in body.content[j].accounts) {
+          media += `[${body.content[j].accounts[k].accountType}](${
+            body.content[j].accounts[k].value
+          })\n`;
+        }
+
+        if (
+          body.content[j].name.includes(args[1]) ||
+          body.content[j].givenName.includes(args[1])
+        ) {
+          const embed = {
+            color: parseInt(body.content[j].teams[0].team.primaryColor, 16),
+            footer: {
+              text: 'OverwatchLeague Player Search'
+            },
+            thumbnail: {
+              url: `${body.content[j].headshot}`
+            },
+
+            author: {
+              name: `${body.content[j].name} #${body.content[
+                j
+              ].attributes.player_number.toString()}`,
+              icon_url: `${body.content[j].teams[0].team.logo}`
+            },
+            fields: [
+              {
+                name: 'Team',
+                value: `${body.content[j].teams[0].team.name}`,
+                inline: true
+              },
+              {
+                name: 'Nationality',
+                value: `:flag_${body.content[j].nationality.toLowerCase()}: ${
+                  body.content[j].attributes.hometown
+                }`,
+                inline: true
+              },
+              {
+                name: `Heroes ${role(body.content[j].attributes.role)}`,
+                value: `${body.content[j].attributes.heroes.join('\n')}`,
+                inline: true
+              },
+              {
+                name: 'Social Media',
+                value: `${media}`
+              }
+            ]
+          };
+          message.channel.send({ embed });
+        }
+      }
       break;
     default:
       message.channel.send(

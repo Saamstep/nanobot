@@ -310,7 +310,7 @@ client.on('ready', ready => {
     client.console(e);
   }
   setInterval(owlLiveMatch, 180000);
-  setInterval(owlNews, 1000);
+  setInterval(owlNews, 179999);
 });
 
 //cooldown
