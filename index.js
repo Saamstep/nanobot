@@ -128,25 +128,30 @@ const owl = new Enmap({
   fetchAll: false
 });
 
+//OWL Team Logos
+module.exports = function logos(output) {
+  const emoji = client.emojis.find(emoji => emoji.name === `${output}`);
+  return emoji;
+};
+
 //OWL News
 async function owlNews() {
-  client.console('Checking for OWL news...'.yellow);
+  client.console('OWL | Checking for OWL news...'.yellow);
 
   //we use try incase the api doesn't exist and the bot crashes :P
   try {
-    owl.set('latest', '');
     //fetch news from official API
     const response = await fetch('https://api.overwatchleague.com/news');
     const body = await response.json();
     //check to see if we already announced the lastest article
     owl.defer.then(() => {
-      if (owl.get('latest') === body.blogs[0].blogId) {
+      if (owl.get('news') === body.blogs[0].blogId) {
         //if announced, skip it (:
         return client.console(
           `Already announced ${body.blogs[0].blogId}`.yellow
         );
       } else {
-        owl.set('latest', body.blogs[0].blogId);
+        owl.set('news', body.blogs[0].blogId);
         //it wasn't announced, so we annoucne it with this code
         // Finds channel and sends msg to channel
         client.guilds.map(guild => {
@@ -175,6 +180,64 @@ async function owlNews() {
                 author: {
                   name: 'OverwatchLeague News',
                   url: `${body.blogs[0].defaultUrl}`,
+                  icon_url:
+                    'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+                }
+              };
+              channel.send({ embed });
+            }
+          }
+        });
+      }
+    });
+  } catch (e) {
+    client.console(e);
+  }
+}
+
+//OWL Live-Match
+async function owlLiveMatch() {
+  client.console('OWL | Checking for OWL live match...'.yellow);
+
+  //we use try incase the api doesn't exist and the bot crashes :P
+  try {
+    //fetch news from official API
+    const response = await fetch('https://api.overwatchleague.com/live-match');
+    const body = await response.json();
+    //check to see if we already announced the lastest article
+    owl.defer.then(() => {
+      if (owl.get('live') === body.data.liveMatch.id) {
+        //if announced, skip it (:
+        return client.console(
+          `Already announced ${body.data.liveMatch.id}`.yellow
+        );
+      } else {
+        owl.set('live', body.data.liveMatch.id);
+        //it wasn't announced, so we announce it with this code
+        // Finds channel and sends msg to channel
+        client.guilds.map(guild => {
+          if (guild.available) {
+            let channel = guild.channels.find(
+              channel =>
+                channel.name === `${client.ConfigService.config.channel.owl}`
+            );
+            if (channel) {
+              const embed = {
+                description: `${logos(
+                  body.data.liveMatch.competitors[0].abbreviatedName
+                )} **${body.data.liveMatch.competitors[0].name}** vs ${logos(
+                  body.data.liveMatch.competitors[1].abbreviatedName
+                )} **${body.data.liveMatch.competitors[1].name}**`,
+                url: `https://twitch.tv/overwatchleague`,
+                color: 16752385,
+                fields: [
+                  {
+                    name: 'Date & Time',
+                    value: `${new Date(body.data.liveMatch.startDate)}`
+                  }
+                ],
+                author: {
+                  name: 'OverwatchLeague Live',
                   icon_url:
                     'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
                 }
@@ -232,7 +295,6 @@ async function topic() {
   }
 }
 
-//twitch notify
 client.on('ready', ready => {
   try {
     setInterval(twitch, 180000);
@@ -247,7 +309,7 @@ client.on('ready', ready => {
   } catch (e) {
     client.console(e);
   }
-
+  setInterval(owlLiveMatch, 180000);
   setInterval(owlNews, 1000);
 });
 
