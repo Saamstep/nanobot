@@ -20,7 +20,7 @@ exports.run = async (client, message, args) => {
         const embed = {
           color: 16752385,
           author: {
-            name: 'OverwatchLeague Standings',
+            name: 'OverwatchLeague Ranking',
             icon_url:
               'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
           },
@@ -260,6 +260,35 @@ exports.run = async (client, message, args) => {
           };
           message.channel.send({ embed });
         }
+      }
+      break;
+    case 'standings':
+      try {
+        const res = await fetch('https://api.overwatchleague.com/standings');
+        const data = await res.json();
+        let standingsList = '';
+        for (j in data.stages[3].teams) {
+          standingsList += `\`${parseInt(j) + 1}.\` ${logos(
+            data.stages[3].teams[j].abbreviatedName
+          )} ${data.stages[3].teams[j].name}\n`;
+        }
+        const embed = {
+          color: 16752385,
+          author: {
+            name: 'OverwatchLeague Standings',
+            icon_url:
+              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+          },
+          footer: {
+            text: 'Stage 3 Standings'
+          },
+          description: `${standingsList}`,
+          timestamp: Date.now()
+        };
+
+        message.channel.send({ embed });
+      } catch (e) {
+        console.error(e);
       }
       break;
     default:
