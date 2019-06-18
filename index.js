@@ -129,10 +129,10 @@ const owl = new Enmap({
 });
 
 //OWL Team Logos
-module.exports = function logos(output) {
+function logos(output) {
   const emoji = client.emojis.find(emoji => emoji.name === `${output}`);
   return emoji;
-};
+}
 
 //OWL News
 async function owlNews() {
@@ -295,13 +295,89 @@ async function topic() {
   }
 }
 
+// enmap and data storage object
+
+const veriEnmap = new Enmap({
+  name: 'verification',
+  autoFetch: true,
+  fetchAll: false
+});
+
+//typeform lookup
+
+//detect if user is in guild.
+async function typeForm() {
+  try {
+    const response = await fetch(
+      'https://api.typeform.com/forms/IotT2f/responses',
+      {
+        headers: {
+          Authorization: `Bearer ${client.ConfigService.config.apis.typeform}`
+        }
+      }
+    ).catch(error => console.error(error));
+    const data = await response.json();
+    data.items.forEach(function(element) {
+      let guild = client.guilds.get('519603949431554048');
+      if (!element.answers) {
+      } else {
+        let user = client.users.find(
+          user =>
+            user.username + '#' + user.discriminator ==
+            `${element.answers[3].text}`
+        );
+        veriEnmap.defer.then(() => {
+          if (veriEnmap.has(user.id)) {
+            return console.log(
+              `${
+                user.username
+              } was attempted to be linked again. We ignored it since it already is linked.`
+            );
+          } else {
+            if (!element.answers[1].email.includes('@warriorlife.net')) {
+              return console.log(
+                'Non warriorlife email detected!' + element.answers[1].email
+              );
+            }
+            veriEnmap.set(`${user.id}`, {
+              name: `${element.answers[0].text}`,
+              email: `${element.answers[1].email}`
+            });
+            user.send(
+              `Your Discord account was used to link to **${
+                guild.name
+              }**. If you believe this was an error email us at vchsesports@gmail.com\nDiscord: ${
+                user.username
+              }\nEmail: ${element.answers[1].email}`
+            );
+            // let member = client.fetchUser(`${user.id}`);
+            guild.members
+              .get(user.id)
+              .setNickname(`${element.answers[0].text}`);
+            let addRole = guild.roles.find(
+              'name',
+              `${client.ConfigService.config.roles.iamRole}`
+            );
+            guild.members.get(user.id).addRole(addRole);
+          }
+          if (veriEnmap.has(user.id) && ' ') {
+            //give back roles if left
+          }
+        });
+      }
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 client.on('ready', ready => {
   try {
     setInterval(twitch, 180000);
   } catch (e) {
     client.console(e);
   }
-
+  typeForm();
   try {
     if (client.ConfigService.config.minecraft.discordToMC == true) {
       setInterval(topic, 180000);
@@ -408,78 +484,9 @@ if (!ConfigService.config.rconPort == '') {
 }
 
 client.on('message', message => {
-  client.on('typingStart', ready => {
-    if (client.user) {
-      message.channel.stopTyping(true);
-    }
-  });
-
-  //Verification System (Email Code)
-
-  // enmap and data storage object
-
-  const veriEnmap = new Enmap({
-    name: 'verification',
-    autoFetch: true,
-    fetchAll: false
-  });
-
-  //check if veriifcation channel is used
-
-  if (message.channel.id == client.ConfigService.config.channel.nickID) {
-    var nodemailer = require('nodemailer');
-    var transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        //hidden
-      }
-    });
-
-    //generates our random string to verify users
-    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
-    var string_length = 8;
-    var randomstring = '';
-    for (var i = 0; i < string_length; i++) {
-      var rnum = Math.floor(Math.random() * chars.length);
-      randomstring += chars.substring(rnum, rnum + 1);
-    }
-    //message and info sent in email
-    var mailOptions = {
-      from: 'DiscordBot',
-      to: `${message.content}`,
-      subject: 'Discord Server Verification',
-      text: `Here is your unique verification code, paste this into the Discord channel to gain access. ${randomstring}`
-    };
-
-    //default structure schema (do not write this directly or vars wont work!)
-    const data = {
-      discord: '',
-      email: '',
-      code: ''
-    };
-    // checks if db is ready then writes to it data from new user
-    veriEnmap.defer.then(() => {
-      veriEnmap.set(`${message.author.id}`, {
-        name: `${message.author.tag}`, //figure out how this is achieved
-        email: `${message.content}`,
-        code: `${randomstring}`
-      });
-    });
-    // finally sends the email to the user with the code so they know what it is!
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        client.console(JSON.stringify(veriEnmap.get(`${message.author.id}`))); //delete the secondary duplicate data lol (ran test twice)
-        console.log('Email sent: ' + info.response);
-      }
-    });
-
-    // *** MUST ADD >> email dupe usage check. && warriorlife only check && DM to remind users to verify on join
-  }
   if (message.content.startsWith('!data')) {
     veriEnmap.defer.then(() => {
-      message.channel.send(
+      message.author.send(
         '```json\n' +
           JSON.stringify(veriEnmap.get(`${message.author.id}`), null, 4) +
           '```'
@@ -496,17 +503,79 @@ client.on('message', message => {
 
   if (message.content.startsWith('!alldata')) {
     veriEnmap.defer.then(() => {
-      message.channel.send(JSON.stringify(veriEnmap.getEverything()));
+      message.channel.send(veriEnmap.fetchEverything());
     });
   }
 
   if (message.content.startsWith('!emailchecker')) {
     veriEnmap.defer.then(() => {
-      if (veriEnmap.has(`${message.author.id}`, `email`)) {
+      if (veriEnmap.has(`${message.author.id}`)) {
         message.channel.send(`${message.author.id} found in Database.`);
       }
     });
   }
+
+  //Verification System (Email Code)
+
+  //check if veriifcation channel is used
+  // if (message.channel.id == client.ConfigService.config.channel.nickID) {
+  //   veriEnmap.defer.then(() => {
+  //     if (!message.content.includes('@warriorlife.net'))
+  //       return message.author.send('Please use a valid VCHS student email.');
+  //     if (veriEnmap.get(`${message.author.id}`, 'email') === message.content)
+  //       return message.author.send(
+  //         'This email has already been used to be verified. If you believe this is an error please direct message an Administrator.'
+  //       );
+  //   });
+
+  // function sendAuthEmail() {
+  //   var nodemailer = require('nodemailer');
+  //   let testAccount = nodemailer.createTestAccount();
+  //   var transporter = nodemailer.createTransport({
+  //     service: 'gmail',
+  //     auth: {
+  //       user: '',
+  //       pass: ''
+  //     }
+  //   });
+
+  //   //generates our random string to verify users
+  //   var chars =
+  //     '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
+  //   var string_length = 8;
+  //   var randomstring = '';
+  //   for (var i = 0; i < string_length; i++) {
+  //     var rnum = Math.floor(Math.random() * chars.length);
+  //     randomstring += chars.substring(rnum, rnum + 1);
+  //   }
+  //   //message and info sent in email
+  //   var mailOptions = {
+  //     from: 'DiscordBot',
+  //     to: `${message.content}`,
+  //     subject: 'Discord Server Verification',
+  //     text: `Here is your unique verification code, paste this into the Discord channel to gain access. ${randomstring}`
+  //   };
+  //   // checks if db is ready then writes to it data from new user
+  //   veriEnmap.defer.then(() => {
+  //     veriEnmap.set(`${message.author.id}`, {
+  //       name: `${message.author.tag}`, //figure out how this is achieved
+  //       email: `${message.content}`,
+  //       code: `${randomstring}`
+  //     });
+  //   });
+  //   // finally sends the email to the user with the code so they know what it is!
+  //   transporter.sendMail(mailOptions, function(error, info) {
+  //     if (error) {
+  //       console.log(error);
+  //     } else {
+  //       client.console(JSON.stringify(veriEnmap.get(`${message.author.id}`)));
+  //       console.log('Email sent: ' + info.response);
+  //     }
+  //   });
+  // }
+
+  // ADD DM to remind users to verify on join
+  // }
 
   //MC Bridge
   if (
