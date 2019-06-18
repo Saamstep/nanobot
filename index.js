@@ -302,10 +302,103 @@ const veriEnmap = new Enmap({
   autoFetch: true,
   fetchAll: false
 });
+const mailMap = new Enmap({
+  name: 'mailchecker',
+  autoFetch: true,
+  fetchAll: false
+});
+
+function sendAuthEmail(email) {
+  //nodemail
+  var nodemailer = require('nodemailer');
+  let testAccount = nodemailer.createTestAccount();
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: ConfigService.config.mail.user,
+      pass: ConfigService.config.mail.pass
+    }
+  });
+  async function invite() {
+    let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+
+    let channel = guild.channels.find(
+      'name',
+      `${client.ConfigService.config.channel.joinCh}`
+    );
+    let options = {
+      maxUses: '1',
+      unique: true
+    };
+    let invite = await channel
+      .createInvite(options, `Inviting ${email} to server.`)
+      .catch(console.error);
+
+    let code = `https://discord.gg/${invite.code}`;
+    //message and info sent in email
+    var mailOptions = {
+      from: 'DiscordBot',
+      to: `${email}`,
+      subject: 'Discord Server Verification',
+      text: `Here is your unique server invite code. ${code}
+    \nThis code will expire in 24 hours.`
+    };
+    //message and info sent in email
+    var mailOptions = {
+      from: 'DiscordBot',
+      to: `${email}`,
+      subject: 'Discord Server Verification',
+      text: `Here is your unique server invite code. ${code}
+      \nThis code will expire in 24 hours.`
+    };
+    // finally sends the email to the user with the code so they know what it is!
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+    });
+  }
+  invite();
+}
+
+//checks if email has been sent
+async function checkEmail() {
+  try {
+    const response = await fetch(
+      'https://api.typeform.com/forms/IotT2f/responses',
+      {
+        headers: {
+          Authorization: `Bearer ${client.ConfigService.config.apis.typeform}`
+        }
+      }
+    ).catch(error => console.error(error));
+    const data = await response.json();
+    data.items.forEach(function(element) {
+      //only run for forms with answers
+      if (element.answers) {
+        //checks db to see if message was sent
+        if (!mailMap.has(element.response_id)) {
+          //if not sent, send email to warriorlife only
+          if (element.answers[1].email.includes('@warriorlife.net')) {
+            sendAuthEmail(element.answers[1].email);
+          } else {
+            console.log('Email is not a warriorlife.net email!');
+          }
+          //add response id to set so it does not dupe
+          mailMap.set(element.response_id, true);
+        } else {
+          return console.log('Already exists!');
+        }
+      }
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
 
 //typeform lookup
-
-//detect if user is in guild.
 async function typeForm() {
   try {
     const response = await fetch(
@@ -318,51 +411,74 @@ async function typeForm() {
     ).catch(error => console.error(error));
     const data = await response.json();
     data.items.forEach(function(element) {
-      let guild = client.guilds.get('519603949431554048');
-      if (!element.answers) {
-      } else {
+      //checks for all responses
+      let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+      //only run for form data with answers
+      if (element.answers) {
+        //find user in guild by searching with username from form
         let user = client.users.find(
           user =>
             user.username + '#' + user.discriminator ==
             `${element.answers[3].text}`
         );
+        //check if DB is ready
         veriEnmap.defer.then(() => {
+          //if the user is not in the guild, do not crash!
+          if (!guild.member(user.id)) {
+            return console.log(`${user.username} is not in guild yet`);
+          }
+          //if the discord username was already linked do not link again!
           if (veriEnmap.has(user.id)) {
-            return console.log(
-              `${
-                user.username
-              } was attempted to be linked again. We ignored it since it already is linked.`
-            );
+            if (
+              !guild
+                .member(user.id)
+                .roles.find(
+                  r => r.name === `${client.ConfigService.config.roles.iamRole}`
+                )
+            ) {
+              //find role to add to new user
+              let addRole = guild.roles.find(
+                'name',
+                `${client.ConfigService.config.roles.iamRole}`
+              );
+              //set nickname and add the role back
+              guild.members
+                .get(user.id)
+                .setNickname(`${element.answers[0].text}`)
+                .addRole(addRole);
+            }
+            return console.log(`${user.username} is already linked.`);
           } else {
+            //if the email ain't warriorlife. don't continue!
             if (!element.answers[1].email.includes('@warriorlife.net')) {
               return console.log(
                 'Non warriorlife email detected!' + element.answers[1].email
               );
             }
-            veriEnmap.set(`${user.id}`, {
-              name: `${element.answers[0].text}`,
-              email: `${element.answers[1].email}`
-            });
-            user.send(
-              `Your Discord account was used to link to **${
-                guild.name
-              }**. If you believe this was an error email us at vchsesports@gmail.com\nDiscord: ${
-                user.username
-              }\nEmail: ${element.answers[1].email}`
-            );
-            // let member = client.fetchUser(`${user.id}`);
-            guild.members
-              .get(user.id)
-              .setNickname(`${element.answers[0].text}`);
-            let addRole = guild.roles.find(
-              'name',
-              `${client.ConfigService.config.roles.iamRole}`
-            );
-            guild.members.get(user.id).addRole(addRole);
           }
-          if (veriEnmap.has(user.id) && ' ') {
-            //give back roles if left
-          }
+          //add user data to set
+          veriEnmap.set(`${user.id}`, {
+            name: `${element.answers[0].text}`,
+            email: `${element.answers[1].email}`
+          });
+          //send DM to user to confirm they have been linked
+          user.send(
+            `Your Discord account was used to link to **${
+              guild.name
+            }**. If you believe this was an error email us at vchsesports@gmail.com\nDiscord: ${
+              user.username
+            }\nEmail: ${element.answers[1].email}`
+          );
+          //find role to add to new user
+          let addRole = guild.roles.find(
+            'name',
+            `${client.ConfigService.config.roles.iamRole}`
+          );
+          //set nickname and add the role back
+          guild.members
+            .get(user.id)
+            .setNickname(`${element.answers[0].text}`)
+            .addRole(addRole);
         });
       }
     });
@@ -371,13 +487,18 @@ async function typeForm() {
   }
 }
 
+client.on('guildMemberAdd', member => {
+  typeForm();
+});
+
 client.on('ready', ready => {
   try {
     setInterval(twitch, 180000);
   } catch (e) {
     client.console(e);
   }
-  typeForm();
+  checkEmail();
+
   try {
     if (client.ConfigService.config.minecraft.discordToMC == true) {
       setInterval(topic, 180000);
@@ -484,7 +605,7 @@ if (!ConfigService.config.rconPort == '') {
 }
 
 client.on('message', message => {
-  if (message.content.startsWith('!data')) {
+  if (message.content.startsWith(`${client.ConfigService.config.prefix}data`)) {
     veriEnmap.defer.then(() => {
       message.author.send(
         '```json\n' +
@@ -497,7 +618,11 @@ client.on('message', message => {
   if (message.content.startsWith('!cleardata')) {
     veriEnmap.defer.then(() => {
       veriEnmap.deleteAll();
-      message.channel.send('```json\n' + '{ "cleared": "true", }' + '```');
+      message.channel.send('Cleared verification enmap');
+    });
+    mailMap.defer.then(() => {
+      mailMap.deleteAll();
+      message.channel.send('Cleared mailauth enmap');
     });
   }
 
@@ -527,18 +652,6 @@ client.on('message', message => {
   //         'This email has already been used to be verified. If you believe this is an error please direct message an Administrator.'
   //       );
   //   });
-
-  // function sendAuthEmail() {
-  //   var nodemailer = require('nodemailer');
-  //   let testAccount = nodemailer.createTestAccount();
-  //   var transporter = nodemailer.createTransport({
-  //     service: 'gmail',
-  //     auth: {
-  //       user: '',
-  //       pass: ''
-  //     }
-  //   });
-
   //   //generates our random string to verify users
   //   var chars =
   //     '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
@@ -548,34 +661,6 @@ client.on('message', message => {
   //     var rnum = Math.floor(Math.random() * chars.length);
   //     randomstring += chars.substring(rnum, rnum + 1);
   //   }
-  //   //message and info sent in email
-  //   var mailOptions = {
-  //     from: 'DiscordBot',
-  //     to: `${message.content}`,
-  //     subject: 'Discord Server Verification',
-  //     text: `Here is your unique verification code, paste this into the Discord channel to gain access. ${randomstring}`
-  //   };
-  //   // checks if db is ready then writes to it data from new user
-  //   veriEnmap.defer.then(() => {
-  //     veriEnmap.set(`${message.author.id}`, {
-  //       name: `${message.author.tag}`, //figure out how this is achieved
-  //       email: `${message.content}`,
-  //       code: `${randomstring}`
-  //     });
-  //   });
-  //   // finally sends the email to the user with the code so they know what it is!
-  //   transporter.sendMail(mailOptions, function(error, info) {
-  //     if (error) {
-  //       console.log(error);
-  //     } else {
-  //       client.console(JSON.stringify(veriEnmap.get(`${message.author.id}`)));
-  //       console.log('Email sent: ' + info.response);
-  //     }
-  //   });
-  // }
-
-  // ADD DM to remind users to verify on join
-  // }
 
   //MC Bridge
   if (
