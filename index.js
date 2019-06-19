@@ -37,24 +37,17 @@ async function twitch(message) {
   ConfigService.config.streamers.forEach(async element => {
     // Makes request
     try {
-      client.console(
-        'Twitch | Getting streamer status: ' + element.magenta.dim
-      );
-      const request = await fetch(
-        `https://api.twitch.tv/kraken/streams?channel=${element}`,
-        {
-          headers: {
-            'User-Agent': 'D.js-Bot-Dev',
-            'Client-ID': `${client.ConfigService.config.apis.twitch}`,
-            'content-type': 'application/json'
-          }
+      client.console('Twitch | Getting streamer status: ' + element.magenta.dim);
+      const request = await fetch(`https://api.twitch.tv/kraken/streams?channel=${element}`, {
+        headers: {
+          'User-Agent': 'D.js-Bot-Dev',
+          'Client-ID': `${client.ConfigService.config.apis.twitch}`,
+          'content-type': 'application/json'
         }
-      );
+      });
       const body = await request.json();
       if (body._total == 0) {
-        return client.console(
-          'Twitch | Found ' + element.magenta.dim + ' is not live'
-        );
+        return client.console('Twitch | Found ' + element.magenta.dim + ' is not live');
       }
       if (!compare.has(element)) {
         // Message formatter for the notificiations
@@ -63,8 +56,7 @@ async function twitch(message) {
           url: 'http://twitch.tv/' + body.streams[0].channel.display_name,
           color: 6684837,
           footer: {
-            icon_url:
-              'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png',
+            icon_url: 'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png',
             text: config.serverName + ' Bot'
           },
           thumbnail: {
@@ -73,8 +65,7 @@ async function twitch(message) {
           author: {
             name: body.streams[0].channel.display_name + ' is live',
             url: 'http://twitch.tv/' + body.streams[0].channel.display_name,
-            icon_url:
-              'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png'
+            icon_url: 'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png'
           },
           fields: [
             {
@@ -96,18 +87,13 @@ async function twitch(message) {
         client.guilds.map(guild => {
           if (guild.available) {
             let channel = guild.channels.find(
-              channel =>
-                channel.name === `${client.ConfigService.config.channel.twitch}`
+              channel => channel.name === `${client.ConfigService.config.channel.twitch}`
             );
             if (channel) {
               channel.send(client.ConfigService.config.twitchMentionNotify, {
                 embed
               });
-              client.console(
-                'Twitch | Found ' +
-                  element.magenta.dim +
-                  ' is live! Sending the announcement...'
-              );
+              client.console('Twitch | Found ' + element.magenta.dim + ' is live! Sending the announcement...');
             }
           }
         });
@@ -147,24 +133,19 @@ async function owlNews() {
     owl.defer.then(() => {
       if (owl.get('news') === body.blogs[0].blogId) {
         //if announced, skip it (:
-        return client.console(
-          `Already announced ${body.blogs[0].blogId}`.yellow
-        );
+        return client.console(`Already announced ${body.blogs[0].blogId}`.yellow);
       } else {
         owl.set('news', body.blogs[0].blogId);
         //it wasn't announced, so we annoucne it with this code
         // Finds channel and sends msg to channel
         client.guilds.map(guild => {
           if (guild.available) {
-            let channel = guild.channels.find(
-              channel =>
-                channel.name === `${client.ConfigService.config.channel.owl}`
-            );
+            let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.owl}`);
             if (channel) {
               const embed = {
-                description: `**${body.blogs[0].title}**\n${
-                  body.blogs[0].summary
-                }\n\n[Read more](${body.blogs[0].defaultUrl})`,
+                description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${
+                  body.blogs[0].defaultUrl
+                })`,
                 url: `${body.blogs[0].defaultUrl}`,
                 color: 16752385,
                 timestamp: body.blogs[0].publish,
@@ -172,10 +153,7 @@ async function owlNews() {
                   text: `Author: ${body.blogs[0].author}`
                 },
                 image: {
-                  url: `${body.blogs[0].thumbnail.url.replace(
-                    '//',
-                    'https://'
-                  )}`
+                  url: `${body.blogs[0].thumbnail.url.replace('//', 'https://')}`
                 },
                 author: {
                   name: 'OverwatchLeague News',
@@ -208,26 +186,21 @@ async function owlLiveMatch() {
     owl.defer.then(() => {
       if (owl.get('live') === body.data.liveMatch.id) {
         //if announced, skip it (:
-        return client.console(
-          `Already announced ${body.data.liveMatch.id}`.yellow
-        );
+        return client.console(`Already announced ${body.data.liveMatch.id}`.yellow);
       } else {
         owl.set('live', body.data.liveMatch.id);
         //it wasn't announced, so we announce it with this code
         // Finds channel and sends msg to channel
         client.guilds.map(guild => {
           if (guild.available) {
-            let channel = guild.channels.find(
-              channel =>
-                channel.name === `${client.ConfigService.config.channel.owl}`
-            );
+            let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.owl}`);
             if (channel) {
               const embed = {
-                description: `${logos(
-                  body.data.liveMatch.competitors[0].abbreviatedName
-                )} **${body.data.liveMatch.competitors[0].name}** vs ${logos(
-                  body.data.liveMatch.competitors[1].abbreviatedName
-                )} **${body.data.liveMatch.competitors[1].name}**`,
+                description: `${logos(body.data.liveMatch.competitors[0].abbreviatedName)} **${
+                  body.data.liveMatch.competitors[0].name
+                }** vs ${logos(body.data.liveMatch.competitors[1].abbreviatedName)} **${
+                  body.data.liveMatch.competitors[1].name
+                }**`,
                 url: `https://twitch.tv/overwatchleague`,
                 color: 16752385,
                 fields: [
@@ -257,9 +230,9 @@ async function owlLiveMatch() {
 async function topic() {
   try {
     const response = await fetch(
-      `http://mcapi.us/server/status?ip=${
-        client.ConfigService.config.minecraft.IP
-      }&port=${client.ConfigService.config.minecraft.port}`
+      `http://mcapi.us/server/status?ip=${client.ConfigService.config.minecraft.IP}&port=${
+        client.ConfigService.config.minecraft.port
+      }`
     );
 
     const body = await response.json();
@@ -267,8 +240,7 @@ async function topic() {
     if (body.online === false) {
       client.guilds.map(guild => {
         let channel = guild.channels.find(
-          channel =>
-            channel.name === `${client.ConfigService.config.channel.mcBridge}`
+          channel => channel.name === `${client.ConfigService.config.channel.mcBridge}`
         );
         if (channel) {
           channel.setTopic('Server Offline');
@@ -277,14 +249,10 @@ async function topic() {
     }
     if (body.online === true) {
       client.guilds.map(guild => {
-        let channel = guild.channels.find(
-          channel => channel.name === `mc-channel`
-        );
+        let channel = guild.channels.find(channel => channel.name === `mc-channel`);
         if (channel) {
           channel.setTopic(
-            `${ConfigService.config.serverName} | ${body.server.name} | ${
-              body.players.now
-            }/${body.players.max} online`
+            `${ConfigService.config.serverName} | ${body.server.name} | ${body.players.now}/${body.players.max} online`
           );
           client.console('MC --> Discord | Set topic!');
         }
@@ -322,42 +290,205 @@ function sendAuthEmail(email) {
   async function invite() {
     let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
 
-    let channel = guild.channels.find(
-      'name',
-      `${client.ConfigService.config.channel.joinCh}`
-    );
+    let channel = guild.channels.find('name', `${client.ConfigService.config.channel.joinCh}`);
     let options = {
       maxUses: '1',
       unique: true
     };
-    let invite = await channel
-      .createInvite(options, `Inviting ${email} to server.`)
-      .catch(console.error);
-
+    let invite = await channel.createInvite(options, `Inviting ${email} to server.`).catch(console.error);
     let code = `https://discord.gg/${invite.code}`;
-    //message and info sent in email
-    var mailOptions = {
-      from: 'DiscordBot',
-      to: `${email}`,
-      subject: 'Discord Server Verification',
-      text: `Here is your unique server invite code. ${code}
-    \nThis code will expire in 24 hours.`
-    };
-    //message and info sent in email
-    var mailOptions = {
-      from: 'DiscordBot',
-      to: `${email}`,
-      subject: 'Discord Server Verification',
-      text: `Here is your unique server invite code. ${code}
-      \nThis code will expire in 24 hours.`
-    };
-    // finally sends the email to the user with the code so they know what it is!
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
+
+    let html = fs.readFile('./html/email.html', function(err, data) {
+      // let sendHTML = data.replace('DISCORDCODE', code);
+      //message and info sent in email
+      var mailOptions = {
+        from: 'DiscordBot',
+        to: `${email}`,
+        subject: 'Discord Server Verification',
+        html: `<!doctype html>
+        <html>
+          <head>
+            <meta name="viewport" content="width=device-width">
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+            <title>Simple Transactional Email</title>
+            <style>
+            /* -------------------------------------
+                INLINED WITH htmlemail.io/inline
+            ------------------------------------- */
+            /* -------------------------------------
+                RESPONSIVE AND MOBILE FRIENDLY STYLES
+            ------------------------------------- */
+            @media only screen and (max-width: 620px) {
+              table[class=body] h1 {
+                font-size: 28px !important;
+                margin-bottom: 10px !important;
+              }
+              table[class=body] p,
+                    table[class=body] ul,
+                    table[class=body] ol,
+                    table[class=body] td,
+                    table[class=body] span,
+                    table[class=body] a {
+                font-size: 16px !important;
+              }
+              table[class=body] .wrapper,
+                    table[class=body] .article {
+                padding: 10px !important;
+              }
+              table[class=body] .content {
+                padding: 0 !important;
+              }
+              table[class=body] .container {
+                padding: 0 !important;
+                width: 100% !important;
+              }
+              table[class=body] .main {
+                border-left-width: 0 !important;
+                border-radius: 0 !important;
+                border-right-width: 0 !important;
+              }
+              table[class=body] .btn table {
+                width: 100% !important;
+              }
+              table[class=body] .btn a {
+                width: 100% !important;
+              }
+              table[class=body] .img-responsive {
+                height: auto !important;
+                max-width: 100% !important;
+                width: auto !important;
+              }
+            }
+        
+            /* -------------------------------------
+                PRESERVE THESE STYLES IN THE HEAD
+            ------------------------------------- */
+            @media all {
+              .ExternalClass {
+                width: 100%;
+              }
+              .ExternalClass,
+                    .ExternalClass p,
+                    .ExternalClass span,
+                    .ExternalClass font,
+                    .ExternalClass td,
+                    .ExternalClass div {
+                line-height: 100%;
+              }
+              .apple-link a {
+                color: inherit !important;
+                font-family: inherit !important;
+                font-size: inherit !important;
+                font-weight: inherit !important;
+                line-height: inherit !important;
+                text-decoration: none !important;
+              }
+              .btn-primary table td:hover {
+                background-color: #34495e !important;
+              }
+              .btn-primary a:hover {
+                background-color: #34495e !important;
+                border-color: #34495e !important;
+              }
+            }
+            </style>
+          </head>
+          <body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
+            <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f6f6f6;">
+              <tr>
+                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+                <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; Margin: 0 auto; max-width: 580px; padding: 10px; width: 580px;">
+                  <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
+        
+                    <!-- START CENTERED WHITE CONTAINER -->
+                    <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">Discord Server Verification.</span>
+                    <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
+        
+                      <!-- START MAIN CONTENT AREA -->
+                      <tr>
+                        <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
+                          <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                            <tr>
+                                <img src="https://i.imgur.com/gxaWyAa.png" height="60"></tr>
+                              <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
+                                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello there,</p>
+                                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">This email is your invite to the Digital Experience Discord server. This is a Valley Chrisitan student only Discord.</p>
+                                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Incase you forgot our Discord ToS here it is for you:</p>
+                                <p> As the Valley Christian High School Esports Hub, I , will not invite NON-Valley Christian High School students to the Discord server. I , understand that in this Discord server, I must follow all the rules below.
+                                  <br>
+                                  <br>
+                                  Rules:
+                                  <br>
+                                  1) No swearing/inappropriate language<br>
+                                  2) No toxicity towards other teammates, teams, HSEL, and/or HSEL teams<br>
+                                  3) Keep channel content related to channel topics<br>
+                                  4) Do not spam/flood channels<br>
+                                  5) Follow the Discord Terms of Service <a href=https://discordapp.com/tos>https://discordapp.com/tos</a><br>
+                                  6) As a Valley Christian Student, be respectful and a proper role model for everyone in the server<br>
+                                  7) Listen to all Management/Leadership<br>
+                                  8) Be respectful to everyone<br>
+                                  9) Act civil in voice channels<br>
+                                  10) Use music bots and all other bots appropriately, do not play inappropriate music.<br>
+                                  11) I understand that if I do not follow these rules I may be punished in a way deemed acceptable by management/leadership.<br>
+                                </p>
+                                <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
+                                  <tbody>
+                                    <tr>
+                                      <td align="left" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-bottom: 15px;">
+                                        <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
+                                          <tbody>
+                                            <tr>
+                                              <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3498db; border-radius: 5px; text-align: center;"> <a href="${code}" target="_blank" style="display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">Join Server</a> </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                        <a style="color: #999999; font-size: 10px; text-align: center;">Alternatively click or copy this link: ${code}</a>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+        
+                    <!-- END MAIN CONTENT AREA -->
+                    </table>
+        
+                    <!-- START FOOTER -->
+                    <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+                      <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+                        <tr>
+                          <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                            <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">VCHS Esports<br>Digital Experience</span>
+                          </td>
+                        </tr>
+                        <tr>
+                        </tr>
+                      </table>
+                    </div>
+                    <!-- END FOOTER -->
+        
+                  <!-- END CENTERED WHITE CONTAINER -->
+                  </div>
+                </td>
+                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
+              </tr>
+            </table>
+          </body>
+        </html>
+        `
+      };
+
+      // finally sends the email to the user with the code so they know what it is!
+      transporter.sendMail(mailOptions, function(error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log('Email sent: ' + info.response);
+        }
+      });
     });
   }
   invite();
@@ -366,21 +497,18 @@ function sendAuthEmail(email) {
 //checks if email has been sent
 async function checkEmail() {
   try {
-    const response = await fetch(
-      'https://api.typeform.com/forms/IotT2f/responses',
-      {
-        headers: {
-          Authorization: `Bearer ${client.ConfigService.config.apis.typeform}`
-        }
+    const response = await fetch('https://api.typeform.com/forms/IotT2f/responses', {
+      headers: {
+        Authorization: `Bearer ${client.ConfigService.config.apis.typeform}`
       }
-    ).catch(error => console.error(error));
+    }).catch(error => console.error(error));
     const data = await response.json();
     data.items.forEach(function(element) {
       //only run for forms with answers
       if (element.answers) {
         //checks db to see if message was sent
         if (!mailMap.has(element.response_id)) {
-          //if not sent, send email to warriorlife only
+          //if not sent, send email to approved email only
           if (element.answers[1].email.includes('@warriorlife.net')) {
             sendAuthEmail(element.answers[1].email);
           } else {
@@ -401,14 +529,11 @@ async function checkEmail() {
 //typeform lookup
 async function typeForm() {
   try {
-    const response = await fetch(
-      'https://api.typeform.com/forms/IotT2f/responses',
-      {
-        headers: {
-          Authorization: `Bearer ${client.ConfigService.config.apis.typeform}`
-        }
+    const response = await fetch('https://api.typeform.com/forms/IotT2f/responses', {
+      headers: {
+        Authorization: `Bearer ${client.ConfigService.config.apis.typeform}`
       }
-    ).catch(error => console.error(error));
+    }).catch(error => console.error(error));
     const data = await response.json();
     data.items.forEach(function(element) {
       //checks for all responses
@@ -416,11 +541,7 @@ async function typeForm() {
       //only run for form data with answers
       if (element.answers) {
         //find user in guild by searching with username from form
-        let user = client.users.find(
-          user =>
-            user.username + '#' + user.discriminator ==
-            `${element.answers[3].text}`
-        );
+        let user = client.users.find(user => user.username + '#' + user.discriminator == `${element.answers[3].text}`);
         //check if DB is ready
         veriEnmap.defer.then(() => {
           //if the user is not in the guild, do not crash!
@@ -429,31 +550,23 @@ async function typeForm() {
           }
           //if the discord username was already linked do not link again!
           if (veriEnmap.has(user.id)) {
-            if (
-              !guild
-                .member(user.id)
-                .roles.find(
-                  r => r.name === `${client.ConfigService.config.roles.iamRole}`
-                )
-            ) {
+            let addRole = guild.roles.find('name', `${client.ConfigService.config.roles.iamRole}`);
+            if (!guild.member(user.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
               //find role to add to new user
-              let addRole = guild.roles.find(
-                'name',
-                `${client.ConfigService.config.roles.iamRole}`
-              );
+
               //set nickname and add the role back
               guild.members
                 .get(user.id)
-                .setNickname(`${element.answers[0].text}`)
-                .addRole(addRole);
+                .addRole(addRole)
+                .catch(console.error);
+              guild.members.get(user.id).setNickname(`${element.answers[0].text}`, 'Joined server.');
+              console.log('Updated user ' + user.id);
             }
             return console.log(`${user.username} is already linked.`);
           } else {
-            //if the email ain't warriorlife. don't continue!
+            //if the email ain't approved. don't continue!
             if (!element.answers[1].email.includes('@warriorlife.net')) {
-              return console.log(
-                'Non warriorlife email detected!' + element.answers[1].email
-              );
+              return console.log('Non warriorlife email detected!' + element.answers[1].email);
             }
           }
           //add user data to set
@@ -463,22 +576,18 @@ async function typeForm() {
           });
           //send DM to user to confirm they have been linked
           user.send(
-            `Your Discord account was used to link to **${
+            `Your Discord account and email was used to link to **${
               guild.name
             }**. If you believe this was an error email us at vchsesports@gmail.com\nDiscord: ${
               user.username
             }\nEmail: ${element.answers[1].email}`
           );
-          //find role to add to new user
-          let addRole = guild.roles.find(
-            'name',
-            `${client.ConfigService.config.roles.iamRole}`
-          );
-          //set nickname and add the role back
           guild.members
             .get(user.id)
-            .setNickname(`${element.answers[0].text}`)
-            .addRole(addRole);
+            .addRole(addRole)
+            .catch(console.error);
+          guild.members.get(user.id).setNickname(`${element.answers[0].text}`, 'Joined server.');
+          console.log('Updated user ' + user.id);
         });
       }
     });
@@ -497,7 +606,12 @@ client.on('ready', ready => {
   } catch (e) {
     client.console(e);
   }
-  checkEmail();
+
+  try {
+    setInterval(checkEmail, 10000);
+  } catch (e) {
+    client.console(e);
+  }
 
   try {
     if (client.ConfigService.config.minecraft.discordToMC == true) {
@@ -550,9 +664,7 @@ if (client.ConfigService.config.minecraft.discordToMC == true) {
           response.end(username + ': ' + message);
           client.guilds.map(guild => {
             if (guild.available) {
-              let channel = guild.channels.find(
-                channel => channel.name === `mc-channel`
-              );
+              let channel = guild.channels.find(channel => channel.name === `mc-channel`);
               if (channel) {
                 channel.send('<' + username + '> ' + message);
               }
@@ -566,9 +678,7 @@ if (client.ConfigService.config.minecraft.discordToMC == true) {
     const host = client.ConfigService.config.minecraft.webhost;
 
     server.listen(port, host);
-    client.console(
-      `MC --> Discord | Listening at http://${host}:${port}`.green
-    );
+    client.console(`MC --> Discord | Listening at http://${host}:${port}`.green);
   } catch (error) {
     client.console(`MC --> Discord | Disabled! ${error}`.green);
   }
@@ -596,10 +706,7 @@ conn.on('end', function() {
 
 if (!ConfigService.config.rconPort == '') {
   conn.connect();
-  client.console(
-    'RCON | Connecting to server @ ' +
-      JSON.stringify(conn.host + ':' + conn.port).green
-  );
+  client.console('RCON | Connecting to server @ ' + JSON.stringify(conn.host + ':' + conn.port).green);
 } else {
   client.console('RCON | Disabled!'.green);
 }
@@ -607,15 +714,11 @@ if (!ConfigService.config.rconPort == '') {
 client.on('message', message => {
   if (message.content.startsWith(`${client.ConfigService.config.prefix}data`)) {
     veriEnmap.defer.then(() => {
-      message.author.send(
-        '```json\n' +
-          JSON.stringify(veriEnmap.get(`${message.author.id}`), null, 4) +
-          '```'
-      );
+      message.author.send('```json\n' + JSON.stringify(veriEnmap.get(`${message.author.id}`), null, 4) + '```');
     });
   }
 
-  if (message.content.startsWith('!cleardata')) {
+  if (message.content.startsWith(`${client.ConfigService.config.prefix}cleardata`)) {
     veriEnmap.defer.then(() => {
       veriEnmap.deleteAll();
       message.channel.send('Cleared verification enmap');
@@ -626,50 +729,10 @@ client.on('message', message => {
     });
   }
 
-  if (message.content.startsWith('!alldata')) {
-    veriEnmap.defer.then(() => {
-      message.channel.send(veriEnmap.fetchEverything());
-    });
-  }
-
-  if (message.content.startsWith('!emailchecker')) {
-    veriEnmap.defer.then(() => {
-      if (veriEnmap.has(`${message.author.id}`)) {
-        message.channel.send(`${message.author.id} found in Database.`);
-      }
-    });
-  }
-
-  //Verification System (Email Code)
-
-  //check if veriifcation channel is used
-  // if (message.channel.id == client.ConfigService.config.channel.nickID) {
-  //   veriEnmap.defer.then(() => {
-  //     if (!message.content.includes('@warriorlife.net'))
-  //       return message.author.send('Please use a valid VCHS student email.');
-  //     if (veriEnmap.get(`${message.author.id}`, 'email') === message.content)
-  //       return message.author.send(
-  //         'This email has already been used to be verified. If you believe this is an error please direct message an Administrator.'
-  //       );
-  //   });
-  //   //generates our random string to verify users
-  //   var chars =
-  //     '0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz';
-  //   var string_length = 8;
-  //   var randomstring = '';
-  //   for (var i = 0; i < string_length; i++) {
-  //     var rnum = Math.floor(Math.random() * chars.length);
-  //     randomstring += chars.substring(rnum, rnum + 1);
-  //   }
-
   //MC Bridge
-  if (
-    message.channel.id === `${client.ConfigService.config.channel.mcBridge}`
-  ) {
+  if (message.channel.id === `${client.ConfigService.config.channel.mcBridge}`) {
     if (message.author.bot) return;
-    let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${
-      message.content
-    }","color":"aqua"}]`;
+    let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
     conn.send(msg);
   }
 
@@ -693,10 +756,7 @@ client.on('message', message => {
 
   // mc ip thumbs up system
   if (client.ConfigService.config.mcIP !== '') {
-    if (
-      message.content.includes(`${client.ConfigService.config.minecraft.IP}`) &&
-      !message.author.bot
-    ) {
+    if (message.content.includes(`${client.ConfigService.config.minecraft.IP}`) && !message.author.bot) {
       message.react(`✅`);
     }
   }
@@ -708,10 +768,7 @@ client.on('message', message => {
 
   //support channel code
 
-  if (
-    message.channel.id === `${client.ConfigService.config.channel.supportID}` &&
-    !message.author.bot
-  ) {
+  if (message.channel.id === `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
     const tag = client.ConfigService.config.supportTags;
     if (tag.some(word => message.content.includes(word))) {
       pMreact();
@@ -730,13 +787,7 @@ client.on('message', message => {
         message.delete(0);
         message.channel.fetchMessage(args[0]).then(msg => {
           msg.delete(0);
-          msg.author.send(
-            'Your suggestion `' +
-              msg.content +
-              '` was removed by an admin for: ```' +
-              reason +
-              '```'
-          );
+          msg.author.send('Your suggestion `' + msg.content + '` was removed by an admin for: ```' + reason + '```');
         });
       }
     } else {

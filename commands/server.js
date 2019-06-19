@@ -62,8 +62,7 @@ exports.run = async (client, message, args) => {
           author: {
             name: ConfigService.config.serverName + ' SMP',
             url: 'https://mcsrvstat.us/',
-            icon_url:
-              'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
+            icon_url: 'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
           },
           fields: [
             {
@@ -98,8 +97,7 @@ exports.run = async (client, message, args) => {
             author: {
               name: args[0],
               url: 'https://mcsrvstat.us/',
-              icon_url:
-                'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
+              icon_url: 'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
             },
             fields: [
               {

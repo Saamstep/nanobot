@@ -291,11 +291,51 @@ exports.run = async (client, message, args) => {
         console.error(e);
       }
       break;
+    case 'matches':
+      const owl_Matches = await fetch(
+        'https://api.overwatchleague.com/matches'
+      );
+      const allMatches = await owl_Matches.json();
+      let matches = '';
+      for (j = 0; j < 5; j++ in allMatches.content) {
+        matches += `${logos(
+          allMatches.content[j].competitors[0].abbreviatedName
+        )} **${allMatches.content[j].competitors[0].name}** vs **${
+          allMatches.content[j].competitors[1].name
+        }** ${logos(
+          allMatches.content[j].competitors[1].abbreviatedName
+        )}\n Score: ||**${allMatches.content[j].scores[0].value}** - **${
+          allMatches.content[j].scores[1].value
+        }**||\n\n`;
+      }
+      const embed = {
+        description: `${matches}`,
+        color: 16752385,
+        author: {
+          name: 'OverwatchLeague Matches',
+          icon_url:
+            'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+        },
+        timestamp: Date.now(),
+        footer: {
+          text: '3 Recent Matches'
+        }
+      };
+      message.channel.send({ embed });
+      break;
     default:
       message.channel.send(
         `\`\`\`${
           client.ConfigService.config.prefix
-        }owl [ranking/stages/news/live/teams/team/player] [search term (if applies to query)]\`\`\``
+        }owl [option] [search(if applicable)]
+      Options:
+      ranking
+      stages
+      news
+      live
+      teams
+      team   [search]
+      player [search]\`\`\``
       );
   }
 };

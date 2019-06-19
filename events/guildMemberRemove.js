@@ -3,12 +3,7 @@ exports.run = (client, member, message) => {
   let guild = member.guild;
   let NEWUSER = member.user;
   let SERVERNAME = guild.name;
-  let newchannel = guild.channels.find(
-    `name`,
-    `${ConfigService.config.channel.joinCh}`
-  );
-  let newest = ConfigService.config.leaveMsg
-    .replace('NEWUSER', NEWUSER)
-    .replace('SERVERNAME', SERVERNAME);
+  let newchannel = guild.channels.find(`name`, `${ConfigService.config.channel.joinCh}`);
+  let newest = ConfigService.config.leaveMsg.replace('NEWUSER', NEWUSER).replace('SERVERNAME', SERVERNAME);
   newchannel.send(newest).catch(console.error);
 };
