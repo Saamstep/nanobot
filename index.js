@@ -29,6 +29,28 @@ fs.readdir('./events/', (err, files) => {
   });
 });
 
+//Send Message to Channel Function
+function sendMessage(name, msg) {
+  client.guilds.map(guild => {
+    if (guild.available) {
+      let channel = guild.channels.find(channel => channel.name === `${name}`);
+      if (channel) {
+        channel.send(msg);
+      }
+    }
+  });
+}
+
+//enmap config (yes we're actually doing it this time)
+client.config = new Enmap({
+  name: 'bot_config',
+  autoFetch: true,
+  fetchAll: false
+});
+const defaultconfig = {
+  //add this
+};
+
 //Twitch Streamer Notifier
 const compare = new Set();
 async function twitch(message) {
@@ -84,19 +106,23 @@ async function twitch(message) {
         compare.add(element);
 
         // Finds channel and sends msg to channel
-        client.guilds.map(guild => {
-          if (guild.available) {
-            let channel = guild.channels.find(
-              channel => channel.name === `${client.ConfigService.config.channel.twitch}`
-            );
-            if (channel) {
-              channel.send(client.ConfigService.config.twitchMentionNotify, {
-                embed
-              });
-              client.console('Twitch | Found ' + element.magenta.dim + ' is live! Sending the announcement...');
-            }
-          }
+        // client.guilds.map(guild => {
+        //   if (guild.available) {
+        //     let channel = guild.channels.find(
+        //       channel => channel.name === `${client.ConfigService.config.channel.twitch}`
+        //     );
+        //     if (channel) {
+        //       channel.send(client.ConfigService.config.twitchMentionNotify, {
+        //         embed
+        //       });
+        //       client.console('Twitch | Found ' + element.magenta.dim + ' is live! Sending the announcement...');
+        //     }
+        //   }
+        // });
+        sendMessage(`${client.ConfigService.config.channel.twitch}`, client.ConfigService.config.twitchMentionNotify, {
+          embed
         });
+        client.console('Twitch | Found ' + element.magenta.dim + ' is live! Sending the announcement...');
       } else if (compare.has(element) && body._total < 1) {
         compare.delete(element);
         return;
@@ -138,34 +164,36 @@ async function owlNews() {
         owl.set('news', body.blogs[0].blogId);
         //it wasn't announced, so we annoucne it with this code
         // Finds channel and sends msg to channel
-        client.guilds.map(guild => {
-          if (guild.available) {
-            let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.owl}`);
-            if (channel) {
-              const embed = {
-                description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${
-                  body.blogs[0].defaultUrl
-                })`,
-                url: `${body.blogs[0].defaultUrl}`,
-                color: 16752385,
-                timestamp: body.blogs[0].publish,
-                footer: {
-                  text: `Author: ${body.blogs[0].author}`
-                },
-                image: {
-                  url: `${body.blogs[0].thumbnail.url.replace('//', 'https://')}`
-                },
-                author: {
-                  name: 'OverwatchLeague News',
-                  url: `${body.blogs[0].defaultUrl}`,
-                  icon_url:
-                    'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
-                }
-              };
-              channel.send({ embed });
-            }
+        const embed = {
+          description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${
+            body.blogs[0].defaultUrl
+          })`,
+          url: `${body.blogs[0].defaultUrl}`,
+          color: 16752385,
+          timestamp: body.blogs[0].publish,
+          footer: {
+            text: `Author: ${body.blogs[0].author}`
+          },
+          image: {
+            url: `${body.blogs[0].thumbnail.url.replace('//', 'https://')}`
+          },
+          author: {
+            name: 'OverwatchLeague News',
+            url: `${body.blogs[0].defaultUrl}`,
+            icon_url:
+              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
           }
-        });
+        };
+        // client.guilds.map(guild => {
+        //   if (guild.available) {
+        //     let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.owl}`);
+        //     if (channel) {
+
+        //       channel.send({ embed });
+        //     }
+        //   }
+        // });
+        sendMessage(`${client.ConfigService.config.channel.owl}`, { embed });
       }
     });
   } catch (e) {
@@ -191,34 +219,35 @@ async function owlLiveMatch() {
         owl.set('live', body.data.liveMatch.id);
         //it wasn't announced, so we announce it with this code
         // Finds channel and sends msg to channel
-        client.guilds.map(guild => {
-          if (guild.available) {
-            let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.owl}`);
-            if (channel) {
-              const embed = {
-                description: `${logos(body.data.liveMatch.competitors[0].abbreviatedName)} **${
-                  body.data.liveMatch.competitors[0].name
-                }** vs ${logos(body.data.liveMatch.competitors[1].abbreviatedName)} **${
-                  body.data.liveMatch.competitors[1].name
-                }**`,
-                url: `https://twitch.tv/overwatchleague`,
-                color: 16752385,
-                fields: [
-                  {
-                    name: 'Date & Time',
-                    value: `${new Date(body.data.liveMatch.startDate)}`
-                  }
-                ],
-                author: {
-                  name: 'OverwatchLeague Live',
-                  icon_url:
-                    'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
-                }
-              };
-              channel.send({ embed });
+        // client.guilds.map(guild => {
+        //   if (guild.available) {
+        //     let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.owl}`);
+        //     if (channel) {
+        //       channel.send({ embed });
+        //     }
+        //   }
+        // });
+        const embed = {
+          description: `${logos(body.data.liveMatch.competitors[0].abbreviatedName)} **${
+            body.data.liveMatch.competitors[0].name
+          }** vs ${logos(body.data.liveMatch.competitors[1].abbreviatedName)} **${
+            body.data.liveMatch.competitors[1].name
+          }**`,
+          url: `https://twitch.tv/overwatchleague`,
+          color: 16752385,
+          fields: [
+            {
+              name: 'Date & Time',
+              value: `${new Date(body.data.liveMatch.startDate)}`
             }
+          ],
+          author: {
+            name: 'OverwatchLeague Live',
+            icon_url:
+              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
           }
-        });
+        };
+        sendMessage(`${client.ConfigService.config.channel.owl}`, { embed });
       }
     });
   } catch (e) {
@@ -484,9 +513,9 @@ function sendAuthEmail(email) {
       // finally sends the email to the user with the code so they know what it is!
       transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
-          console.log(error);
+          client.console(error);
         } else {
-          console.log('Email sent: ' + info.response);
+          client.console('Email sent: ' + info.response);
         }
       });
     });
@@ -512,12 +541,12 @@ async function checkEmail() {
           if (element.answers[1].email.includes('@warriorlife.net')) {
             sendAuthEmail(element.answers[1].email);
           } else {
-            console.log('Email is not a warriorlife.net email!');
+            client.console('Email is not a warriorlife.net email!');
           }
           //add response id to set so it does not dupe
           mailMap.set(element.response_id, true);
         } else {
-          return console.log('Already exists!');
+          return client.console('Already exists!');
         }
       }
     });
@@ -546,7 +575,7 @@ async function typeForm() {
         veriEnmap.defer.then(() => {
           //if the user is not in the guild, do not crash!
           if (!guild.member(user.id)) {
-            return console.log(`${user.username} is not in guild yet`);
+            return client.console(`${user.username} is not in guild yet`);
           }
           //if the discord username was already linked do not link again!
           if (veriEnmap.has(user.id)) {
@@ -560,13 +589,21 @@ async function typeForm() {
                 .addRole(addRole)
                 .catch(console.error);
               guild.members.get(user.id).setNickname(`${element.answers[0].text}`, 'Joined server.');
-              console.log('Updated user ' + user.id);
+              client.console('Updated user ' + user.id);
+              element.answers[4].choices.labels.forEach(function(choice) {
+                let role = guild.roles.find('name', `${choice}`);
+                guild.members
+                  .get(user.id)
+                  .addRole(role)
+                  .catch(console.error);
+                console.log(`adding ${choice} to ${user.name}`);
+              });
             }
-            return console.log(`${user.username} is already linked.`);
+            return client.console(`${user.username} is already linked.`);
           } else {
             //if the email ain't approved. don't continue!
             if (!element.answers[1].email.includes('@warriorlife.net')) {
-              return console.log('Non warriorlife email detected!' + element.answers[1].email);
+              return client.console('Non warriorlife email detected!' + element.answers[1].email);
             }
           }
           //add user data to set
@@ -582,12 +619,21 @@ async function typeForm() {
               user.username
             }\nEmail: ${element.answers[1].email}`
           );
+          let addRole = guild.roles.find('name', `${client.ConfigService.config.roles.iamRole}`);
           guild.members
             .get(user.id)
             .addRole(addRole)
             .catch(console.error);
           guild.members.get(user.id).setNickname(`${element.answers[0].text}`, 'Joined server.');
-          console.log('Updated user ' + user.id);
+          element.answers[4].choices.labels.forEach(function(choice) {
+            let role = guild.roles.find('name', `${choice}`);
+            guild.members
+              .get(user.id)
+              .addRole(role)
+              .catch(console.error);
+            console.log(`adding ${choice} to ${user.id}`);
+          });
+          client.console('Updated user ' + user.id);
         });
       }
     });
@@ -600,9 +646,77 @@ client.on('guildMemberAdd', member => {
   typeForm();
 });
 
+const youtube = new Enmap({
+  name: 'youtube',
+  autoFetch: true,
+  fetchAll: false
+});
+
+//YT Video
+async function youtubeNotifier() {
+  client.ConfigService.config.youtubeChannels.forEach(async function(id) {
+    client.console('YouTube | Searching for new videos...');
+    const api = await fetch(
+      `https://www.googleapis.com/youtube/v3/search?key=${
+        client.ConfigService.config.apis.youtube
+      }&channelId=${id}&part=snippet,id&order=date&maxResults=1`
+    );
+    const channel = await api.json();
+    if (!youtube.has(channel.items[0].id.videoId)) {
+      client.console('YouTube | Found channel video to announce!');
+      let youtubeURL = `https://youtu.be/${channel.items[0].id.videoId}`;
+      const embed = {
+        url: `${youtubeURL}`,
+        color: 15076647,
+        timestamp: `${channel.items[0].snippet.publishedAt}`,
+        footer: {
+          text: 'YouTube Notifier'
+        },
+        image: {
+          url: `${channel.items[0].snippet.thumbnails.medium.url}`
+        },
+        author: {
+          name: `${channel.items[0].snippet.channelTitle} Uploaded`,
+          url: `${youtubeURL}`,
+          icon_url: 'https://seeklogo.com/images/Y/youtube-square-logo-3F9D037665-seeklogo.com.png'
+        },
+        fields: [
+          {
+            name: 'Title',
+            value: `${channel.items[0].snippet.title}`
+          },
+          {
+            name: 'Video Link',
+            value: `${youtubeURL}`
+          }
+        ]
+      };
+      // client.guilds.map(guild => {
+      //   if (guild.available) {
+      //     let channel = guild.channels.find(
+      //       channel => channel.name === `${client.ConfigService.config.channel.youtube}`
+      //     );
+      //     if (channel) {
+      //       channel.send({ embed });
+      //     }
+      //   }
+      // });
+      sendMessage(`${client.ConfigService.config.channel.youtube}`, { embed });
+      youtube.set(`${channel.items[0].id.videoId}`, true);
+    } else {
+      client.console(`YouTube | Already announced ${channel.items[0].id.videoId}`);
+    }
+  });
+}
+
 client.on('ready', ready => {
   try {
     setInterval(twitch, 180000);
+  } catch (e) {
+    client.console(e);
+  }
+  try {
+    setInterval(youtubeNotifier, 300000);
   } catch (e) {
     client.console(e);
   }
@@ -620,8 +734,8 @@ client.on('ready', ready => {
   } catch (e) {
     client.console(e);
   }
-  setInterval(owlLiveMatch, 180000);
-  setInterval(owlNews, 179999);
+  setInterval(owlLiveMatch, 280000);
+  setInterval(owlNews, 280000);
 });
 
 //cooldown
@@ -662,14 +776,7 @@ if (client.ConfigService.config.minecraft.discordToMC == true) {
           const message = regBody[2];
           response.writeHead(200, { 'Content-Type': 'text/html' });
           response.end(username + ': ' + message);
-          client.guilds.map(guild => {
-            if (guild.available) {
-              let channel = guild.channels.find(channel => channel.name === `mc-channel`);
-              if (channel) {
-                channel.send('<' + username + '> ' + message);
-              }
-            }
-          });
+          sendMessage('mc-channel', '<' + username + '> ' + message);
         });
       }
     });
