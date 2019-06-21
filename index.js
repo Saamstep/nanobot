@@ -320,10 +320,9 @@ const mailMap = new Enmap({
   fetchAll: false
 });
 
-function sendAuthEmail(email) {
+function sendAuthEmail(email, name, discorduser) {
   //nodemail
   var nodemailer = require('nodemailer');
-  let testAccount = nodemailer.createTestAccount();
   var transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -334,7 +333,7 @@ function sendAuthEmail(email) {
   async function invite() {
     let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
 
-    let channel = guild.channels.find('name', `${client.ConfigService.config.channel.joinCh}`);
+    let channel = guild.channels.find(ch => ch.name === `${client.ConfigService.config.channel.joinCh}`);
     let options = {
       maxUses: '1',
       unique: true
@@ -342,187 +341,21 @@ function sendAuthEmail(email) {
     let invite = await channel.createInvite(options, `Inviting ${email} to server.`).catch(console.error);
     let code = `https://discord.gg/${invite.code}`;
 
-    let html = fs.readFile('./html/email.html', function(err, data) {
-      // let sendHTML = data.replace('DISCORDCODE', code);
-      //message and info sent in email
+    //add discord invite to html
+    fs.readFile('./html/confirm.html', 'utf8', function(err, data) {
+      if (err) {
+        return console.log(err);
+      }
+      let result = data
+        .replace(/DISCORDCODE/g, code)
+        .replace(/NAME/g, name)
+        .replace(/DISCORDUSER/g, discorduser);
+
       var mailOptions = {
         from: 'DiscordBot',
         to: `${email}`,
         subject: 'Discord Server Verification',
-        html: `<!doctype html>
-        <html>
-          <head>
-            <meta name="viewport" content="width=device-width">
-            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-            <title>Discord Server Invite</title>
-            <style>
-            /* -------------------------------------
-                INLINED WITH htmlemail.io/inline
-            ------------------------------------- */
-            /* -------------------------------------
-                RESPONSIVE AND MOBILE FRIENDLY STYLES
-            ------------------------------------- */
-            @media only screen and (max-width: 620px) {
-              table[class=body] h1 {
-                font-size: 28px !important;
-                margin-bottom: 10px !important;
-              }
-              table[class=body] p,
-                    table[class=body] ul,
-                    table[class=body] ol,
-                    table[class=body] td,
-                    table[class=body] span,
-                    table[class=body] a {
-                font-size: 16px !important;
-              }
-              table[class=body] .wrapper,
-                    table[class=body] .article {
-                padding: 10px !important;
-              }
-              table[class=body] .content {
-                padding: 0 !important;
-              }
-              table[class=body] .container {
-                padding: 0 !important;
-                width: 100% !important;
-              }
-              table[class=body] .main {
-                border-left-width: 0 !important;
-                border-radius: 0 !important;
-                border-right-width: 0 !important;
-              }
-              table[class=body] .btn table {
-                width: 100% !important;
-              }
-              table[class=body] .btn a {
-                width: 100% !important;
-              }
-              table[class=body] .img-responsive {
-                height: auto !important;
-                max-width: 100% !important;
-                width: auto !important;
-              }
-            }
-        
-            /* -------------------------------------
-                PRESERVE THESE STYLES IN THE HEAD
-            ------------------------------------- */
-            @media all {
-              .ExternalClass {
-                width: 100%;
-              }
-              .ExternalClass,
-                    .ExternalClass p,
-                    .ExternalClass span,
-                    .ExternalClass font,
-                    .ExternalClass td,
-                    .ExternalClass div {
-                line-height: 100%;
-              }
-              .apple-link a {
-                color: inherit !important;
-                font-family: inherit !important;
-                font-size: inherit !important;
-                font-weight: inherit !important;
-                line-height: inherit !important;
-                text-decoration: none !important;
-              }
-              .btn-primary table td:hover {
-                background-color: #34495e !important;
-              }
-              .btn-primary a:hover {
-                background-color: #34495e !important;
-                border-color: #34495e !important;
-              }
-            }
-            </style>
-          </head>
-          <body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
-            <table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f6f6f6;">
-              <tr>
-                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
-                <td class="container" style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; Margin: 0 auto; max-width: 580px; padding: 10px; width: 580px;">
-                  <div class="content" style="box-sizing: border-box; display: block; Margin: 0 auto; max-width: 580px; padding: 10px;">
-        
-                    <!-- START CENTERED WHITE CONTAINER -->
-                    <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">Discord Server Verification.</span>
-                    <table class="main" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 3px;">
-        
-                      <!-- START MAIN CONTENT AREA -->
-                      <tr>
-                        <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;">
-                          <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
-                            <tr>
-                                <img src="https://i.imgur.com/gxaWyAa.png" height="60"></tr>
-                              <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">
-                                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Hello there,</p>
-                                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">This email is your invite to the Digital Experience Discord server. This is a Valley Chrisitan student only Discord.</p>
-                                <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; Margin-bottom: 15px;">Incase you forgot our Discord ToS here it is for you:</p>
-                                <p> As the Valley Christian High School Esports Hub, I , will not invite NON-Valley Christian High School students to the Discord server. I , understand that in this Discord server, I must follow all the rules below.
-                                  <br>
-                                  <br>
-                                  Rules:
-                                  <br>
-                                  1) No swearing/inappropriate language<br>
-                                  2) No toxicity towards other teammates, teams, HSEL, and/or HSEL teams<br>
-                                  3) Keep channel content related to channel topics<br>
-                                  4) Do not spam/flood channels<br>
-                                  5) Follow the Discord Terms of Service <a href=https://discordapp.com/tos>https://discordapp.com/tos</a><br>
-                                  6) As a Valley Christian Student, be respectful and a proper role model for everyone in the server<br>
-                                  7) Listen to all Management/Leadership<br>
-                                  8) Be respectful to everyone<br>
-                                  9) Act civil in voice channels<br>
-                                  10) Use music bots and all other bots appropriately, do not play inappropriate music.<br>
-                                  11) I understand that if I do not follow these rules I may be punished in a way deemed acceptable by management/leadership.<br>
-                                </p>
-                                <table border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;">
-                                  <tbody>
-                                    <tr>
-                                      <td align="left" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-bottom: 15px;">
-                                        <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
-                                          <tbody>
-                                            <tr>
-                                              <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3498db; border-radius: 5px; text-align: center;"> <a href="${code}" target="_blank" style="display: inline-block; color: #ffffff; background-color: #3498db; border: solid 1px #3498db; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3498db;">Join Server</a> </td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                        <a style="color: #999999; font-size: 10px; text-align: center;">Alternatively click or copy this link: ${code}</a>
-                                      </td>
-                                    </tr>
-                                  </tbody>
-                                </table>
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                      </tr>
-        
-                    <!-- END MAIN CONTENT AREA -->
-                    </table>
-        
-                    <!-- START FOOTER -->
-                    <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
-                      <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
-                        <tr>
-                          <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
-                            <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">VCHS Esports<br>Digital Experience</span>
-                          </td>
-                        </tr>
-                        <tr>
-                        </tr>
-                      </table>
-                    </div>
-                    <!-- END FOOTER -->
-        
-                  <!-- END CENTERED WHITE CONTAINER -->
-                  </div>
-                </td>
-                <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;">&nbsp;</td>
-              </tr>
-            </table>
-          </body>
-        </html>
-        `
+        html: `${result}`
       };
 
       // finally sends the email to the user with the code so they know what it is!
@@ -536,6 +369,42 @@ function sendAuthEmail(email) {
     });
   }
   invite();
+}
+
+function sendErrorEmail(email, name, errormsg) {
+  //nodemail
+  var nodemailer = require('nodemailer');
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: ConfigService.config.mail.user,
+      pass: ConfigService.config.mail.pass
+    }
+  });
+
+  //add discord invite to html
+  fs.readFile('./html/error.html', 'utf8', function(err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    let result = data.replace(/NAME/g, name).replace(/ERROR/g, errormsg);
+
+    var mailOptions = {
+      from: 'DiscordBot',
+      to: `${email}`,
+      subject: 'Discord Server Verification',
+      html: `${result}`
+    };
+
+    // finally sends the email to the user with the code so they know what it is!
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        client.console(error);
+      } else {
+        client.console('Email sent: ' + info.response);
+      }
+    });
+  });
 }
 
 //checks if email has been sent
@@ -611,7 +480,7 @@ async function typeForm() {
                   .get(user.id)
                   .addRole(role)
                   .catch(console.error);
-                console.log(`adding ${choice} to ${user.name}`);
+                client.console(`adding ${choice} to ${user.name}`);
               });
             }
             return client.console(`${user.username} is already linked.`);
@@ -646,7 +515,7 @@ async function typeForm() {
               .get(user.id)
               .addRole(role)
               .catch(console.error);
-            console.log(`adding ${choice} to ${user.id}`);
+            client.console(`adding ${choice} to ${user.id}`);
           });
           client.console('Updated user ' + user.id);
         });
@@ -717,24 +586,86 @@ async function youtubeNotifier() {
       //   }
       // });
       sendMessage(`${client.ConfigService.config.channel.youtube}`, { embed });
-      youtube.set(`${channel.items[0].id.videoId}`, true);
+      if (channel.items) youtube.set(`${channel.items[0].id.videoId}`, true);
     } else {
       client.console(`YouTube | Already announced ${channel.items[0].id.videoId}`);
     }
   });
 }
 
-client.on('ready', ready => {
+//TypeForm Responses Webhook server
+function typeFormServer() {
   const http = require('http');
+  const crypto = require('crypto');
+  var options = {
+    key: fs.readFileSync('./https/key.pem'),
+    cert: fs.readFileSync('./https/cert.pem'),
+    method: 'POST',
+    path: '/typeform'
+  };
+  client.console('HTTP Server | Listening for requests'.red);
   http
-    .createServer(function(req, res) {
-      console.log('STATUS: ' + res.statusCode);
+    .createServer(options, function(req, res) {
+      let body = '';
+      req.setEncoding('utf8');
       req.on('data', function(chunk) {
-        client.console(chunk);
+        body += chunk;
       });
-      res.end();
+      req.on('end', function() {
+        let hmac = crypto.createHmac('sha256', `${client.ConfigService.config.apis.sha}`);
+        hmac.update(body);
+        if ('sha256=' + hmac.digest('base64') == req.headers['typeform-signature']) {
+          client.console('Crypto | Verified');
+          let data = JSON.parse(body);
+          let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+          let discord = client.users.find(
+            user => user.username + '#' + user.discriminator === `${data.form_response.answers[3].text}`
+          );
+          let discorduser = data.form_response.answers[3].text;
+          let email = data.form_response.answers[1].email; //email
+          let name = data.form_response.answers[0].text; //name
+          if (email.includes('@warriorlife.net')) {
+            sendAuthEmail(email, name, data.form_response.answers[3].text);
+            client.console(`Auth email sent to ${email}`);
+            veriEnmap.defer.then(() => {
+              veriEnmap.set(`${discord.id}`, {
+                name: `${name}`,
+                email: `${email}`
+              });
+            });
+          } else {
+            sendErrorEmail(email, name, 'Email is not a school approved email.');
+            client.console('Warriorlife Email not found! Sending error email...');
+          }
+          veriEnmap.defer.then(() => {
+            if (veriEnmap.has(discord.id, 'name') || veriEnmap.has(discord.id, 'email')) {
+              sendErrorEmail(email, name, 'Data with provided information already exists!');
+            }
+          });
+
+          res.end('<h1>Complete</h1>');
+          //find user in guild by searching with username from form
+        } else {
+          client.console('Crypto | Invalid Signature');
+          return res.end('<h1>Error</h1>');
+        }
+      });
     })
     .listen(3000);
+}
+
+client.on('ready', ready => {
+  const exec = require('child_process').exec;
+  client.console('SSH Tunnel | Started');
+  exec('sh ../samstepapi.sh', (error, stdout, stderr) => {
+    console.log(stdout);
+    console.log(stderr);
+    if (error !== null) {
+      console.log(`exec error: ${error}`);
+    }
+  });
+
+  typeFormServer();
 
   // try {
   //   setInterval(twitch, 1000);
@@ -747,11 +678,11 @@ client.on('ready', ready => {
     client.console(e);
   }
 
-  try {
-    setInterval(checkEmail, 10000);
-  } catch (e) {
-    client.console(e);
-  }
+  // try {
+  //   setInterval(checkEmail, 10000);
+  // } catch (e) {
+  //   client.console(e);
+  // }
 
   try {
     if (client.ConfigService.config.minecraft.discordToMC == true) {
