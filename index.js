@@ -231,6 +231,15 @@ async function owlLiveMatch() {
         //if announced, skip it (:
         return client.console(`Already announced ${body.data.liveMatch.id}`.yellow);
       } else {
+        function isEmpty(obj) {
+          for (var key in obj) {
+            if (obj.hasOwnProperty(key)) return false;
+          }
+          return true;
+        }
+        if (isEmpty(body.data.liveMatch)) {
+          return client.console('No live match data.');
+        }
         owl.set('live', body.data.liveMatch.id);
         //it wasn't announced, so we announce it with this code
         // Finds channel and sends msg to channel
@@ -242,6 +251,7 @@ async function owlLiveMatch() {
         //     }
         //   }
         // });
+
         const embed = {
           description: `${logos(body.data.liveMatch.competitors[0].abbreviatedName)} **${
             body.data.liveMatch.competitors[0].name
@@ -405,21 +415,13 @@ function sendErrorEmail(email, name, errormsg) {
 //typeform lookup runs whenever a user joins guild
 async function typeForm(member) {
   try {
-    // const response = await fetch('https://api.typeform.com/forms/IotT2f/responses', {
-    //   headers: {
-    //     Authorization: `Bearer ${client.ConfigService.config.apis.typeform}`
-    //   }
-    // }).catch(error => console.error(error));
-    // const data = await response.json();
-    // data.items.forEach(function(element) {
-
     //check if DB is ready
     veriEnmap.defer.then(() => {
       let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
       //if the user is not in the guild, do not crash!
       //if the discord id is in db, it means they are verified :D so add roles, nickname etc
       if (veriEnmap.has(`${member.user.id}`)) {
-        let addRole = guild.roles.find('name', `${client.ConfigService.config.roles.iamRole}`);
+        let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
         //if they dont have default role, run commands
         if (!guild.member(member.user.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
           // add the roles
@@ -434,16 +436,22 @@ async function typeForm(member) {
           client.console('Updated user ' + member.user.id);
           veriEnmap.get(`${member.user.id}`, 'roles').forEach(function(choice) {
             let role = guild.roles.find(r => r.name === `${choice}`);
-            guild.members
-              .get(member.user.id)
-              .addRole(role)
-              .catch(console.error);
-            client.console(`adding ${choice} to ${member.user.username}`);
+            guild.members.get(member.user.id).addRole(role);
           });
+          // veriEnmap.get(`${member.user.id}`, 'roles').forEach(function(choice) {
+          //   let role = guild.roles.find(r => r.name === `${choice}`);
+          //   guild.members
+          //     .get(member.user.id)
+          //     .addRole(role)
+          //     .catch(console.error);
+          //   client.console(`adding ${choice} to ${member.user.username}`);
+          // });
           member.send(
-            `Your Discord account was sucessfully linked to **${
+            `You have been sucessfully verified in the Discord server **${
               guild.name
-            }**. If you believe this was an error email us at vchsesports@gmail.com\nDiscord: ${member.user.username}`
+            }**. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${
+              member.user.username
+            }\nEmail: ${veriEnmap.get(member.user.id, 'email')}\`\`\``
           );
         }
       } else {
@@ -560,19 +568,21 @@ function typeFormServer() {
           let email = data.form_response.answers[1].email; //email
           let name = data.form_response.answers[0].text; //name
           veriEnmap.defer.then(() => {
-            if (veriEnmap.hasKey(email)) {
-              return sendErrorEmail(email, name, 'Data with provided information already exists!');
+            const value = veriEnmap.map(Object.values).flat();
+            if (email === value[1]) {
+              return sendErrorEmail(email, name, 'Form data with provided email already exists!');
+            }
+            if (veriEnmap.has(discordid)) {
+              return sendErrorEmail(email, name, 'Data with provided Discord ID already exists!');
             }
             if (email.includes('@warriorlife.net')) {
               sendAuthEmail(email, name, discordid);
               client.console(`Auth email sent to ${email}`);
-              let roles = new Array();
-              roles.push(`${data.form_response.answers[4].choices.labels}`);
               veriEnmap.defer.then(() => {
                 veriEnmap.set(`${discordid}`, {
                   name: `${name}`,
                   email: `${email}`,
-                  roles: `${roles}`
+                  roles: data.form_response.answers[4].choices.labels
                 });
                 console.log(`set enmap data\n${name}\n${email}\n${discordid}`);
               });
@@ -596,6 +606,7 @@ function typeFormServer() {
 client.on('ready', ready => {
   const exec = require('child_process').exec;
   client.console('SSH Tunnel | Started');
+
   // exec('sh ../samstepapi.sh', (error, stdout, stderr) => {
   //   console.log(stdout);
   //   console.log(stderr);
@@ -716,20 +727,62 @@ if (!ConfigService.config.rconPort == '') {
 client.on('message', message => {
   if (message.content.startsWith(`${client.ConfigService.config.prefix}data`)) {
     veriEnmap.defer.then(() => {
-      message.author.send('```json\n' + JSON.stringify(veriEnmap.get(`${message.author.id}`), null, 4) + '```');
-    });
-    console.log(message.author.id);
-  }
-  if (message.content.startsWith(`${client.ConfigService.config.prefix}alldata`)) {
-    veriEnmap.defer.then(() => {
-      message.channel.send(JSON.stringify(veriEnmap.fetchEverything()));
-    });
-  }
-
-  if (message.content.startsWith(`${client.ConfigService.config.prefix}cleardata`)) {
-    veriEnmap.defer.then(() => {
-      veriEnmap.deleteAll();
-      message.channel.send('Cleared verification enmap');
+      if (!args[0]) {
+        const embed = {
+          color: 16239504,
+          author: {
+            name: `${message.author.username}'s Data`,
+            avatar_url: `${message.author.avatarURL}`
+          },
+          fields: [
+            {
+              name: 'Name',
+              value: `${veriEnmap.get(`${message.author.id}`, 'name')}`
+            },
+            {
+              name: 'Discord',
+              value: `<@${message.author.id}>`
+            },
+            {
+              name: 'Email',
+              value: `${veriEnmap.get(`${message.author.id}`, 'email')}`
+            },
+            {
+              name: 'Roles',
+              value: `${veriEnmap.get(`${message.author.id}`, 'roles').join('\n')}`
+            }
+          ]
+        };
+        message.author.send({ embed });
+      } else {
+        var member = message.mentions.users.first();
+        const embed = {
+          color: 16239504,
+          author: {
+            name: `${member.username}'s Data`,
+            avatar_url: `${member.avatarURL}`
+          },
+          fields: [
+            {
+              name: 'Name',
+              value: `${veriEnmap.get(`${member.id}`, 'name')}`
+            },
+            {
+              name: 'Discord',
+              value: `<@${member.id}>`
+            },
+            {
+              name: 'Email',
+              value: `${veriEnmap.get(`${member.id}`, 'email')}`
+            },
+            {
+              name: 'Roles',
+              value: `${veriEnmap.get(`${member.id}`, 'roles').join('\n')}`
+            }
+          ]
+        };
+        if (client.isMod(message.author, message)) return message.author.send({ embed });
+      }
     });
   }
 

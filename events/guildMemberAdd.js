@@ -5,5 +5,9 @@ exports.run = (client, member, message) => {
   let SERVERNAME = guild.name;
   let newchannel = guild.channels.find(`name`, `${ConfigService.config.channel.joinCh}`);
   var replacer = ConfigService.config.joinMsg.replace('NEWUSER', NEWUSER).replace('SERVERNAME', SERVERNAME);
-  newchannel.send(`${replacer}`).catch(console.error);
+  if (ConfigService.config.joinMsg === '') {
+    return;
+  } else {
+    newchannel.send(`${replacer}`).catch(console.error);
+  }
 };
