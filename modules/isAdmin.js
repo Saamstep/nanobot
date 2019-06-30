@@ -1,9 +1,7 @@
 module.exports = function isAdmin(user, message, msg) {
   const ConfigService = require('../config.js');
-  let admin = message.member.roles.find(
-    'name',
-    `${ConfigService.config.adminrolename}`
-  );
+  let admin = message.member.roles.find(a => a.name === `${ConfigService.config.adminrolename}`);
+  
 
   let error = require('../modules/errorMod.js');
   try {
@@ -16,9 +14,9 @@ module.exports = function isAdmin(user, message, msg) {
     if (message.author.id == ConfigService.config.ownerid) {
       return true;
     } else {
-      let role = ConfigService.config.adminrolename;
+      let role = ConfigService.config.roles.admin;
       if (msg == true) {
-        error(`You are missing the \`${role}\` permission role.`, message);
+        return error(`You are missing the \`${role}\` permission role.`, message);
       }
     }
   }

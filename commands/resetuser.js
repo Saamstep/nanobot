@@ -3,10 +3,7 @@ exports.run = (client, message, args) => {
   const ConfigService = require('../config.js');
   const member = message.mentions.members.first();
   let guild = message.guild;
-  let addRole = message.guild.roles.find(
-    'name',
-    `${ConfigService.config.iamRole}`
-  );
+  let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
   let log = require('../modules/logMod.js');
   let isAdmin = require('../modules/isAdmin.js');
   message.delete();

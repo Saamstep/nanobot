@@ -244,24 +244,12 @@ function sendAuthEmail(email, name, discorduser) {
       pass: ConfigService.config.mail.pass
     }
   });
-  async function invite() {
-    let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-
-    let channel = guild.channels.find(ch => ch.name === `${client.ConfigService.config.channel.joinCh}`);
-    let options = {
-      maxUses: '1',
-      unique: true
-    };
-    let invite = await channel.createInvite(options, `Inviting ${email} to server.`).catch(console.error);
-    let code = `https://discord.gg/${invite.code}`;
-
     //add discord invite to html
     fs.readFile('./html/confirm.html', 'utf8', function(err, data) {
       if (err) {
         return console.log(err);
       }
       let result = data
-        .replace(/DISCORDCODE/g, code)
         .replace(/NAME/g, name)
         .replace(/DISCORDUSER/g, discorduser);
 
@@ -278,11 +266,10 @@ function sendAuthEmail(email, name, discorduser) {
           client.console(error);
         } else {
           client.console('Email sent: ' + info.response);
+          sendMessage(`${client.ConfigService.config.channel.log}`, `Email sent to ${name} (${discorduser}) with the email adress ${email} for server verification.`);
         }
       });
     });
-  }
-  invite();
 }
 
 function sendErrorEmail(email, name, errormsg) {
@@ -321,8 +308,8 @@ function sendErrorEmail(email, name, errormsg) {
   });
 }
 
-//typeform lookup runs whenever a user joins guild
-async function typeForm(member) {
+
+async function onJoin(member) {
   try {
     //check if DB is ready
     veriEnmap.defer.then(() => {
@@ -343,18 +330,11 @@ async function typeForm(member) {
             .get(member.user.id)
             .setNickname(`${veriEnmap.get(`${member.user.id}`, 'name')}`, 'Joined server.');
           client.console('Updated user ' + member.user.id);
+          sendMessage(`${client.ConfigService.config.channel.log}`, `${member.user.id} was updated with all their roles and nicknames after joining.`);
           veriEnmap.get(`${member.user.id}`, 'roles').forEach(function(choice) {
             let role = guild.roles.find(r => r.name === `${choice}`);
             guild.members.get(member.user.id).addRole(role);
           });
-          // veriEnmap.get(`${member.user.id}`, 'roles').forEach(function(choice) {
-          //   let role = guild.roles.find(r => r.name === `${choice}`);
-          //   guild.members
-          //     .get(member.user.id)
-          //     .addRole(role)
-          //     .catch(console.error);
-          //   client.console(`adding ${choice} to ${member.user.username}`);
-          // });
           member.send(
             `You have been sucessfully verified in the Discord server **${
               guild.name
@@ -368,11 +348,8 @@ async function typeForm(member) {
         member.send(
           `Welcome to **${
             guild.name
-          }** we did not seem to find your form submission so we will have to remove you from the guild. If you believe this is an error please email us.`
+          }** requires user verification, please fill out the Google form here: https://forms.gle/qGxEx2Vqd7fcLbzD8. Note that you will be kicked if you do not fill the form out.`
         );
-        // setTimeout(function() {
-        //   member.kick(`${member.displayName}'s data is not in db.`);
-        // }, 3000);
       }
     });
 
@@ -383,7 +360,7 @@ async function typeForm(member) {
 }
 
 client.on('guildMemberAdd', member => {
-  typeForm(member);
+  onJoin(member);
 });
 
 const youtube = new Enmap({
@@ -468,41 +445,60 @@ function typeFormServer() {
         body += chunk;
       });
       req.on('end', function() {
-        let hmac = crypto.createHmac('sha256', `${client.ConfigService.config.apis.sha}`);
-        hmac.update(body);
-        if ('sha256=' + hmac.digest('base64') == req.headers['typeform-signature']) {
+    // let hmac = crypto.createHmac('sha256', `${client.ConfigService.config.apis.sha}`);
+    //     hmac.update(body);
+        // if ('sha256=' + hmac.digest('base64') == req.headers['typeform-signature']) {
+        if (body) {
           client.console('Crypto | Verified');
           let data = JSON.parse(body);
-          let discordid = data.form_response.answers[3].text; //discord id
-          let email = data.form_response.answers[1].email; //email
-          let name = data.form_response.answers[0].text; //name
+          console.log(data);
+
+          let discorduser = data[2].answer; //discord username
+          let discordid = client.users.find(user => user.username + '#' + user.discriminator == `${discorduser}`);
+          
+          let email = data[1].answer; //email
+          let name = data[0].answer; //name
           veriEnmap.defer.then(() => {
-            const value = veriEnmap.map(Object.values).flat();
-            if (email === value[1]) {
-              return sendErrorEmail(email, name, 'Form data with provided email already exists!');
-            }
-            if (veriEnmap.has(discordid)) {
-              return sendErrorEmail(email, name, 'Data with provided Discord ID already exists!');
-            }
-            if (email.includes('@warriorlife.net')) {
-              sendAuthEmail(email, name, discordid);
+          //  const value = veriEnmap.map(Object.values).flat();
+         //   if (email === value[1]) {
+           //   return sendErrorEmail(email, name, 'Form data with provided email already exists!');
+          //  }
+              sendAuthEmail(email, name, discorduser);
               client.console(`Auth email sent to ${email}`);
               veriEnmap.defer.then(() => {
-                veriEnmap.set(`${discordid}`, {
+                veriEnmap.set(`${discordid.id}`, {
                   name: `${name}`,
                   email: `${email}`,
-                  roles: data.form_response.answers[4].choices.labels
+                  roles: data[3].answer
                 });
-                console.log(`set enmap data\n${name}\n${email}\n${discordid}`);
+    
+                discordid.send(
+                  `You have been sucessfully verified in the Discord server. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${
+                    discorduser}\nEmail: ${veriEnmap.get(discordid.id, 'email')}\`\`\``
+                );
+                console.log(`set enmap data\n${name}\n${email}\n${discordid}\nwith given username: ${discorduser}`);
+                let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+                let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
+                //if they dont have default role, run commands
+                if (!guild.member(discordid.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
+                  // add the roles
+                  guild.members
+                    .get(discordid.id)
+                    .addRole(addRole)
+                    .catch(console.error);
+                  // set nickname
+                  guild.members
+                    .get(discordid.id)
+                    .setNickname(`${veriEnmap.get(`${discordid.id}`, 'name')}`, 'Joined server.');
+                  client.console('Updated user: ' + discorduser);
+                  veriEnmap.get(discordid.id, 'roles').forEach(function(choice) {
+                    let role = guild.roles.find(r => r.name === `${choice}`);
+                    guild.members.get(discordid.id).addRole(role);
+                  });
+                };
               });
-            } else {
-              sendErrorEmail(email, name, 'Email is not a school approved email.');
-              client.console('Warriorlife Email not found! Sending error email...');
-            }
           });
-
           res.end('<h1>Complete</h1>');
-          //find user in guild by searching with username from form
         } else {
           client.console('Crypto | Invalid Signature');
           return res.end('<h1>Error</h1>');
@@ -579,7 +575,6 @@ async function twitchNotifier() {
 
 client.on('ready', ready => {
   typeFormServer();
-  twitch.deleteAll();
   try {
     setInterval(() => {
       twitchNotifier();
@@ -692,6 +687,37 @@ if (!ConfigService.config.rconPort == '') {
 }
 
 client.on('message', message => {
+  if(message.author.id == `${client.ConfigService.config.ownerid}`) {
+ if (message.content.startsWith('!cleardata_nocancel')) {
+    veriEnmap.defer.then(() => {
+      veriEnmap.deleteAll();
+      message.channel.send('Cleared verification enmap');
+    });
+}
+
+if(message.content.startsWith(`${client.ConfigService.config.prefix}addrole`)) {
+  let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+  let part = message.content.split(' ').slice(1);
+  if(!part[0] && part[1]) {
+    return 
+  }
+  let member = message.mentions.users.first();
+  veriEnmap.push(`${member.id}`, `${part[1]}`, 'roles')
+}
+
+if(message.content.startsWith(`${client.ConfigService.config.prefix}removerole`)) {
+  let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+  let part = message.content.split(' ').slice(1);
+  if(!part[0] && part[1]) {
+    return 
+  }
+  let member = message.mentions.users.first();
+  veriEnmap.remove(`${member.id}`, `${part[1]}`, 'roles')
+}
+  } else {
+    return;
+  }
+
   if (message.content.startsWith(`${client.ConfigService.config.prefix}data`)) {
     veriEnmap.defer.then(() => {
       if (!args[0]) {
@@ -708,7 +734,7 @@ client.on('message', message => {
             },
             {
               name: 'Discord',
-              value: `<@${message.author.id}>`
+              value: `${message.author.username}#${message.author.discriminator}`
             },
             {
               name: 'Email',
