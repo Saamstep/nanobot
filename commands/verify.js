@@ -1,7 +1,9 @@
 exports.run = (client, message, args, veriEnmap) => {
  if(client.isMod(message.author, message)) {
+   if(args[2]) {
     let member = message.mentions.users.first();
     let roleUser = message.guild.members.get(member.id);
+   }
     switch(args[0]) {
         case "clearALL_dangerous_be_careful":
                 veriEnmap.defer.then(() => {

@@ -859,8 +859,8 @@ client.on('message', message => {
   }
 
   // Command file manager code
+  if (!message.content.startsWith(ConfigService.config.prefix)) return;
   if (!message.guild || message.author.bot) return;
-  if (!message.content.includes(ConfigService.config.prefix)) return;
 
   let command = message.content.split(' ')[0];
   command = command.slice(config.prefix.length);
