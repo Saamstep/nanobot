@@ -7,7 +7,7 @@ module.exports = function logEvent(event, reason, color, message, client) {
     color: color,
     footer: {
       icon_url: client.user.avatarURL,
-      text: `${client.ConfigService.config.minecraft.serverName} Action Logger`,
+      text: `${client.user.username} Action Logger`,
       timestamp: Date.now()
     },
     author: {

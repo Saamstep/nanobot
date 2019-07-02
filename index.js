@@ -342,6 +342,8 @@ async function onJoin(member) {
               member.user.username
             }\nEmail: ${veriEnmap.get(member.user.id, 'email')}\`\`\``
           );
+          let newchannel = guild.channels.find(ch => ch.name === `${ConfigService.config.channel.joinCh}`);
+          newchannel.send(`✅ **${member.user.username}** has been verified!`);
         }
       } else {
         //if they are not in the database (wonder how they got there) then run the following commands
@@ -429,7 +431,6 @@ async function youtubeNotifier() {
 //TypeForm Responses Webhook server
 function typeFormServer() {
   const http = require('http');
-  const crypto = require('crypto');
   var options = {
     key: fs.readFileSync('./https/key.pem'),
     cert: fs.readFileSync('./https/cert.pem'),
@@ -445,9 +446,7 @@ function typeFormServer() {
         body += chunk;
       });
       req.on('end', function() {
-    // let hmac = crypto.createHmac('sha256', `${client.ConfigService.config.apis.sha}`);
-    //     hmac.update(body);
-        // if ('sha256=' + hmac.digest('base64') == req.headers['typeform-signature']) {
+   
         if (body) {
           client.console('Crypto | Verified');
           let data = JSON.parse(body);
@@ -459,10 +458,6 @@ function typeFormServer() {
           let email = data[1].answer; //email
           let name = data[0].answer; //name
           veriEnmap.defer.then(() => {
-          //  const value = veriEnmap.map(Object.values).flat();
-         //   if (email === value[1]) {
-           //   return sendErrorEmail(email, name, 'Form data with provided email already exists!');
-          //  }
               sendAuthEmail(email, name, discorduser);
               client.console(`Auth email sent to ${email}`);
               veriEnmap.defer.then(() => {
@@ -476,8 +471,10 @@ function typeFormServer() {
                   `You have been sucessfully verified in the Discord server. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${
                     discorduser}\nEmail: ${veriEnmap.get(discordid.id, 'email')}\`\`\``
                 );
-                console.log(`set enmap data\n${name}\n${email}\n${discordid}\nwith given username: ${discorduser}`);
                 let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+                let join = guild.channels.find(jn => jn.name === `${ConfigService.config.channel.joinCh}`);
+                join.send(`✅ **${discordid.username}** has been verified, welcome ${name}.`);
+                console.log(`set enmap data\n${name}\n${email}\n${discordid.username}\nwith given username: ${discorduser}`);
                 let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
                 //if they dont have default role, run commands
                 if (!guild.member(discordid.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
@@ -687,97 +684,113 @@ if (!ConfigService.config.rconPort == '') {
 }
 
 client.on('message', message => {
-  if(message.author.id == `${client.ConfigService.config.ownerid}`) {
- if (message.content.startsWith('!cleardata_nocancel')) {
-    veriEnmap.defer.then(() => {
-      veriEnmap.deleteAll();
-      message.channel.send('Cleared verification enmap');
-    });
-}
+  // let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+  // let adminPerm = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.adminrolename}`)
+//   if(message.member.roles.has(adminPerm.id)) {
+//  if (message.content.startsWith('!cleardata_nocancel')) {
+//     veriEnmap.defer.then(() => {
+//       veriEnmap.deleteAll();
+//       message.channel.send('Cleared verification enmap');
+//     });
+// }
+// 
+// if(message.content.startsWith(`${client.ConfigService.config.prefix}addrole`)) {
 
-if(message.content.startsWith(`${client.ConfigService.config.prefix}addrole`)) {
-  let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-  let part = message.content.split(' ').slice(1);
-  if(!part[0] && part[1]) {
-    return 
-  }
-  let member = message.mentions.users.first();
-  veriEnmap.push(`${member.id}`, `${part[1]}`, 'roles')
-}
+//   let part = message.content.split(' ').slice(1);
+//   if(!part[0] && part[1]) {
+//     return 
+//   }
+//   let member = message.mentions.users.first();
+//   veriEnmap.push(`${member.id}`, `${part[1]}`, 'roles')
+// }
 
-if(message.content.startsWith(`${client.ConfigService.config.prefix}removerole`)) {
-  let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-  let part = message.content.split(' ').slice(1);
-  if(!part[0] && part[1]) {
-    return 
-  }
-  let member = message.mentions.users.first();
-  veriEnmap.remove(`${member.id}`, `${part[1]}`, 'roles')
-}
-  } else {
-    return;
-  }
+// if(message.content.startsWith(`${client.ConfigService.config.prefix}removerole`)) {
+  
+//   let part = message.content.split(' ').slice(1);
+//   if(!part[0] && part[1]) {
+//     return 
+//   }
 
-  if (message.content.startsWith(`${client.ConfigService.config.prefix}data`)) {
-    veriEnmap.defer.then(() => {
-      if (!args[0]) {
-        const embed = {
-          color: 16239504,
-          author: {
-            name: `${message.author.username}'s Data`,
-            avatar_url: `${message.author.avatarURL}`
-          },
-          fields: [
-            {
-              name: 'Name',
-              value: `${veriEnmap.get(`${message.author.id}`, 'name')}`
-            },
-            {
-              name: 'Discord',
-              value: `${message.author.username}#${message.author.discriminator}`
-            },
-            {
-              name: 'Email',
-              value: `${veriEnmap.get(`${message.author.id}`, 'email')}`
-            },
-            {
-              name: 'Roles',
-              value: `${veriEnmap.get(`${message.author.id}`, 'roles').join('\n')}`
-            }
-          ]
-        };
-        message.author.send({ embed });
-      } else {
-        var member = message.mentions.users.first();
-        const embed = {
-          color: 16239504,
-          author: {
-            name: `${member.username}'s Data`,
-            avatar_url: `${member.avatarURL}`
-          },
-          fields: [
-            {
-              name: 'Name',
-              value: `${veriEnmap.get(`${member.id}`, 'name')}`
-            },
-            {
-              name: 'Discord',
-              value: `<@${member.id}>`
-            },
-            {
-              name: 'Email',
-              value: `${veriEnmap.get(`${member.id}`, 'email')}`
-            },
-            {
-              name: 'Roles',
-              value: `${veriEnmap.get(`${member.id}`, 'roles').join('\n')}`
-            }
-          ]
-        };
-        if (client.isMod(message.author, message)) return message.author.send({ embed });
-      }
-    });
-  }
+//   let member = message.mentions.users.first();
+//   veriEnmap.remove(`${member.id}`, `${part[1]}`, 'roles')
+// }
+
+// if(message.content.startsWith(`${client.ConfigService.config.prefix}updatename`)) {
+  
+//   let part = message.content.split(' ').slice(1);
+//   if(!part[0] && part[1]) {
+//     return 
+//   }
+
+// let member = message.mentions.users.first();
+// veriEnmap.set(`${member.id}`, 'name', `${part[0]} ${part[1]}`)
+// member.setNickname(`${part[0]} ${part[1]}`);
+// }
+
+//   } else {
+//     return;
+//   }
+
+   // if (message.content.startsWith(`${client.ConfigService.config.prefix}data`)) {
+  //   veriEnmap.defer.then(() => {
+  //     if (!args[0]) {
+  //       const embed = {
+  //         color: 16239504,
+  //         author: {
+  //           name: `${message.author.username}'s Data`,
+  //           avatar_url: `${message.author.avatarURL}`
+  //         },
+  //         fields: [
+  //           {
+  //             name: 'Name',
+  //             value: `${veriEnmap.get(`${message.author.id}`, 'name')}`
+  //           },
+  //           {
+  //             name: 'Discord',
+  //             value: `${message.author.username}#${message.author.discriminator}`
+  //           },
+  //           {
+  //             name: 'Email',
+  //             value: `${veriEnmap.get(`${message.author.id}`, 'email')}`
+  //           },
+  //           {
+  //             name: 'Roles',
+  //             value: `${veriEnmap.get(`${message.author.id}`, 'roles').join('\n')}`
+  //           }
+  //         ]
+  //       };
+  //       message.author.send({ embed });
+  //     } else {
+  //       var member = message.mentions.users.first();
+  //       const embed = {
+  //         color: 16239504,
+  //         author: {
+  //           name: `${member.username}'s Data`,
+  //           avatar_url: `${member.avatarURL}`
+  //         },
+  //         fields: [
+  //           {
+  //             name: 'Name',
+  //             value: `${veriEnmap.get(`${member.id}`, 'name')}`
+  //           },
+  //           {
+  //             name: 'Discord',
+  //             value: `<@${member.id}>`
+  //           },
+  //           {
+  //             name: 'Email',
+  //             value: `${veriEnmap.get(`${member.id}`, 'email')}`
+  //           },
+  //           {
+  //             name: 'Roles',
+  //             value: `${veriEnmap.get(`${member.id}`, 'roles').join('\n')}`
+  //           }
+  //         ]
+  //       };
+  //       if (client.isMod(message.author, message)) return message.author.send({ embed });
+  //     }
+  //   });
+  // }
 
   //MC Bridge
   if (message.channel.id === `${client.ConfigService.config.channel.mcBridge}`) {
@@ -857,7 +870,7 @@ if(message.content.startsWith(`${client.ConfigService.config.prefix}removerole`)
   // Regular command file manager
   try {
     let commandFile = require(`./commands/${command}.js`);
-    commandFile.run(client, message, args);
+    commandFile.run(client, message, args, veriEnmap);
     message.channel.stopTyping(true);
   } catch (err) {
     if (config.debug === true) {
