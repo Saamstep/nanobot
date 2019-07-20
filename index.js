@@ -41,6 +41,22 @@ function sendMessage(name, msg) {
   });
 }
 
+client.on('ready', ready => {
+  fs.readdir('./loops/', (err, files) => {
+    if (err) return client.console(err);
+    files.forEach(file => {
+      let eventFunction = require(`./loops/${file}`);
+      let eventName = file.split('.')[0];
+      setInterval(() => {
+        eventFunction.run(client, owl, youtube, twitch, sendMessage);
+      }, eventFunction.time);
+      client.console(`Ran ${eventName} loop event`.cyan);
+    });
+  });
+});
+
+//===ALL ENMAPS===
+
 //enmap config (yes we're actually doing it this time)
 client.config = new Enmap({
   name: 'bot_config',
@@ -64,174 +80,19 @@ const owl = new Enmap({
   fetchAll: false
 });
 
-//OWL Team Logos
-function logos(output) {
-  const emoji = client.emojis.find(emoji => emoji.name === `${output}`);
-  return emoji;
-}
-
-//OWL News
-async function owlNews() {
-  client.console('OWL | Checking for OWL news...'.yellow);
-
-  //we use try incase the api doesn't exist and the bot crashes :P
-  try {
-    //fetch news from official API
-    const response = await fetch('https://api.overwatchleague.com/news');
-    const body = await response.json();
-    //check to see if we already announced the lastest article
-    owl.defer.then(() => {
-      if (owl.get('news') === body.blogs[0].blogId) {
-        //if announced, skip it (:
-        return client.console(`Already announced ${body.blogs[0].blogId}`.yellow);
-      } else {
-        owl.set('news', body.blogs[0].blogId);
-        //it wasn't announced, so we annoucne it with this code
-        // Finds channel and sends msg to channel
-        const embed = {
-          description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${
-            body.blogs[0].defaultUrl
-          })`,
-          url: `${body.blogs[0].defaultUrl}`,
-          color: 16752385,
-          timestamp: body.blogs[0].publish,
-          footer: {
-            text: `Author: ${body.blogs[0].author}`
-          },
-          image: {
-            url: `${body.blogs[0].thumbnail.url.replace('//', 'https://')}`
-          },
-          author: {
-            name: 'OverwatchLeague News',
-            url: `${body.blogs[0].defaultUrl}`,
-            icon_url:
-              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
-          }
-        };
-        // client.guilds.map(guild => {
-        //   if (guild.available) {
-        //     let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.owl}`);
-        //     if (channel) {
-
-        //       channel.send({ embed });
-        //     }
-        //   }
-        // });
-        sendMessage(`${client.ConfigService.config.channel.owl}`, { embed });
-      }
-    });
-  } catch (e) {
-    client.console(e);
-  }
-}
-
-//OWL Live-Match
-async function owlLiveMatch() {
-  client.console('OWL | Checking for OWL live match...'.yellow);
-
-  //we use try incase the api doesn't exist and the bot crashes :P
-  try {
-    //fetch news from official API
-    const response = await fetch('https://api.overwatchleague.com/live-match');
-    const body = await response.json();
-    //check to see if we already announced the lastest article
-    owl.defer.then(() => {
-      if (owl.get('live') === body.data.liveMatch.id) {
-        //if announced, skip it (:
-        return client.console(`Already announced ${body.data.liveMatch.id}`.yellow);
-      } else {
-        function isEmpty(obj) {
-          for (var key in obj) {
-            if (obj.hasOwnProperty(key)) return false;
-          }
-          return true;
-        }
-        if (isEmpty(body.data.liveMatch)) {
-          return client.console('No live match data.');
-        }
-        owl.set('live', body.data.liveMatch.id);
-        //it wasn't announced, so we announce it with this code
-        // Finds channel and sends msg to channel
-        // client.guilds.map(guild => {
-        //   if (guild.available) {
-        //     let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.owl}`);
-        //     if (channel) {
-        //       channel.send({ embed });
-        //     }
-        //   }
-        // });
-
-        const embed = {
-          description: `${logos(body.data.liveMatch.competitors[0].abbreviatedName)} **${
-            body.data.liveMatch.competitors[0].name
-          }** vs ${logos(body.data.liveMatch.competitors[1].abbreviatedName)} **${
-            body.data.liveMatch.competitors[1].name
-          }**`,
-          url: `https://twitch.tv/overwatchleague`,
-          color: 16752385,
-          fields: [
-            {
-              name: 'Date & Time',
-              value: `${new Date(body.data.liveMatch.startDate)}`
-            }
-          ],
-          author: {
-            name: 'OverwatchLeague Live',
-            icon_url:
-              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
-          }
-        };
-        sendMessage(`${client.ConfigService.config.channel.owl}`, { embed });
-      }
-    });
-  } catch (e) {
-    client.console(e);
-  }
-}
-
-// mc channel topic:
-async function topic() {
-  try {
-    const response = await fetch(
-      `http://mcapi.us/server/status?ip=${client.ConfigService.config.minecraft.IP}&port=${
-        client.ConfigService.config.minecraft.port
-      }`
-    );
-
-    const body = await response.json();
-
-    if (body.online === false) {
-      client.guilds.map(guild => {
-        let channel = guild.channels.find(
-          channel => channel.name === `${client.ConfigService.config.channel.mcBridge}`
-        );
-        if (channel) {
-          channel.setTopic('Server Offline');
-        }
-      });
-    }
-    if (body.online === true) {
-      client.guilds.map(guild => {
-        let channel = guild.channels.find(channel => channel.name === `mc-channel`);
-        if (channel) {
-          channel.setTopic(
-            `${ConfigService.config.serverName} | ${body.server.name} | ${body.players.now}/${body.players.max} online`
-          );
-          client.console('MC --> Discord | Set topic!');
-        }
-      });
-    }
-  } catch (e) {
-    client.console(e);
-  }
-}
-
-// enmap and data storage object
+// enmap and data storage object for verification system
 
 const veriEnmap = new Enmap({
   name: 'verification',
   autoFetch: true,
   fetchAll: true
+});
+
+//YT notifier
+const youtube = new Enmap({
+  name: 'youtube',
+  autoFetch: true,
+  fetchAll: false
 });
 
 function sendAuthEmail(email, name, discorduser) {
@@ -244,32 +105,33 @@ function sendAuthEmail(email, name, discorduser) {
       pass: ConfigService.config.mail.pass
     }
   });
-    //add discord invite to html
-    fs.readFile('./html/confirm.html', 'utf8', function(err, data) {
-      if (err) {
-        return console.log(err);
+  //add discord invite to html
+  fs.readFile('./html/confirm.html', 'utf8', function(err, data) {
+    if (err) {
+      return console.log(err);
+    }
+    let result = data.replace(/NAME/g, name).replace(/DISCORDUSER/g, discorduser);
+
+    var mailOptions = {
+      from: 'DiscordBot',
+      to: `${email}`,
+      subject: 'Discord Server Verification',
+      html: `${result}`
+    };
+
+    // finally sends the email to the user with the code so they know what it is!
+    transporter.sendMail(mailOptions, function(error, info) {
+      if (error) {
+        client.console(error);
+      } else {
+        client.console('Email sent: ' + info.response);
+        sendMessage(
+          `${client.ConfigService.config.channel.log}`,
+          `Email sent to ${name} (${discorduser}) with the email adress ${email} for server verification.`
+        );
       }
-      let result = data
-        .replace(/NAME/g, name)
-        .replace(/DISCORDUSER/g, discorduser);
-
-      var mailOptions = {
-        from: 'DiscordBot',
-        to: `${email}`,
-        subject: 'Discord Server Verification',
-        html: `${result}`
-      };
-
-      // finally sends the email to the user with the code so they know what it is!
-      transporter.sendMail(mailOptions, function(error, info) {
-        if (error) {
-          client.console(error);
-        } else {
-          client.console('Email sent: ' + info.response);
-          sendMessage(`${client.ConfigService.config.channel.log}`, `Email sent to ${name} (${discorduser}) with the email adress ${email} for server verification.`);
-        }
-      });
     });
+  });
 }
 
 function sendErrorEmail(email, name, errormsg) {
@@ -308,7 +170,6 @@ function sendErrorEmail(email, name, errormsg) {
   });
 }
 
-
 async function onJoin(member) {
   try {
     //check if DB is ready
@@ -330,7 +191,10 @@ async function onJoin(member) {
             .get(member.user.id)
             .setNickname(`${veriEnmap.get(`${member.user.id}`, 'name')}`, 'Joined server.');
           client.console('Updated user ' + member.user.id);
-          sendMessage(`${client.ConfigService.config.channel.log}`, `${member.user.id} was updated with all their roles and nicknames after joining.`);
+          sendMessage(
+            `${client.ConfigService.config.channel.log}`,
+            `${member.user.id} was updated with all their roles and nicknames after joining.`
+          );
           veriEnmap.get(`${member.user.id}`, 'roles').forEach(function(choice) {
             let role = guild.roles.find(r => r.name === `${choice}`);
             guild.members.get(member.user.id).addRole(role);
@@ -365,69 +229,6 @@ client.on('guildMemberAdd', member => {
   onJoin(member);
 });
 
-const youtube = new Enmap({
-  name: 'youtube',
-  autoFetch: true,
-  fetchAll: false
-});
-
-//YT Video
-async function youtubeNotifier() {
-  client.ConfigService.config.youtubeChannels.forEach(async function(id) {
-    client.console('YouTube | Searching for new videos...');
-    const api = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?key=${
-        client.ConfigService.config.apis.youtube
-      }&channelId=${id}&part=snippet,id&order=date&maxResults=1`
-    );
-    const channel = await api.json();
-    if (!youtube.has(channel.items[0].id.videoId)) {
-      client.console('YouTube | Found channel video to announce!');
-      let youtubeURL = `https://youtu.be/${channel.items[0].id.videoId}`;
-      const embed = {
-        url: `${youtubeURL}`,
-        color: 15076647,
-        timestamp: `${channel.items[0].snippet.publishedAt}`,
-        footer: {
-          text: 'YouTube Notifier'
-        },
-        image: {
-          url: `${channel.items[0].snippet.thumbnails.medium.url}`
-        },
-        author: {
-          name: `${channel.items[0].snippet.channelTitle} Uploaded`,
-          url: `${youtubeURL}`,
-          icon_url: 'https://seeklogo.com/images/Y/youtube-square-logo-3F9D037665-seeklogo.com.png'
-        },
-        fields: [
-          {
-            name: 'Title',
-            value: `${channel.items[0].snippet.title}`
-          },
-          {
-            name: 'Video Link',
-            value: `${youtubeURL}`
-          }
-        ]
-      };
-      // client.guilds.map(guild => {
-      //   if (guild.available) {
-      //     let channel = guild.channels.find(
-      //       channel => channel.name === `${client.ConfigService.config.channel.youtube}`
-      //     );
-      //     if (channel) {
-      //       channel.send({ embed });
-      //     }
-      //   }
-      // });
-      sendMessage(`${client.ConfigService.config.channel.youtube}`, { embed });
-      if (channel.items) youtube.set(`${channel.items[0].id.videoId}`, true);
-    } else {
-      client.console(`YouTube | Already announced ${channel.items[0].id.videoId}`);
-    }
-  });
-}
-
 //TypeForm Responses Webhook server
 function typeFormServer() {
   const http = require('http');
@@ -446,7 +247,6 @@ function typeFormServer() {
         body += chunk;
       });
       req.on('end', function() {
-   
         if (body) {
           client.console('Crypto | Verified');
           let data = JSON.parse(body);
@@ -454,46 +254,52 @@ function typeFormServer() {
 
           let discorduser = data[2].answer; //discord username
           let discordid = client.users.find(user => user.username + '#' + user.discriminator == `${discorduser}`);
-          
+
           let email = data[1].answer; //email
           let name = data[0].answer; //name
           veriEnmap.defer.then(() => {
-              sendAuthEmail(email, name, discorduser);
-              client.console(`Auth email sent to ${email}`);
-              veriEnmap.defer.then(() => {
-                veriEnmap.set(`${discordid.id}`, {
-                  name: `${name}`,
-                  email: `${email}`,
-                  roles: data[3].answer
-                });
-    
-                discordid.send(
-                  `You have been sucessfully verified in the Discord server. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${
-                    discorduser}\nEmail: ${veriEnmap.get(discordid.id, 'email')}\`\`\``
-                );
-                let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-                let join = guild.channels.find(jn => jn.name === `${ConfigService.config.channel.joinCh}`);
-                join.send(`✅ **${discordid.username}** has been verified, welcome ${name}.`);
-                console.log(`set enmap data\n${name}\n${email}\n${discordid.username}\nwith given username: ${discorduser}`);
-                let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
-                //if they dont have default role, run commands
-                if (!guild.member(discordid.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
-                  // add the roles
-                  guild.members
-                    .get(discordid.id)
-                    .addRole(addRole)
-                    .catch(console.error);
-                  // set nickname
-                  guild.members
-                    .get(discordid.id)
-                    .setNickname(`${veriEnmap.get(`${discordid.id}`, 'name')}`, 'Joined server.');
-                  client.console('Updated user: ' + discorduser);
-                  veriEnmap.get(discordid.id, 'roles').forEach(function(choice) {
-                    let role = guild.roles.find(r => r.name === `${choice}`);
-                    guild.members.get(discordid.id).addRole(role);
-                  });
-                };
+            sendAuthEmail(email, name, discorduser);
+            client.console(`Auth email sent to ${email}`);
+            veriEnmap.defer.then(() => {
+              veriEnmap.set(`${discordid.id}`, {
+                name: `${name}`,
+                email: `${email}`,
+                roles: data[3].answer
               });
+
+              discordid.send(
+                `You have been sucessfully verified in the Discord server. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${discorduser}\nEmail: ${veriEnmap.get(
+                  discordid.id,
+                  'email'
+                )}\`\`\``
+              );
+              let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+              let join = guild.channels.find(jn => jn.name === `${ConfigService.config.channel.joinCh}`);
+              join.send(`✅ **${discordid.username}** has been verified, welcome ${name}.`);
+              console.log(
+                `set enmap data\n${name}\n${email}\n${discordid.username}\nwith given username: ${discorduser}`
+              );
+              let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
+              //if they dont have default role, run commands
+              if (
+                !guild.member(discordid.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)
+              ) {
+                // add the roles
+                guild.members
+                  .get(discordid.id)
+                  .addRole(addRole)
+                  .catch(console.error);
+                // set nickname
+                guild.members
+                  .get(discordid.id)
+                  .setNickname(`${veriEnmap.get(`${discordid.id}`, 'name')}`, 'Joined server.');
+                client.console('Updated user: ' + discorduser);
+                veriEnmap.get(discordid.id, 'roles').forEach(function(choice) {
+                  let role = guild.roles.find(r => r.name === `${choice}`);
+                  guild.members.get(discordid.id).addRole(role);
+                });
+              }
+            });
           });
           res.end('<h1>Complete</h1>');
         } else {
@@ -504,84 +310,19 @@ function typeFormServer() {
     })
     .listen(3000);
 }
-async function twitchNotifier() {
-  // List of streamers to get notifications for
-  ConfigService.config.streamers.forEach(async element => {
-    // Makes request
-    try {
-      client.console('Twitch | Getting streamer status: ' + element.magenta.dim);
-      const request = await fetch(`https://api.twitch.tv/kraken/streams?channel=${element}`, {
-        headers: {
-          'User-Agent': 'D.js-Bot-Dev',
-          'Client-ID': `${client.ConfigService.config.apis.twitch}`,
-          'content-type': 'application/json'
-        }
-      });
-      const body = await request.json();
-      if (body._total == 0) {
-        return client.console('Twitch | Found ' + element.magenta.dim + ' is not live');
-      }
-      twitch.defer.then(() => {
-        if (!twitch.has(element)) {
-          // Message formatter for the notificiations
-          const embed = {
-            description: '**' + body.streams[0].channel.status + '**',
-            url: 'http://twitch.tv/' + body.streams[0].channel.display_name,
-            color: 6684837,
-            footer: {
-              icon_url: 'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png',
-              text: client.user.username + ' Bot'
-            },
-            thumbnail: {
-              url: body.streams[0].channel.logo
-            },
-            author: {
-              name: body.streams[0].channel.display_name + ' is live',
-              url: 'http://twitch.tv/' + body.streams[0].channel.display_name,
-              icon_url: 'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png'
-            },
-            fields: [
-              {
-                name: 'Game',
-                value: body.streams[0].channel.game,
-                inline: true
-              },
-              {
-                name: 'Link',
-                value: 'http://twitch.tv/' + body.streams[0].channel.display_name,
-                inline: true
-              }
-            ]
-          };
-
-          // Add streamer name to a set
-          twitch.set(element, true);
-          sendMessage(`${client.ConfigService.config.channel.twitch}`, { embed });
-          client.console('Twitch | Found ' + element.magenta.dim + ' is live! Sending the announcement...');
-        } else if (twitch.has(element) && body._total < 1) {
-          twitch.delete(element);
-          return;
-        }
-      });
-      // });
-    } catch (e) {
-      client.console(e);
-    }
-  });
-}
 
 client.on('ready', ready => {
   typeFormServer();
   try {
     setInterval(() => {
-      twitchNotifier();
+      // twitchNotifier();
     }, 180000);
   } catch (e) {
     console.error(e);
   }
 
   try {
-    setInterval(youtubeNotifier, 300000);
+    // setInterval(youtubeNotifier, 300000);
   } catch (e) {
     client.console(e);
   }
@@ -599,8 +340,6 @@ client.on('ready', ready => {
   } catch (e) {
     client.console(e);
   }
-  setInterval(owlLiveMatch, 280000);
-  setInterval(owlNews, 280000);
 });
 
 //cooldown
@@ -684,114 +423,6 @@ if (!ConfigService.config.rconPort == '') {
 }
 
 client.on('message', message => {
-  // let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-  // let adminPerm = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.adminrolename}`)
-//   if(message.member.roles.has(adminPerm.id)) {
-//  if (message.content.startsWith('!cleardata_nocancel')) {
-//     veriEnmap.defer.then(() => {
-//       veriEnmap.deleteAll();
-//       message.channel.send('Cleared verification enmap');
-//     });
-// }
-// 
-// if(message.content.startsWith(`${client.ConfigService.config.prefix}addrole`)) {
-
-//   let part = message.content.split(' ').slice(1);
-//   if(!part[0] && part[1]) {
-//     return 
-//   }
-//   let member = message.mentions.users.first();
-//   veriEnmap.push(`${member.id}`, `${part[1]}`, 'roles')
-// }
-
-// if(message.content.startsWith(`${client.ConfigService.config.prefix}removerole`)) {
-  
-//   let part = message.content.split(' ').slice(1);
-//   if(!part[0] && part[1]) {
-//     return 
-//   }
-
-//   let member = message.mentions.users.first();
-//   veriEnmap.remove(`${member.id}`, `${part[1]}`, 'roles')
-// }
-
-// if(message.content.startsWith(`${client.ConfigService.config.prefix}updatename`)) {
-  
-//   let part = message.content.split(' ').slice(1);
-//   if(!part[0] && part[1]) {
-//     return 
-//   }
-
-// let member = message.mentions.users.first();
-// veriEnmap.set(`${member.id}`, 'name', `${part[0]} ${part[1]}`)
-// member.setNickname(`${part[0]} ${part[1]}`);
-// }
-
-//   } else {
-//     return;
-//   }
-
-   // if (message.content.startsWith(`${client.ConfigService.config.prefix}data`)) {
-  //   veriEnmap.defer.then(() => {
-  //     if (!args[0]) {
-  //       const embed = {
-  //         color: 16239504,
-  //         author: {
-  //           name: `${message.author.username}'s Data`,
-  //           avatar_url: `${message.author.avatarURL}`
-  //         },
-  //         fields: [
-  //           {
-  //             name: 'Name',
-  //             value: `${veriEnmap.get(`${message.author.id}`, 'name')}`
-  //           },
-  //           {
-  //             name: 'Discord',
-  //             value: `${message.author.username}#${message.author.discriminator}`
-  //           },
-  //           {
-  //             name: 'Email',
-  //             value: `${veriEnmap.get(`${message.author.id}`, 'email')}`
-  //           },
-  //           {
-  //             name: 'Roles',
-  //             value: `${veriEnmap.get(`${message.author.id}`, 'roles').join('\n')}`
-  //           }
-  //         ]
-  //       };
-  //       message.author.send({ embed });
-  //     } else {
-  //       var member = message.mentions.users.first();
-  //       const embed = {
-  //         color: 16239504,
-  //         author: {
-  //           name: `${member.username}'s Data`,
-  //           avatar_url: `${member.avatarURL}`
-  //         },
-  //         fields: [
-  //           {
-  //             name: 'Name',
-  //             value: `${veriEnmap.get(`${member.id}`, 'name')}`
-  //           },
-  //           {
-  //             name: 'Discord',
-  //             value: `<@${member.id}>`
-  //           },
-  //           {
-  //             name: 'Email',
-  //             value: `${veriEnmap.get(`${member.id}`, 'email')}`
-  //           },
-  //           {
-  //             name: 'Roles',
-  //             value: `${veriEnmap.get(`${member.id}`, 'roles').join('\n')}`
-  //           }
-  //         ]
-  //       };
-  //       if (client.isMod(message.author, message)) return message.author.send({ embed });
-  //     }
-  //   });
-  // }
-
   //MC Bridge
   if (message.channel.id === `${client.ConfigService.config.channel.mcBridge}`) {
     if (message.author.bot) return;
