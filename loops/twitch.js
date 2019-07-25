@@ -6,7 +6,7 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
       // Makes request
       try {
         client.console('Twitch | Getting streamer status: ' + element.magenta.dim);
-        const request = await fetch(`https://api.twitch.tv/kraken/streams?channel=${element}`, {
+        const request = await fetch(`https://api.twitch.tv/helix/streams?user_login=${element}`, {
           headers: {
             'User-Agent': 'D.js-Bot-Dev',
             'Client-ID': `${client.ConfigService.config.apis.twitch}`,
@@ -14,38 +14,47 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
           }
         });
         const body = await request.json();
-        if (body._total == 0) {
+        if (!body.data) {
           return client.console('Twitch | Found ' + element.magenta.dim + ' is not live');
         }
         twitch.defer.then(() => {
           if (!twitch.has(element)) {
             // Message formatter for the notificiations
+
+            // try {
+            //   const req = await fetch(`https://api.twitch.tv/helix/streams?user_login=${element}`)
+            // }
+
             const embed = {
-              description: '**' + body.streams[0].channel.status + '**',
-              url: 'http://twitch.tv/' + body.streams[0].channel.display_name,
+              description: '**' + body.data[0].title + '**',
+              url: 'http://twitch.tv/' + element,
               color: 6684837,
               footer: {
                 icon_url: 'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png',
                 text: client.user.username + ' Bot'
               },
               thumbnail: {
-                url: body.streams[0].channel.logo
+                url: profilepicture
               },
               author: {
-                name: body.streams[0].channel.display_name + ' is live',
-                url: 'http://twitch.tv/' + body.streams[0].channel.display_name,
+                name: element + ' is live',
+                url: 'http://twitch.tv/' + element,
                 icon_url: 'https://cdn4.iconfinder.com/data/icons/social-media-circle-long-shadow/1024/long-10-512.png'
               },
               fields: [
                 {
                   name: 'Game',
-                  value: body.streams[0].channel.game,
+                  value: game,
                   inline: true
                 },
                 {
                   name: 'Link',
-                  value: 'http://twitch.tv/' + body.streams[0].channel.display_name,
+                  value: 'http://twitch.tv/' + element,
                   inline: true
+                },
+                {
+                  name: 'Viewers',
+                  value: body.data[0].viewer_count
                 }
               ]
             };
@@ -67,4 +76,4 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
   }
   twitchNotifier();
 };
-exports.time = 30000;
+exports.time = 180000;

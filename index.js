@@ -15,6 +15,76 @@ client.log = require('./modules/logMod.js');
 client.ConfigService = require('./config.js');
 client.login(ConfigService.config.token);
 
+//enmap config (yes we're actually doing it this time)
+client.settings = new Enmap({
+  name: 'bot_config',
+  autoFetch: true,
+  fetchAll: true
+});
+const defaultconfig = {
+  prefix: '?',
+  debug: true,
+  ownerid: '',
+  welcome: {
+    enabled: true,
+    joinMsg: 'Welcome NEWUSER',
+    leaveMsg: 'Goodbye NEWUSER',
+    channel: 'general'
+  },
+  roles: {
+    modrolename: '_Mod',
+    adminrolename: '_Admin',
+    memberrole: '_Member',
+    introlename: '',
+    iamRole: 'Cool People'
+  },
+  twitch: {
+    enabled: true,
+    channel: '',
+    streamers: []
+  },
+  owl: {
+    enabled: true,
+    channel: ''
+  },
+  nicknamer: {
+    enabled: true,
+    channel: '',
+    expression: ''
+  },
+  feedback: {
+    channel: ''
+  },
+  otherChannels: {
+    log: 'logger',
+    poll: 'announcements'
+  },
+  minecraft: {
+    IP: '',
+    port: '',
+    serverName: 'Dev Test',
+    webPort: '1234',
+    webHost: '192.168.1.31',
+    queryPort: '',
+    discordToMC: false,
+    channel: '',
+    rcon: {
+      port: '',
+      pass: ''
+    }
+  },
+  smp: {
+    acceptMessage: 'You were accepted! Congratulations!',
+    website: '',
+    denyImg:
+      'http://images.all-free-download.com/images/graphicthumb/delicious_birthday_cake_creative_vector_577659.jpg'
+  },
+  youtube: {
+    creators: [],
+    channel: ''
+  }
+};
+
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
   if (err) return client.console(err);
@@ -51,7 +121,7 @@ client.on('ready', ready => {
       setInterval(() => {
         eventFunction.run(client, owl, youtube, twitch, sendMessage);
       }, eventFunction.time);
-      client.console(`Ran ${eventName} loop event`.cyan);
+      client.console(`Started ${eventName} loop event`.cyan);
     });
   });
   //runs services once to keep them alive
@@ -61,35 +131,30 @@ client.on('ready', ready => {
       let eventFunction = require(`./services/${file}`);
       let eventName = file.split('.')[0];
       eventFunction.run(client, owl, youtube, twitch, veriEnmap, sendMessage);
-      client.console(`Ran ${eventName} service`.cyan.dim);
+      client.console(`Started ${eventName} service`.cyan.dim);
     });
   });
 });
 
-//===ALL ENMAPS===
-
-//enmap config (yes we're actually doing it this time)
-client.config = new Enmap({
-  name: 'bot_config',
-  autoFetch: true,
-  fetchAll: false
+client.on('guildCreate', guild => {
+  client.settings.set(guild.id, defaultconfig);
+  client.console(`Created config enmap entry for guild:\n${guild.id}`);
 });
-const defaultconfig = {
-  //add this
-};
+
+//===ALL ENMAPS=== (except conf defaults)
 
 //Twitch Streamer Notifier
 twitch = new Enmap({
   name: 'twitch',
   autoFetch: true,
-  fetchAll: false
+  fetchAll: true
 });
 
 //OverwatchLeague notifier
 const owl = new Enmap({
   name: 'OWL',
   autoFetch: true,
-  fetchAll: false
+  fetchAll: true
 });
 
 // enmap and data storage object for verification system
@@ -104,7 +169,14 @@ const veriEnmap = new Enmap({
 const youtube = new Enmap({
   name: 'youtube',
   autoFetch: true,
-  fetchAll: false
+  fetchAll: true
+});
+
+//Custom command
+const cc = new Enmap({
+  name: 'cc',
+  autoFetch: true,
+  fetchAll: true
 });
 
 async function onJoin(member) {
@@ -183,47 +255,7 @@ module.exports = function cooldown(message, code) {
   }
 };
 
-// mc to discord
-if (client.ConfigService.config.minecraft.discordToMC == true) {
-  try {
-    const http = require('http');
-
-    const regex = new RegExp('\\[Server thread/INFO\\]: <([^>]*)> (.*)');
-
-    const server = http.createServer(function(request, response) {
-      console.dir(request.param);
-
-      if (request.method == 'POST') {
-        var body = '';
-        request.on('data', function(data) {
-          body += data;
-        });
-        request.on('end', function() {
-          const regBody = body.match(regex);
-          const username = regBody[1].replace(/(§[A-Z-a-z0-9])/g, '');
-          const message = regBody[2];
-          response.writeHead(200, { 'Content-Type': 'text/html' });
-          response.end(username + ': ' + message);
-          sendMessage('mc-channel', '<' + username + '> ' + message);
-        });
-      }
-    });
-
-    let port = Number(client.ConfigService.config.minecraft.webPort);
-    const host = client.ConfigService.config.minecraft.webhost;
-
-    server.listen(port, host);
-    client.console(`MC --> Discord | Listening at http://${host}:${port}`.green);
-  } catch (error) {
-    client.console(`MC --> Discord | Disabled! ${error}`.green);
-  }
-} else {
-  client.console(`MC --> Discord | Disabled!`.green);
-}
-
-// end of mc to discord
-
-//mc rcon
+//MC to Discord - rcon
 var Rcon = require('rcon');
 var updatedport = Number(client.ConfigService.config.minecraft.rcon.port);
 var conn = new Rcon(
@@ -247,7 +279,7 @@ if (!ConfigService.config.rconPort == '') {
 }
 
 client.on('message', message => {
-  //MC Bridge
+  //MC to Discord message handler
   if (message.channel.id === `${client.ConfigService.config.channel.mcBridge}`) {
     if (message.author.bot) return;
     let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
@@ -260,8 +292,7 @@ client.on('message', message => {
     return message.react(`👍`);
   }
 
-  // Nicknamer
-
+  // Nicknamer [p]iam command
   try {
     if (message.channel.id === client.ConfigService.config.channel.nickID) {
       if (message.content !== `${ConfigService.config.prefix}iam`) {
@@ -272,7 +303,7 @@ client.on('message', message => {
     console.error(err);
   }
 
-  // mc ip thumbs up system
+  // Checkmarks if the correct IP is typed in chat
   if (client.ConfigService.config.mcIP !== '') {
     if (message.content.includes(`${client.ConfigService.config.minecraft.IP}`) && !message.author.bot) {
       message.react(`✅`);
@@ -284,8 +315,7 @@ client.on('message', message => {
     await message.react('⬇');
   }
 
-  //support channel code
-
+  //Support channel code
   if (message.channel.id === `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
     const tag = client.ConfigService.config.supportTags;
     if (tag.some(word => message.content.includes(word))) {
@@ -324,24 +354,64 @@ client.on('message', message => {
 
   // Regular command file manager
   try {
-    let commandFile = require(`./commands/${command}.js`);
-    commandFile.run(client, message, args, veriEnmap);
-    message.channel.stopTyping(true);
+    cc.defer.then(() => {
+      if (cc.has(command)) {
+        return;
+      } else {
+        try {
+          let commandFile = require(`./commands/${command}.js`);
+          commandFile.run(client, message, args, veriEnmap, cc);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
   } catch (err) {
-    if (config.debug === true) {
+    if (client.ConfigService.config.debug === true) {
       console.error(err);
     }
   }
 
-  // Custom command file manager
+  //New Custom Command File System
+
+  if (message.content.startsWith('?addcc')) {
+    cc.defer.then(() => {
+      cc.set(`${args[0]}`, args.join(' ').replace(args[0], ''));
+    });
+  }
+
+  if (message.content.startsWith('?listall')) {
+    cc.defer.then(() => {
+      return console.log(cc);
+    });
+  }
+  if (message.content.startsWith('?deleteall')) {
+    cc.defer.then(() => {
+      return cc.deleteAll();
+    });
+  }
+
   try {
-    let commandFile = require(`./commands/cc/${command}.js`);
-    commandFile.run(client, message, args);
-  } catch (err) {
-    if (config.debug === true) {
-      console.error(err);
+    if (message.content.startsWith(client.ConfigService.config.prefix) && cc.has(command)) {
+      cc.defer.then(() => {
+        message.channel.send(cc.get(command));
+      });
     } else {
       return;
     }
+  } catch (e) {
+    console.error(e);
   }
+
+  // Custom command file manager
+  // try {
+  //   let commandFile = require(`./commands/cc/${command}.js`);
+  //   commandFile.run(client, message, args);
+  // } catch (err) {
+  //   if (config.debug === true) {
+  //     console.error(err);
+  //   } else {
+  //     return;
+  //   }
+  // }
 });

@@ -6,8 +6,8 @@ module.exports = function logEvent(event, reason, color, message, client) {
   const embed = {
     color: color,
     footer: {
-      icon_url: client.user.avatarURL,
-      text: `${client.user.username} Action Logger`,
+      // icon_url: client.user.avatarURL,
+      // text: `${client.user.username} Action Logger`,
       timestamp: Date.now()
     },
     author: {
@@ -26,11 +26,6 @@ module.exports = function logEvent(event, reason, color, message, client) {
     ]
   };
 
-  let guild = message.guild;
-
-  let logchannel = guild.channels.find(
-    'name',
-    `${client.ConfigService.config.channel.log}`
-  );
+  let logchannel = message.guild.channels.find('name', `logger`);
   logchannel.send({ embed });
 };

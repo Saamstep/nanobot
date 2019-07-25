@@ -1,55 +1,57 @@
-exports.run = (client, message, args) => {
-	const error = require('../modules/errorMod.js');
-	const ConfigService = require('../config.js');
-	const fs = require('fs');
-	const msg = args.join(' ').replace(args[0], '');
-	const newMsg = msg.replace(/\s/, '');
-	const newerMsg = newMsg.replace(args[1], '');
+exports.run = (client, message, args, veriEnmap, cc) => {
+  const error = require('../modules/errorMod.js');
+  const ConfigService = require('../config.js');
+  const fs = require('fs');
+  let msg = args.join(' ').replace(args[0], '');
+  msg = msg.replace(/\s/, '');
+  msg = msg.replace(args[1], '');
 
-	const isAdmin = require('../modules/isAdmin.js');
-	if (isAdmin(message.author, message)) {
-		if (args[0] === 'add') {
-			fs.writeFile(
-				`./commands/cc/${args[1]}.js`,
-				`exports.run = (client, message, args) => { const ConfigService = require('../../config.js'); let guild = message.guild; message.channel.send(\`${newerMsg}\`); };`,
-				function(err) {
-					if (err) throw err;
-				}
-			);
-			message.channel.send(
-				`Changes made to: \`${ConfigService.config.prefix}${args[1]}\``
-			);
-			delete require.cache[require.resolve(`./commands/cc/${args[1]}.js`)];
-		}
+  const isAdmin = require('../modules/isAdmin.js');
+  if (isAdmin(message.author, message)) {
+    if (args[0] === 'add') {
+      cc.defer.then(() => {
+        cc.set(`${args[1]}`, msg);
+        message.channel.send(
+          `Command \`${client.ConfigService.config.prefix}${args[1]}\` created with response \`${cc.get(args[1])}\``
+        );
+      });
+    }
 
-		if (args[0] === 'del') {
-			if (fs.existsSync(`./commands/cc/${args[1]}.js`)) {
-				fs.unlink(`./commands/cc/${args[1]}.js`, err => {
-					if (err) throw err;
-					message.channel.send(
-						`Deleted \`${ConfigService.config.prefix}${args[1]}\``
-					);
-				});
-			}
- else {
-				return error(
-					`Command \`${ConfigService.config.prefix}${
-						args[1]
-					}\` does not exist!`,
-					message
-				);
-			}
-		}
-
-		if (!args[0]) {
-			message.channel.send(
-				`${
-					ConfigService.config.prefix
-				}cc [add | OR | del] [commandname] [text if adding command]`,
-				{ code: 'asciidoc' }
-			);
-		}
-	}
+    if (args[0] === 'del') {
+      cc.defer.then(() => {
+        if (cc.has(args[1])) {
+          cc.delete(args[1]);
+          message.channel.send(`Deleted command \`${client.ConfigService.config.prefix}${args[1]}\``);
+        } else {
+          return client.error(`Command \`${args[1]}\` does not exist!`, message);
+        }
+      });
+    }
+    if (args[0] === 'list') {
+      cc.defer.then(() => {
+        // let CMDS = cc.fetchEverything();
+        // message.channel.send(CMDS);
+        // let keys = Array.from(cc.keys());
+        // let values = Array.from(cc.values());
+        let keys = cc.keyArray();
+        let values = cc.array();
+        let msg = '';
+        for (i in keys) {
+          msg += `${keys[i]} - ${values[i]}\n`;
+        }
+        message.channel.send(`\`\`\`${msg}\`\`\``);
+        console.log(cc);
+      });
+    }
+    if (!args[0]) {
+      message.channel.send(
+        `${ConfigService.config.prefix}cc [add | del | list] [commandname] [text if adding command]`,
+        {
+          code: 'asciidoc'
+        }
+      );
+    }
+  }
 };
 
 exports.description = 'Allows admins to add/remove custom commands.';
