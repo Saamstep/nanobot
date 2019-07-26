@@ -39,20 +39,21 @@ const defaultconfig = {
     iamRole: 'Cool People'
   },
   twitch: {
-    enabled: true,
-    channel: '',
-    streamers: []
+    enabled: false,
+    channel: 'announcements',
+    streamers: ['samstep']
   },
   owl: {
     enabled: true,
-    channel: ''
+    channel: 'overwatch'
   },
   nicknamer: {
-    enabled: true,
+    enabled: false,
     channel: '',
-    expression: ''
+    expression: 'USER (NICK)'
   },
   feedback: {
+    enabled: false,
     channel: ''
   },
   otherChannels: {
@@ -63,15 +64,14 @@ const defaultconfig = {
     IP: '',
     port: '',
     serverName: 'Dev Test',
-    webPort: '1234',
-    webHost: '192.168.1.31',
     queryPort: '',
     discordToMC: false,
-    channel: '',
-    rcon: {
-      port: '',
-      pass: ''
-    }
+    channel: ''
+  },
+  rcon: {
+    enabled: false,
+    port: '',
+    pass: '123'
   },
   smp: {
     acceptMessage: 'You were accepted! Congratulations!',
@@ -80,7 +80,7 @@ const defaultconfig = {
       'http://images.all-free-download.com/images/graphicthumb/delicious_birthday_cake_creative_vector_577659.jpg'
   },
   youtube: {
-    creators: [],
+    creators: ['UClOf1XXinvZsy4wKPAkro2A'],
     channel: ''
   }
 };
@@ -95,7 +95,7 @@ fs.readdir('./events/', (err, files) => {
     let eventFunction = require(`./events/${file}`);
     let eventName = file.split('.')[0];
     // super-secret recipe to call events with all their proper arguments *after* the `client` var.
-    client.on(eventName, (...args) => eventFunction.run(client, ...args));
+    client.on(eventName, (...message) => eventFunction.run(client, ...message));
   });
 });
 
@@ -124,6 +124,7 @@ client.on('ready', ready => {
       client.console(`Started ${eventName} loop event`.cyan);
     });
   });
+
   //runs services once to keep them alive
   fs.readdir('./services/', (err, files) => {
     if (err) return client.console(err);
@@ -402,16 +403,4 @@ client.on('message', message => {
   } catch (e) {
     console.error(e);
   }
-
-  // Custom command file manager
-  // try {
-  //   let commandFile = require(`./commands/cc/${command}.js`);
-  //   commandFile.run(client, message, args);
-  // } catch (err) {
-  //   if (config.debug === true) {
-  //     console.error(err);
-  //   } else {
-  //     return;
-  //   }
-  // }
 });

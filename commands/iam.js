@@ -1,19 +1,17 @@
 exports.run = (client, message, args) => {
   const error = require('../modules/errorMod.js');
   const ConfigService = require('../config.js');
-  let guild = message.guild;
-  let addRole = message.guild.roles.find(
-    'name',
-    `${ConfigService.config.iamRole}`
-  );
-
+  let addRole = message.guild.roles.find('name', `${ConfigService.config.iamRole}`);
+  let expression = client.settings
+    .get(`${message.channel.id}`, 'nicknamer.expression')
+    .replace('USER', message.author.username)
+    .replace('NICK', args[0]);
   if (message.channel.id !== ConfigService.config.nickChannelid) {
     return error('You cannot do that here!', message);
   } else {
     try {
-      let name = args[0];
       message.guild.fetchMember(message.author).then(member => {
-        member.setNickname(message.author.username + ' (' + name + ')');
+        member.setNickname(expression);
       });
     } catch (err) {
       // console.error(err);

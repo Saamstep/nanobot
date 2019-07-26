@@ -1,9 +1,13 @@
 exports.run = (client, owl, sendMessage) => {
   const fetch = require('node-fetch');
   //OWL Live-Match
+
   async function owlLiveMatch() {
     client.console('OWL | Checking for OWL live match...'.yellow);
-
+    function logos(output) {
+      const emoji = client.emojis.find(emoji => emoji.name === `${output}`);
+      return emoji;
+    }
     //we use try incase the api doesn't exist and the bot crashes :P
     try {
       //fetch news from official API

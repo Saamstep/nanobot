@@ -28,7 +28,7 @@ exports.run = (client, owl, youtube, twitch, veriEnamp, sendMessage) => {
       // finally sends the email to the user with the code so they know what it is!
       transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
-          client.console(error);
+          client.console(error);    
         } else {
           client.console('Email sent: ' + info.response);
           sendMessage(
