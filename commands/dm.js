@@ -9,12 +9,9 @@ exports.run = (client, message, args) => {
   }
   const ConfigService = require('../config.js');
   let isAdmin = require('../modules/isAdmin.js');
-  if (isAdmin(message.author, message)) {
+  if (client.isAdmin(message.author, message, true, client)) {
     if (args[0] == null) {
-      return message.channel.send(
-        `${ConfigService.config.prefix}dm [@user] [message]`,
-        { code: 'asciidoc' }
-      );
+      return message.channel.send(`${ConfigService.config.prefix}dm [@user] [message]`, { code: 'asciidoc' });
     } else {
       try {
         sender();
@@ -26,5 +23,4 @@ exports.run = (client, message, args) => {
   }
 };
 
-exports.description =
-  'Allows admins to send a message as the bot to a specific user.';
+exports.description = 'Allows admins to send a message as the bot to a specific user.';

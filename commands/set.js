@@ -10,7 +10,7 @@ exports.run = (client, message, args) => {
   console.log('set.js is deprecated!');
 
   let isAdmin = require('../modules/isAdmin.js');
-  if (isAdmin(message.author, message)) {
+  if (client.isAdmin(message.author, message, true, client)) {
     switch (option) {
       case 'youtube':
         if (args[1] === 'add') {

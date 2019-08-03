@@ -1,7 +1,7 @@
-module.exports = function isMod(user, message) {
+module.exports = function isMod(user, message, client) {
   const ConfigService = require('../config.js');
-  let mod = message.member.roles.find('name', `${ConfigService.config.roles.modrolename}`);
-  let admin = message.member.roles.find('name', `${ConfigService.config.roles.adminrolename}`);
+  let mod = message.member.roles.find('name', `${client.settings.get(`${message.guild.id}`, 'roles.mod')}`);
+  let admin = message.member.roles.find('name', `${client.settings.get(`${message.guild.id}`, 'roles.admin')}`);
   let error = require('../modules/errorMod.js');
   try {
     if (!message.member.roles.has(mod.id)) {

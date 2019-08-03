@@ -1,8 +1,6 @@
-module.exports = function isOwner(message, msg) {
-  const ConfigService = require('../config.js');
-
+module.exports = function isOwner(message, msg, client) {
   let error = require('../modules/errorMod.js');
-  if (message.author.id === ConfigService.config.ownerid) {
+  if (message.author.id == `${client.settings.get(`${message.guild.id}`, 'ownerid')}`) {
     return true;
   } else {
     if (msg == true) {

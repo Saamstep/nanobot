@@ -92,7 +92,9 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
 
               // Add streamer name to a set
               twitch.set(element, true);
-              sendMessage(`${client.ConfigService.config.channel.twitch}`, { embed });
+              client.guilds.forEach(function(g) {
+                sendMessage(client.settings.get(g.id, 'owl.channel'), { embed });
+              });
               client.console('Twitch | Found ' + element.magenta.dim + ' is live! Sent the announcement.');
             }
           });

@@ -5,7 +5,7 @@ exports.run = async (client, message, args) => {
     let sourceVoiceChannel = voiceChannels.find('name', `${message.member.voiceChannel.name}`);
     let isMod = require('../modules/isMod.js');
 
-    if (isMod(message.author, message)) {
+    if (isMod(message.author, message, client)) {
       let sourceVoiceChannelMember = sourceVoiceChannel.members.array();
       for (let member of sourceVoiceChannelMember) {
         {

@@ -7,7 +7,7 @@ exports.run = (client, message, args, cc) => {
   const newerMsg = newMsg.replace(args[1], '');
 
   const isAdmin = require('../modules/isAdmin.js');
-  if (isAdmin(message.author, message)) {
+  if (client.isAdmin(message.author, message, true, client)) {
     if (args[0] === 'add') {
       fs.writeFile(
         `./commands/cc/${args[1]}.js`,

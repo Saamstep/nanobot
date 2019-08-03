@@ -2,7 +2,7 @@ exports.run = (client, message, args) => {
   let otherMessage = message.guild;
   const ConfigService = require('../config.js');
   let isMod = require('../modules/isMod.js');
-  if (isMod(message.author, message)) {
+  if (isMod(message.author, message, client)) {
     function react(emoji) {
       message.react('👍');
       message.react('👎');
@@ -20,5 +20,4 @@ exports.run = (client, message, args) => {
   }
 };
 
-exports.description =
-  'Allows mods to send a message with reactions to take a poll.';
+exports.description = 'Allows mods to send a message with reactions to take a poll.';

@@ -12,7 +12,7 @@ module.exports = function logEvent(event, reason, color, message, client) {
     },
     author: {
       name: `${event}`,
-      icon_url: 'http://chittagongit.com/download/13059'
+      icon_url: 'https://icon-library.net/images/administrator-icon/administrator-icon-1.jpg'
     },
     fields: [
       {

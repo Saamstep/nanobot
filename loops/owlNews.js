@@ -53,7 +53,9 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
           //     }
           //   }
           // });
-          sendMessage(`${client.ConfigService.config.channel.owl}`, { embed });
+          client.guilds.forEach(function(g) {
+            sendMessage(client.settings.get(g.id, 'owl.channel'), { embed });
+          });
         }
       });
     } catch (e) {

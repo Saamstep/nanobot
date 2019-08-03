@@ -7,7 +7,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   msg = msg.replace(args[1], '');
 
   const isAdmin = require('../modules/isAdmin.js');
-  if (isAdmin(message.author, message)) {
+  if (client.isAdmin(message.author, message, true, client)) {
     if (args[0] === 'add') {
       cc.defer.then(() => {
         cc.set(`${args[1]}`, msg);

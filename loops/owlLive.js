@@ -1,4 +1,4 @@
-exports.run = (client, owl, sendMessage) => {
+exports.run = (client, owl, youtube, twitch, sendMessage) => {
   const fetch = require('node-fetch');
   //OWL Live-Match
 
@@ -60,7 +60,9 @@ exports.run = (client, owl, sendMessage) => {
                 'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
             }
           };
-          sendMessage(`${client.ConfigService.config.channel.owl}`, { embed });
+          client.guilds.forEach(function(g) {
+            sendMessage(client.settings.get(g.id, 'owl.channel'), { embed });
+          });
         }
       });
     } catch (e) {

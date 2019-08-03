@@ -2,20 +2,14 @@ const ConfigService = require('../config.js');
 const errorMod = require('../modules/errorMod.js');
 exports.run = (client, message, args) => {
   const acceptMember = message.guild.member(message.mentions.users.first());
-  const memberRole = message.guild.roles.find(
-    'name',
-    `${ConfigService.config.memberrole}`
-  );
+  const memberRole = message.guild.roles.find('name', `${ConfigService.config.memberrole}`);
 
-  const intRole = message.guild.roles.find(
-    'name',
-    `${ConfigService.config.introlename}`
-  );
+  const intRole = message.guild.roles.find('name', `${ConfigService.config.introlename}`);
   const appRole = message.guild.roles.find('name', 'Application');
 
   const isAdmin = require('../modules/isAdmin.js');
 
-  if (isAdmin(message.author, message)) {
+  if (client.client.isAdmin(message.author, message, true, client)) {
     if (message.mentions.users.size === 0) {
       return errorMod('Please mention a user', message);
     }

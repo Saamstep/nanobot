@@ -1,4 +1,4 @@
-exports.run = (client, owl, youtube, twitch, veriEnamp, sendMessage) => {
+exports.run = (client, owl, youtube, twitch, veriEnmap, sendMessage) => {
   const fs = require('fs');
 
   function sendAuthEmail(email, name, discorduser) {
@@ -7,8 +7,8 @@ exports.run = (client, owl, youtube, twitch, veriEnamp, sendMessage) => {
     var transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: ConfigService.config.mail.user,
-        pass: ConfigService.config.mail.pass
+        user: client.ConfigService.config.mail.user,
+        pass: client.ConfigService.config.mail.pass
       }
     });
     //add discord invite to html
@@ -28,7 +28,7 @@ exports.run = (client, owl, youtube, twitch, veriEnamp, sendMessage) => {
       // finally sends the email to the user with the code so they know what it is!
       transporter.sendMail(mailOptions, function(error, info) {
         if (error) {
-          client.console(error);    
+          client.console(error);
         } else {
           client.console('Email sent: ' + info.response);
           sendMessage(
@@ -99,7 +99,7 @@ exports.run = (client, owl, youtube, twitch, veriEnamp, sendMessage) => {
             let data = JSON.parse(body);
             console.log(data);
 
-            let discordusser = data[2].answer; //discord username
+            let discorduser = data[2].answer; //discord username
             let discordid = client.users.find(user => user.username + '#' + user.discriminator == `${discorduser}`);
 
             let email = data[1].answer; //email
@@ -111,7 +111,8 @@ exports.run = (client, owl, youtube, twitch, veriEnamp, sendMessage) => {
                 veriEnmap.set(`${discordid.id}`, {
                   name: `${name}`,
                   email: `${email}`,
-                  roles: data[3].answer
+                  class: `${data[3].answer}`,
+                  roles: data[4].answer
                 });
 
                 discordid.send(
@@ -121,7 +122,7 @@ exports.run = (client, owl, youtube, twitch, veriEnamp, sendMessage) => {
                   )}\`\`\``
                 );
                 let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-                let join = guild.channels.find(jn => jn.name === `${ConfigService.config.channel.joinCh}`);
+                let join = guild.channels.find(jn => jn.name === `${client.ConfigService.config.channel.joinCh}`);
                 join.send(`✅ **${discordid.username}** has been verified, welcome ${name}.`);
                 console.log(
                   `set enmap data\n${name}\n${email}\n${discordid.username}\nwith given username: ${discorduser}`
@@ -139,12 +140,18 @@ exports.run = (client, owl, youtube, twitch, veriEnamp, sendMessage) => {
                   // set nickname
                   guild.members
                     .get(discordid.id)
-                    .setNickname(`${veriEnmap.get(`${discordid.id}`, 'name')}`, 'Joined server.');
+                    .setNickname(
+                      `${discordid.username} (${veriEnmap.get(`${discordid.id}`, 'name')})`,
+                      'Joined server.'
+                    );
                   client.console('Updated user: ' + discorduser);
                   veriEnmap.get(discordid.id, 'roles').forEach(function(choice) {
                     let role = guild.roles.find(r => r.name === `${choice}`);
                     guild.members.get(discordid.id).addRole(role);
                   });
+                  //set class (freshman, sophomore, junior, senior, etc)
+                  let hsClass = guild.roles.find(r => r.name === `${veriEnmap.get(discordid.id, 'class')}`);
+                  guild.members.get(discordid.id).addRole(hsClass);
                 }
               });
             });

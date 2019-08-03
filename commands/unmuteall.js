@@ -8,21 +8,15 @@ exports.run = async (client, message, args) => {
     let isMod = require('../modules/isMod.js');
     let error = require('../modules/errorMod.js');
 
-
-    if (isMod(message.author, message)) {
+    if (isMod(message.author, message, client)) {
       let sourceVoiceChannelMember = sourceVoiceChannel.members.array();
       for (let member of sourceVoiceChannelMember) {
-        await member.setMute(false, `${message.author.tag} used muteall command.`).catch((e) => console.error(e));
+        await member.setMute(false, `${message.author.tag} used muteall command.`).catch(e => console.error(e));
       }
       message.react('👌');
     }
   } catch (e) {
-    error("You either are not in a voice channel, don't have the correct permissions or messed up badly!", message)
+    error("You either are not in a voice channel, don't have the correct permissions or messed up badly!", message);
     console.error(e);
   }
-
-
-
-
-
-}
+};

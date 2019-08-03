@@ -25,18 +25,19 @@ const defaultconfig = {
   prefix: '?',
   debug: true,
   ownerid: '',
+  playing: '',
   welcome: {
     enabled: true,
-    joinMsg: 'Welcome NEWUSER',
-    leaveMsg: 'Goodbye NEWUSER',
+    joinMsg: 'Welcome **USER** to SERVER',
+    leaveMsg: 'Goodbye USER',
     channel: 'general'
   },
   roles: {
-    modrolename: '_Mod',
-    adminrolename: '_Admin',
-    memberrole: '_Member',
-    introlename: '',
-    iamRole: 'Cool People'
+    mod: 'Mod',
+    admin: 'Admin',
+    smpMember: 'Members',
+    interview: '',
+    join: 'Cool People'
   },
   twitch: {
     enabled: false,
@@ -54,34 +55,39 @@ const defaultconfig = {
   },
   feedback: {
     enabled: false,
-    channel: ''
+    channel: '',
+    categories: ['[Review]', '[ASAP]']
   },
-  otherChannels: {
+  urlReact: {
+    enabled: true,
+    urls: ['youtu.be/']
+  },
+  otherChannel: {
     log: 'logger',
     poll: 'announcements'
-  },
-  minecraft: {
-    IP: '',
-    port: '',
-    serverName: 'Dev Test',
-    queryPort: '',
-    discordToMC: false,
-    channel: ''
   },
   rcon: {
     enabled: false,
     port: '',
-    pass: '123'
+    pass: ''
   },
-  smp: {
+  minecraft: {
+    IP: '',
+    port: '',
+    queryPort: '',
+    mcServerConnection: false,
+    topicChannel: ''
+  },
+  mcSMP: {
+    serverName: 'Dev Test',
     acceptMessage: 'You were accepted! Congratulations!',
     website: '',
     denyImg:
       'http://images.all-free-download.com/images/graphicthumb/delicious_birthday_cake_creative_vector_577659.jpg'
   },
   youtube: {
-    creators: ['UClOf1XXinvZsy4wKPAkro2A'],
-    channel: ''
+    channel: '',
+    creators: ['UClOf1XXinvZsy4wKPAkro2A']
   }
 };
 
@@ -145,7 +151,7 @@ client.on('guildCreate', guild => {
 //===ALL ENMAPS=== (except conf defaults)
 
 //Twitch Streamer Notifier
-twitch = new Enmap({
+const twitch = new Enmap({
   name: 'twitch',
   autoFetch: true,
   fetchAll: true
@@ -180,6 +186,8 @@ const cc = new Enmap({
   fetchAll: true
 });
 
+veriEnmap.deleteAll();
+
 async function onJoin(member) {
   try {
     //check if DB is ready
@@ -188,9 +196,13 @@ async function onJoin(member) {
       //if the user is not in the guild, do not crash!
       //if the discord id is in db, it means they are verified :D so add roles, nickname etc
       if (veriEnmap.has(`${member.user.id}`)) {
-        let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
+        let addRole = guild.roles.find(r => r.name === `${client.settings.get(`${guild.id}`, 'roles.join')}`);
         //if they dont have default role, run commands
-        if (!guild.member(member.user.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
+        if (
+          !guild
+            .member(member.user.id)
+            .roles.find(r => r.name === `${client.settings.get(`${guild.id}`, 'roles.join')}`)
+        ) {
           // add the roles
           guild.members
             .get(member.user.id)
@@ -199,16 +211,18 @@ async function onJoin(member) {
           // set nickname
           guild.members
             .get(member.user.id)
-            .setNickname(`${veriEnmap.get(`${member.user.id}`, 'name')}`, 'Joined server.');
+            .setNickname(`${member.user.username} (${veriEnmap.get(`${member.user.id}`, 'name')})`, 'Joined server.');
           client.console('Updated user ' + member.user.id);
           sendMessage(
-            `${client.ConfigService.config.channel.log}`,
-            `${member.user.id} was updated with all their roles and nicknames after joining.`
+            `${client.settings.get(`${guild.id}`, 'otherChannel.log')}`,
+            `<@${member.user.id}> was updated with all their roles and nicknames after joining.`
           );
           veriEnmap.get(`${member.user.id}`, 'roles').forEach(function(choice) {
             let role = guild.roles.find(r => r.name === `${choice}`);
             guild.members.get(member.user.id).addRole(role);
           });
+          let hsClass = guild.roles.find(r => r.name === `${veriEnmap.get(member.user.id, 'class')}`);
+          guild.members.get(discordid.id).addRole(hsClass);
           member.send(
             `You have been sucessfully verified in the Discord server **${
               guild.name
@@ -216,7 +230,9 @@ async function onJoin(member) {
               member.user.username
             }\nEmail: ${veriEnmap.get(member.user.id, 'email')}\`\`\``
           );
-          let newchannel = guild.channels.find(ch => ch.name === `${ConfigService.config.channel.joinCh}`);
+          let newchannel = guild.channels.find(
+            ch => ch.name === `${client.settings.get(`${guild.id}`, 'welcome.channel')}`
+          );
           newchannel.send(`✅ **${member.user.username}** has been verified!`);
         }
       } else {
@@ -257,150 +273,158 @@ module.exports = function cooldown(message, code) {
 };
 
 //MC to Discord - rcon
-var Rcon = require('rcon');
-var updatedport = Number(client.ConfigService.config.minecraft.rcon.port);
-var conn = new Rcon(
-  `${client.ConfigService.config.minecraft.IP}`,
-  updatedport,
-  `${client.ConfigService.config.minecraft.rcon.pass}`
-);
 
-conn.on('auth', function() {
-  client.console('RCON | Authed!'.green);
-});
-conn.on('end', function() {
-  client.console('RCON | Socket closed!'.green);
-});
+// var Rcon = require('rcon');
+// var updatedport = Number(client.ConfigService.config.minecraft.rcon.port);
+// var conn = new Rcon(
+//   `${client.ConfigService.config.minecraft.IP}`,
+//   updatedport,
+//   `${client.ConfigService.config.minecraft.rcon.pass}`
+// );
 
-if (!ConfigService.config.rconPort == '') {
-  conn.connect();
-  client.console('RCON | Connecting to server @ ' + JSON.stringify(conn.host + ':' + conn.port).green);
-} else {
-  client.console('RCON | Disabled!'.green);
-}
+// conn.on('auth', function() {
+//   client.console('RCON | Authed!'.green);
+// });
+// conn.on('end', function() {
+//   client.console('RCON | Socket closed!'.green);
+// });
+
+// if (!ConfigService.config.rconPort == '') {
+//   conn.connect();
+//   client.console('RCON | Connecting to server @ ' + JSON.stringify(conn.host + ':' + conn.port).green);
+// } else {
+//   client.console('RCON | Disabled!'.green);
+// }
 
 client.on('message', message => {
-  //MC to Discord message handler
-  if (message.channel.id === `${client.ConfigService.config.channel.mcBridge}`) {
-    if (message.author.bot) return;
-    let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
-    conn.send(msg);
-  }
-
-  // thumbs up url system
-  let urls = ConfigService.config.urls;
-  if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
-    return message.react(`👍`);
-  }
-
-  // Nicknamer [p]iam command
-  try {
-    if (message.channel.id === client.ConfigService.config.channel.nickID) {
-      if (message.content !== `${ConfigService.config.prefix}iam`) {
-        message.delete(0);
-      }
+  client.guilds.forEach(function(g) {
+    // MC to Discord message handler
+    if (message.channel.name === `${client.settings.get(`${g.id}`, 'minecraft.topicChannel')}`) {
+      if (message.author.bot) return;
+      let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
+      conn.send(msg);
     }
-  } catch (err) {
-    console.error(err);
-  }
 
-  // Checkmarks if the correct IP is typed in chat
-  if (client.ConfigService.config.mcIP !== '') {
-    if (message.content.includes(`${client.ConfigService.config.minecraft.IP}`) && !message.author.bot) {
-      message.react(`✅`);
-    }
-  }
-  // Support Channel Code
-  async function pMreact() {
-    await message.react('⬆');
-    await message.react('⬇');
-  }
-
-  //Support channel code
-  if (message.channel.id === `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
-    const tag = client.ConfigService.config.supportTags;
-    if (tag.some(word => message.content.includes(word))) {
-      pMreact();
-    } else if (isAdmin(message.author, message, false)) {
-      if (message.content.startsWith('check')) {
-        let args = message.content.split(' ').slice(1);
-        message.channel.fetchMessage(args[0]).then(msg => {
-          msg.react('✅');
-        });
-        message.delete(0);
+    // thumbs up url system
+    try {
+      let urls = client.settings.get(`${g.id}`, 'urlReact.urls');
+      if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
+        return message.react(`👍`);
       }
-      if (message.content.startsWith('delete')) {
-        let args = message.content.split(' ').slice(1);
-        let reason = args.join(' ');
-        reason = reason.replace(args[0], '\n');
-        message.delete(0);
-        message.channel.fetchMessage(args[0]).then(msg => {
-          msg.delete(0);
-          msg.author.send('Your suggestion `' + msg.content + '` was removed by an admin for: ```' + reason + '```');
-        });
-      }
-    } else {
-      message.delete();
+    } catch (e) {
+      console.error(e);
     }
-  }
 
-  // Command file manager code
-  if (!message.content.startsWith(ConfigService.config.prefix)) return;
-  if (!message.guild || message.author.bot) return;
-
-  let command = message.content.split(' ')[0];
-  command = command.slice(config.prefix.length);
-  client.config = config;
-  let args = message.content.split(' ').slice(1);
-
-  // Regular command file manager
-  try {
-    cc.defer.then(() => {
-      if (cc.has(command)) {
-        return;
-      } else {
-        try {
-          let commandFile = require(`./commands/${command}.js`);
-          commandFile.run(client, message, args, veriEnmap, cc);
-        } catch (e) {
-          console.error(e);
+    // Nicknamer [p]iam command
+    try {
+      if (message.channel.name === `${client.settings.get(`${g.id}`, 'nicknamer.channel')}`) {
+        if (message.content !== `${client.settings.get(`${g.id}`, 'prefix')}iam`) {
+          message.delete(0);
         }
       }
-    });
-  } catch (err) {
-    if (client.ConfigService.config.debug === true) {
+    } catch (err) {
       console.error(err);
     }
-  }
 
-  //New Custom Command File System
-
-  if (message.content.startsWith('?addcc')) {
-    cc.defer.then(() => {
-      cc.set(`${args[0]}`, args.join(' ').replace(args[0], ''));
-    });
-  }
-
-  if (message.content.startsWith('?listall')) {
-    cc.defer.then(() => {
-      return console.log(cc);
-    });
-  }
-  if (message.content.startsWith('?deleteall')) {
-    cc.defer.then(() => {
-      return cc.deleteAll();
-    });
-  }
-
-  try {
-    if (message.content.startsWith(client.ConfigService.config.prefix) && cc.has(command)) {
-      cc.defer.then(() => {
-        message.channel.send(cc.get(command));
-      });
-    } else {
-      return;
+    // Checkmarks if the correct IP is typed in chat
+    if (`${client.settings.get(`${g.id}`, 'minecraft.IP')}` !== '') {
+      if (message.content.includes(`${client.settings.get(`${g.id}`, 'minecraft.IP')}`) && !message.author.bot) {
+        message.react(`✅`);
+      }
     }
-  } catch (e) {
-    console.error(e);
-  }
+    // Support Channel Code
+    async function pMreact() {
+      await message.react('⬆');
+      await message.react('⬇');
+    }
+
+    //Support channel code
+
+    if (message.channel.name === `${client.settings.get(`${g.id}`, 'feedback.channel')}` && !message.author.bot) {
+      const tag = `${client.settings.get(`${g.id}`, 'feedback.categories')}`;
+      if (tag.some(word => message.content.includes(word))) {
+        pMreact();
+      } else if (client.isAdmin(message.author, message, false, client)) {
+        if (message.content.startsWith('check')) {
+          let args = message.content.split(' ').slice(1);
+          message.channel.fetchMessage(args[0]).then(msg => {
+            msg.react('✅');
+          });
+          message.delete(0);
+        }
+        if (message.content.startsWith('delete')) {
+          let args = message.content.split(' ').slice(1);
+          let reason = args.join(' ');
+          reason = reason.replace(args[0], '\n');
+          message.delete(0);
+          message.channel.fetchMessage(args[0]).then(msg => {
+            msg.delete(0);
+            msg.author.send('Your suggestion `' + msg.content + '` was removed by an admin for: ```' + reason + '```');
+          });
+        }
+      } else {
+        message.delete();
+      }
+    }
+
+    // Command file manager code
+    if (!message.content.startsWith(client.settings.get(`${g.id}`, 'prefix'))) return;
+    if (!message.guild || message.author.bot) return;
+
+    let command = message.content.split(' ')[0];
+    command = command.slice(config.prefix.length);
+    client.config = config;
+    let args = message.content.split(' ').slice(1);
+
+    // Regular command file manager
+    try {
+      cc.defer.then(() => {
+        if (cc.has(command)) {
+          return;
+        } else {
+          try {
+            let commandFile = require(`./commands/${command}.js`);
+            commandFile.run(client, message, args, veriEnmap, cc);
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      });
+    } catch (err) {
+      if (client.ConfigService.config.debug === true) {
+        console.error(err);
+      }
+    }
+
+    //New Custom Command File System
+
+    // if (message.content.startsWith('?addcc')) {
+    //   cc.defer.then(() => {
+    //     cc.set(`${args[0]}`, args.join(' ').replace(args[0], ''));
+    //   });
+    // }
+
+    // if (message.content.startsWith('?listall')) {
+    //   cc.defer.then(() => {
+    //     return console.log(cc);
+    //   });
+    // }
+    // if (message.content.startsWith('?deleteall')) {
+    //   cc.defer.then(() => {
+    //     return cc.deleteAll();
+    //   });
+    // }
+
+    try {
+      if (message.content.startsWith(client.settings.get(`${g.id}`, 'prefix')) && cc.has(command)) {
+        cc.defer.then(() => {
+          message.channel.send(cc.get(command));
+        });
+      } else {
+        return;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  });
 });

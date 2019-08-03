@@ -6,18 +6,17 @@ exports.run = (client, message, args, veriEnmap) => {
   let log = require('../modules/logMod.js');
   let isAdmin = require('../modules/isAdmin.js');
   message.delete();
-  if (isAdmin(message.author, message)) {
+  if (client.isAdmin(message.author, message, true, client)) {
     member.setNickname('');
     member.removeRole(addRole);
     veriEnmap.defer.then(() => {
-      veriEnmap.get(member.id, 'roles').forEach(function (role) {
+      veriEnmap.get(member.id, 'roles').forEach(function(role) {
         let remove = message.guild.roles.find(r => r.name === `${role}`);
         member.removeRole(remove);
-      })
-  
-    veriEnmap.delete(`${member.id}`);
+      });
 
-    })
+      veriEnmap.delete(`${member.id}`);
+    });
     log('User Reset', `${member} was reset`, 2942691, message, client);
   }
 };

@@ -11,7 +11,7 @@ exports.run = (client, message, args) => {
     `${ConfigService.config.pollchannel}`
   );
   let isMod = require('../modules/isMod.js');
-  if (isMod(message.author, message)) {
+  if (isMod(message.author, message, client)) {
     if (type == null) {
       message.channel.send(
         `${

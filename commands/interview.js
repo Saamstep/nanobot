@@ -5,13 +5,10 @@ exports.run = (client, message, args) => {
   let guild = message.guild.id;
   let memberRole = message.guild.roles.find('name', `Members`);
   let oldRole = message.guild.roles.find('name', `Application`);
-  let newRole = message.guild.roles.find(
-    'name',
-    `${ConfigService.config.introlename}`
-  );
+  let newRole = message.guild.roles.find('name', `${ConfigService.config.introlename}`);
 
   let isAdmin = require('../modules/isAdmin.js');
-  if (isAdmin(message.author, message)) {
+  if (client.isAdmin(message.author, message, true, client)) {
     if (message.mentions.users.size === 0) {
       return errorMod('Please mention a user', message);
     }

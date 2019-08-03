@@ -13,9 +13,9 @@ exports.run = async (client, message, args) => {
         const body = await response.json();
         let rank = '';
         for (j in body.content) {
-          rank += `\`${parseInt(j) + 1}.\` ${logos(
-            body.content[j].competitor.abbreviatedName
-          )} ${body.content[j].competitor.name}\n`;
+          rank += `\`${parseInt(j) + 1}.\` ${logos(body.content[j].competitor.abbreviatedName)} ${
+            body.content[j].competitor.name
+          }\n`;
         }
         const embed = {
           color: 16752385,
@@ -42,9 +42,9 @@ exports.run = async (client, message, args) => {
         const response = await fetch('https://api.overwatchleague.com/news');
         const body = await response.json();
         const embed = {
-          description: `**${body.blogs[0].title}**\n${
-            body.blogs[0].summary
-          }\n\n[Read more](${body.blogs[0].defaultUrl})`,
+          description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${
+            body.blogs[0].defaultUrl
+          })`,
           url: `${body.blogs[0].defaultUrl}`,
           color: 16752385,
           timestamp: body.blogs[0].publish,
@@ -76,9 +76,7 @@ exports.run = async (client, message, args) => {
       //we use try incase the api doesn't exist and the bot crashes :P
       try {
         //fetch news from official API
-        const response = await fetch(
-          'https://api.overwatchleague.com/live-match'
-        );
+        const response = await fetch('https://api.overwatchleague.com/live-match');
         const body = await response.json();
         //it wasn't announced, so we annoucne it with this code
         // Finds channel and sends msg to channel
@@ -86,11 +84,11 @@ exports.run = async (client, message, args) => {
           return client.error('No live match data.', message);
         } else {
           const embed = {
-            description: `${logos(
-              body.data.liveMatch.competitors[0].abbreviatedName
-            )} **${body.data.liveMatch.competitors[0].name}** vs ${logos(
-              body.data.liveMatch.competitors[1].abbreviatedName
-            )} **${body.data.liveMatch.competitors[1].name}**`,
+            description: `${logos(body.data.liveMatch.competitors[0].abbreviatedName)} **${
+              body.data.liveMatch.competitors[0].name
+            }** vs ${logos(body.data.liveMatch.competitors[1].abbreviatedName)} **${
+              body.data.liveMatch.competitors[1].name
+            }**`,
             url: `https://twitch.tv/overwatchleague`,
             color: 16752385,
             fields: [
@@ -100,9 +98,7 @@ exports.run = async (client, message, args) => {
               },
               {
                 name: 'Score',
-                value: `||${body.data.liveMatch.scores[0].value} - ${
-                  body.data.liveMatch.scores[1].value
-                }||`
+                value: `||${body.data.liveMatch.scores[0].value} - ${body.data.liveMatch.scores[1].value}||`
               }
             ],
             author: {
@@ -123,9 +119,9 @@ exports.run = async (client, message, args) => {
         const body = await response.json();
         let teamList = '';
         for (j in body.competitors) {
-          teamList += `- ${logos(
-            body.competitors[j].competitor.abbreviatedName
-          )} ${body.competitors[j].competitor.name}\n`;
+          teamList += `- ${logos(body.competitors[j].competitor.abbreviatedName)} ${
+            body.competitors[j].competitor.name
+          }\n`;
         }
         const embed = {
           color: 16752385,
@@ -153,17 +149,15 @@ exports.run = async (client, message, args) => {
           if (body.competitors[j].competitor.name.includes(args[1])) {
             let players = '';
             for (i in body.competitors[j].competitor.players) {
-              players += `\:flag_${body.competitors[j].competitor.players[
-                i
-              ].player.nationality.toLowerCase()}: ${
+              players += `\:flag_${body.competitors[j].competitor.players[i].player.nationality.toLowerCase()}: ${
                 body.competitors[j].competitor.players[i].player.name
               }\n`;
             }
             let media = '';
             for (k in body.competitors[j].competitor.accounts) {
-              media += `[${
-                body.competitors[j].competitor.accounts[k].accountType
-              }](${body.competitors[j].competitor.accounts[k].value})\n`;
+              media += `[${body.competitors[j].competitor.accounts[k].accountType}](${
+                body.competitors[j].competitor.accounts[k].value
+              })\n`;
             }
             const embed = {
               url: 'https://discordapp.com',
@@ -210,15 +204,10 @@ exports.run = async (client, message, args) => {
       for (j in body.content) {
         let media = '';
         for (k in body.content[j].accounts) {
-          media += `[${body.content[j].accounts[k].accountType}](${
-            body.content[j].accounts[k].value
-          })\n`;
+          media += `[${body.content[j].accounts[k].accountType}](${body.content[j].accounts[k].value})\n`;
         }
 
-        if (
-          body.content[j].name.includes(args[1]) ||
-          body.content[j].givenName.includes(args[1])
-        ) {
+        if (body.content[j].name.includes(args[1]) || body.content[j].givenName.includes(args[1])) {
           const embed = {
             color: parseInt(body.content[j].teams[0].team.primaryColor, 16),
             footer: {
@@ -229,9 +218,7 @@ exports.run = async (client, message, args) => {
             },
 
             author: {
-              name: `${body.content[j].name} #${body.content[
-                j
-              ].attributes.player_number.toString()}`,
+              name: `${body.content[j].name} #${body.content[j].attributes.player_number.toString()}`,
               icon_url: `${body.content[j].teams[0].team.logo}`
             },
             fields: [
@@ -242,9 +229,7 @@ exports.run = async (client, message, args) => {
               },
               {
                 name: 'Nationality',
-                value: `:flag_${body.content[j].nationality.toLowerCase()}: ${
-                  body.content[j].attributes.hometown
-                }`,
+                value: `:flag_${body.content[j].nationality.toLowerCase()}: ${body.content[j].attributes.hometown}`,
                 inline: true
               },
               {
@@ -268,9 +253,9 @@ exports.run = async (client, message, args) => {
         const data = await res.json();
         let standingsList = '';
         for (j in data.stages[3].teams) {
-          standingsList += `\`${parseInt(j) + 1}.\` ${logos(
-            data.stages[3].teams[j].abbreviatedName
-          )} ${data.stages[3].teams[j].name}\n`;
+          standingsList += `\`${parseInt(j) + 1}.\` ${logos(data.stages[3].teams[j].abbreviatedName)} ${
+            data.stages[3].teams[j].name
+          }\n`;
         }
         const embed = {
           color: 16752385,
@@ -292,17 +277,13 @@ exports.run = async (client, message, args) => {
       }
       break;
     case 'matches':
-      const owl_Matches = await fetch(
-        'https://api.overwatchleague.com/matches'
-      );
+      const owl_Matches = await fetch('https://api.overwatchleague.com/matches');
       const allMatches = await owl_Matches.json();
       let matches = '';
       for (j = 0; j < 5; j++ in allMatches.content) {
-        matches += `${logos(
-          allMatches.content[j].competitors[0].abbreviatedName
-        )} **${allMatches.content[j].competitors[0].name}** vs **${
-          allMatches.content[j].competitors[1].name
-        }** ${logos(
+        matches += `${logos(allMatches.content[j].competitors[0].abbreviatedName)} **${
+          allMatches.content[j].competitors[0].name
+        }** vs **${allMatches.content[j].competitors[1].name}** ${logos(
           allMatches.content[j].competitors[1].abbreviatedName
         )}\n Score: ||**${allMatches.content[j].scores[0].value}** - **${
           allMatches.content[j].scores[1].value
@@ -325,9 +306,7 @@ exports.run = async (client, message, args) => {
       break;
     default:
       message.channel.send(
-        `\`\`\`${
-          client.ConfigService.config.prefix
-        }owl [option] [search(if applicable)]
+        `\`\`\`${client.ConfigService.config.prefix}owl [option] [search(if applicable)]
       Options:
       ranking
       stages

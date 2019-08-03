@@ -49,7 +49,9 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
         //     }
         //   }
         // });
-        sendMessage(`${client.ConfigService.config.channel.youtube}`, { embed });
+        client.guilds.forEach(function(g) {
+          sendMessage(client.settings.get(g.id, 'owl.channel'), { embed });
+        });
         if (channel.items) youtube.set(`${channel.items[0].id.videoId}`, true);
       } else {
         client.console(`YouTube | Already announced ${channel.items[0].id.videoId}`);

@@ -30,28 +30,6 @@ exports.run = async function(client, member, message) {
     });
   } catch (e) {
     console.log(e);
-    console.error(
-      'No commands were found to load! If you see this error you likely cloned the bot incorrectly and left some files behind!'
-        .red.bold
-    );
-    process.exit(1);
-  }
-
-  // Add custom commands to command list
-  try {
-    const customCommands = await fs.readdir(ccFolder);
-    customCommands.forEach(file => {
-      if (file.startsWith('.')) {
-        return;
-      } else {
-        let cmdfiles = require(`../commands/cc/${file}`);
-        CommandList.addCommand(file.toString().replace('.js', ''), true, cmdfiles.description);
-      }
-    });
-  } catch (e) {
-    console.error(
-      "No custom commands file directory exists, please create a folder in the commands directory called 'cc'".red
-    );
   }
 
   // Discord status URL
@@ -63,11 +41,8 @@ exports.run = async function(client, member, message) {
   const body = await response.json();
 
   if (!response.ok) {
-    throw Error('Error: DISCORD_STATUS_REQUEST. Please tell the bot author.');
+    throw Error('Error: DISCORD_STATUS_REQUEST. The Discord API gave us a baaad response...');
   }
-
-  var indicator = body.status.indicator;
-  var desc = body.status.description;
 
   if (body.status.description == 'All Systems Operational') {
     console.log('\nAll Discord systems operational!\n'.green.dim);
@@ -78,10 +53,7 @@ exports.run = async function(client, member, message) {
   }
   // End discord status
   const cmds = await fs.readdir(commandsFolder);
-  const ccmds = await fs.readdir(ccFolder);
-  console.log(
-    'Loading '.green + cmds.length + ' commands'.green + ' and '.green + ccmds.length + ' custom commands'.green
-  );
+  console.log('Loading '.green + cmds.length + ' commands'.green);
   console.log(
     `${client.user.username}`.underline.magenta +
       ' online!\n'.magenta.reset +
