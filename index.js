@@ -186,8 +186,6 @@ const cc = new Enmap({
   fetchAll: true
 });
 
-veriEnmap.deleteAll();
-
 async function onJoin(member) {
   try {
     //check if DB is ready
@@ -196,13 +194,9 @@ async function onJoin(member) {
       //if the user is not in the guild, do not crash!
       //if the discord id is in db, it means they are verified :D so add roles, nickname etc
       if (veriEnmap.has(`${member.user.id}`)) {
-        let addRole = guild.roles.find(r => r.name === `${client.settings.get(`${guild.id}`, 'roles.join')}`);
+        let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
         //if they dont have default role, run commands
-        if (
-          !guild
-            .member(member.user.id)
-            .roles.find(r => r.name === `${client.settings.get(`${guild.id}`, 'roles.join')}`)
-        ) {
+        if (!guild.member(member.user.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
           // add the roles
           guild.members
             .get(member.user.id)
@@ -222,7 +216,7 @@ async function onJoin(member) {
             guild.members.get(member.user.id).addRole(role);
           });
           let hsClass = guild.roles.find(r => r.name === `${veriEnmap.get(member.user.id, 'class')}`);
-          guild.members.get(discordid.id).addRole(hsClass);
+          guild.members.get(member.user.id).addRole(hsClass);
           member.send(
             `You have been sucessfully verified in the Discord server **${
               guild.name
@@ -230,9 +224,7 @@ async function onJoin(member) {
               member.user.username
             }\nEmail: ${veriEnmap.get(member.user.id, 'email')}\`\`\``
           );
-          let newchannel = guild.channels.find(
-            ch => ch.name === `${client.settings.get(`${guild.id}`, 'welcome.channel')}`
-          );
+          let newchannel = guild.channels.find(ch => ch.name === `${client.ConfigService.config.channel.joinCh}`);
           newchannel.send(`✅ **${member.user.username}** has been verified!`);
         }
       } else {

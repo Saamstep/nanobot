@@ -57,11 +57,15 @@ exports.run = (client, message, args, veriEnmap, cc) => {
                   value: `${message.author.username}#${message.author.discriminator}`
                 },
                 {
+                  name: 'Class',
+                  value: `${veriEnmap.get(`${message.author.id}`, 'class')}`
+                },
+                {
                   name: 'Email',
                   value: `${veriEnmap.get(`${message.author.id}`, 'email')}`
                 },
                 {
-                  name: 'Roles',
+                  name: 'Interested Games',
                   value: `${veriEnmap.get(`${message.author.id}`, 'roles').join('\n')}`
                 }
               ]
@@ -85,11 +89,15 @@ exports.run = (client, message, args, veriEnmap, cc) => {
                   value: `<@${member.id}>`
                 },
                 {
+                  name: 'Class',
+                  value: `${veriEnmap.get(`${member.id}`, 'class')}`
+                },
+                {
                   name: 'Email',
                   value: `${veriEnmap.get(`${member.id}`, 'email')}`
                 },
                 {
-                  name: 'Roles',
+                  name: 'Interested Games',
                   value: `${veriEnmap.get(`${member.id}`, 'roles').join('\n')}`
                 }
               ]
