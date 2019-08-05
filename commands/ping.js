@@ -9,7 +9,7 @@ exports.run = (client, message, args) => {
     });
   }
 
-  if (isOwner(message, false)) {
+  if (isOwner(message, false, client)) {
     message.channel.send('Pinging...').then(sent => {
       sent.edit(`Pong! Response time: ${sent.createdTimestamp - message.createdTimestamp}ms`);
     });
