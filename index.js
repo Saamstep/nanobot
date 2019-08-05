@@ -360,7 +360,7 @@ client.on('message', message => {
     }
 
     // Command file manager code
-    if (!message.content.startsWith(client.settings.get(`${g.id}`, 'prefix'))) return;
+    if (!message.content.startsWith(client.ConfigService.config.prefix)) return;
     if (!message.guild || message.author.bot) return;
 
     let command = message.content.split(' ')[0];
