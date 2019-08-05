@@ -299,7 +299,7 @@ client.on('message', message => {
 
     // thumbs up url system
     try {
-      let urls = client.settings.get(`${g.id}`, 'urlReact.urls');
+      let urls = client.ConfigService.config.urls;
       if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
         return message.react(`👍`);
       }
@@ -309,8 +309,8 @@ client.on('message', message => {
 
     // Nicknamer [p]iam command
     try {
-      if (message.channel.name === `${client.settings.get(`${g.id}`, 'nicknamer.channel')}`) {
-        if (message.content !== `${client.settings.get(`${g.id}`, 'prefix')}iam`) {
+      if (message.channel.name === `${client.ConfigService.config.channel.nickID}`) {
+        if (message.content !== `${client.ConfigService.config.prefix}iam`) {
           message.delete(0);
         }
       }
@@ -320,7 +320,7 @@ client.on('message', message => {
 
     // Checkmarks if the correct IP is typed in chat
     if (`${client.settings.get(`${g.id}`, 'minecraft.IP')}` !== '') {
-      if (message.content.includes(`${client.settings.get(`${g.id}`, 'minecraft.IP')}`) && !message.author.bot) {
+      if (message.content.includes(`${client.ConfigService.config.minecraft.IP}`) && !message.author.bot) {
         message.react(`✅`);
       }
     }
@@ -332,8 +332,8 @@ client.on('message', message => {
 
     //Support channel code
 
-    if (message.channel.name === `${client.settings.get(`${g.id}`, 'feedback.channel')}` && !message.author.bot) {
-      const tag = `${client.settings.get(`${g.id}`, 'feedback.categories')}`;
+    if (message.channel.name === `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
+      const tag = client.ConfigService.config.supportTags;
       if (tag.some(word => message.content.includes(word))) {
         pMreact();
       } else if (client.isAdmin(message.author, message, false, client)) {
@@ -408,7 +408,7 @@ client.on('message', message => {
     // }
 
     try {
-      if (message.content.startsWith(client.settings.get(`${g.id}`, 'prefix')) && cc.has(command)) {
+      if (message.content.startsWith(client.ConfigService.config.prefix) && cc.has(command)) {
         cc.defer.then(() => {
           message.channel.send(cc.get(command));
         });
