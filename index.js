@@ -166,116 +166,114 @@ module.exports = function cooldown(message, code) {
 };
 
 client.on('message', message => {
-  client.guilds.forEach(function(g) {
-    // MC to Discord message handler (deprecating for now)
-    // if (message.channel.name === `${client.settings.get(`${g.id}`, 'minecraft.topicChannel')}`) {
-    //   if (message.author.bot) return;
-    //   let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
-    //   conn.send(msg);
-    // }
+  // MC to Discord message handler (deprecating for now)
+  // if (message.channel.name === `${client.settings.get(`${g.id}`, 'minecraft.topicChannel')}`) {
+  //   if (message.author.bot) return;
+  //   let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
+  //   conn.send(msg);
+  // }
 
-    // thumbs up url system
-    try {
-      let urls = client.ConfigService.config.urls;
-      if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
-        return message.react(`👍`);
-      }
-    } catch (e) {
-      console.error(e);
+  // thumbs up url system
+  try {
+    let urls = client.ConfigService.config.urls;
+    if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
+      return message.react(`👍`);
     }
+  } catch (e) {
+    console.error(e);
+  }
 
-    // Nicknamer [p]iam command
-    try {
-      if (message.channel.name === `${client.ConfigService.config.channel.nickID}`) {
-        if (message.content !== `${client.ConfigService.config.prefix}iam`) {
-          message.delete(0);
+  // Nicknamer [p]iam command
+  try {
+    if (message.channel.name === `${client.ConfigService.config.channel.nickID}`) {
+      if (message.content !== `${client.ConfigService.config.prefix}iam`) {
+        message.delete(0);
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+
+  // Checkmarks if the correct IP is typed in chat
+  if (`${client.ConfigService.config.minecraft.serverIP}` !== '') {
+    if (message.content.includes(`${client.ConfigService.config.minecraft.IP}`) && !message.author.bot) {
+      message.react(`✅`);
+    }
+  }
+  // Support Channel Code
+  async function pMreact() {
+    await message.react('⬆');
+    await message.react('⬇');
+  }
+
+  //Support channel code
+
+  if (message.channel.name === `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
+    const tag = client.ConfigService.config.supportTags;
+    if (tag.some(word => message.content.includes(word))) {
+      pMreact();
+    } else if (client.isAdmin(message.author, message, false, client)) {
+      if (message.content.startsWith('check')) {
+        let args = message.content.split(' ').slice(1);
+        message.channel.fetchMessage(args[0]).then(msg => {
+          msg.react('✅');
+        });
+        message.delete(0);
+      }
+      if (message.content.startsWith('delete')) {
+        let args = message.content.split(' ').slice(1);
+        let reason = args.join(' ');
+        reason = reason.replace(args[0], '\n');
+        message.delete(0);
+        message.channel.fetchMessage(args[0]).then(msg => {
+          msg.delete(0);
+          msg.author.send('Your suggestion `' + msg.content + '` was removed by an admin for: ```' + reason + '```');
+        });
+      }
+    } else {
+      message.delete();
+    }
+  }
+
+  // Command file manager code
+  if (!message.content.startsWith(client.ConfigService.config.prefix)) return;
+  if (!message.guild || message.author.bot) return;
+
+  let command = message.content.split(' ')[0];
+  command = command.slice(config.prefix.length);
+  client.config = config;
+  let args = message.content.split(' ').slice(1);
+
+  // Regular command file manager
+  try {
+    cc.defer.then(() => {
+      if (cc.has(command)) {
+        return;
+      } else {
+        try {
+          let commandFile = require(`./commands/${command}.js`);
+          commandFile.run(client, message, args, veriEnmap, cc);
+        } catch (e) {
+          console.error(e);
         }
       }
-    } catch (err) {
+    });
+  } catch (err) {
+    if (client.ConfigService.config.debug === true) {
       console.error(err);
     }
+  }
 
-    // Checkmarks if the correct IP is typed in chat
-    if (`${client.ConfigService.config.minecraft.serverIP}` !== '') {
-      if (message.content.includes(`${client.ConfigService.config.minecraft.IP}`) && !message.author.bot) {
-        message.react(`✅`);
-      }
-    }
-    // Support Channel Code
-    async function pMreact() {
-      await message.react('⬆');
-      await message.react('⬇');
-    }
-
-    //Support channel code
-
-    if (message.channel.name === `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
-      const tag = client.ConfigService.config.supportTags;
-      if (tag.some(word => message.content.includes(word))) {
-        pMreact();
-      } else if (client.isAdmin(message.author, message, false, client)) {
-        if (message.content.startsWith('check')) {
-          let args = message.content.split(' ').slice(1);
-          message.channel.fetchMessage(args[0]).then(msg => {
-            msg.react('✅');
-          });
-          message.delete(0);
-        }
-        if (message.content.startsWith('delete')) {
-          let args = message.content.split(' ').slice(1);
-          let reason = args.join(' ');
-          reason = reason.replace(args[0], '\n');
-          message.delete(0);
-          message.channel.fetchMessage(args[0]).then(msg => {
-            msg.delete(0);
-            msg.author.send('Your suggestion `' + msg.content + '` was removed by an admin for: ```' + reason + '```');
-          });
-        }
-      } else {
-        message.delete();
-      }
-    }
-
-    // Command file manager code
-    if (!message.content.startsWith(client.ConfigService.config.prefix)) return;
-    if (!message.guild || message.author.bot) return;
-
-    let command = message.content.split(' ')[0];
-    command = command.slice(config.prefix.length);
-    client.config = config;
-    let args = message.content.split(' ').slice(1);
-
-    // Regular command file manager
-    try {
+  //New Custom Command File System
+  try {
+    if (message.content.startsWith(client.ConfigService.config.prefix) && cc.has(command)) {
       cc.defer.then(() => {
-        if (cc.has(command)) {
-          return;
-        } else {
-          try {
-            let commandFile = require(`./commands/${command}.js`);
-            commandFile.run(client, message, args, veriEnmap, cc);
-          } catch (e) {
-            console.error(e);
-          }
-        }
+        message.channel.send(cc.get(command));
       });
-    } catch (err) {
-      if (client.ConfigService.config.debug === true) {
-        console.error(err);
-      }
+    } else {
+      return;
     }
-
-    //New Custom Command File System
-    try {
-      if (message.content.startsWith(client.ConfigService.config.prefix) && cc.has(command)) {
-        cc.defer.then(() => {
-          message.channel.send(cc.get(command));
-        });
-      } else {
-        return;
-      }
-    } catch (e) {
-      console.error(e);
-    }
-  });
+  } catch (e) {
+    console.error(e);
+  }
 });

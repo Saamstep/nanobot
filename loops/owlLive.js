@@ -60,9 +60,8 @@ exports.run = (client, dupe, sendMessage) => {
                 'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
             }
           };
-          client.guilds.forEach(function(g) {
-            sendMessage(client.ConfigService.config.channel.owl, { embed });
-          });
+
+          sendMessage(client.ConfigService.config.channel.owl, { embed });
         }
       });
     } catch (e) {

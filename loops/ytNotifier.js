@@ -47,9 +47,9 @@ exports.run = (client, dupe, sendMessage) => {
         //     }
         //   }
         // });
-        client.guilds.forEach(function(g) {
-          sendMessage(client.ConfigService.config.channel.youtube, { embed });
-        });
+
+        sendMessage(client.ConfigService.config.channel.youtube, { embed });
+
         if (channel.items) dupe.set(`${channel.items[0].id.videoId}`, true);
       } else {
         client.console(`YouTube | Already announced ${channel.items[0].id.videoId}`);

@@ -51,9 +51,8 @@ exports.run = (client, dupe, sendMessage) => {
           //     }
           //   }
           // });
-          client.guilds.forEach(function(g) {
-            sendMessage(client.ConfigService.config.channel.owl, { embed });
-          });
+
+          sendMessage(client.ConfigService.config.channel.owl, { embed });
         }
       });
     } catch (e) {
