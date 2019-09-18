@@ -1,4 +1,4 @@
-exports.run = (client, owl, youtube, twitch, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   const fetch = require('node-fetch');
   //OWL Live-Match
 
@@ -14,8 +14,8 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
       const response = await fetch('https://api.overwatchleague.com/live-match');
       const body = await response.json();
       //check to see if we already announced the lastest article
-      owl.defer.then(() => {
-        if (owl.get('live') === body.data.liveMatch.id) {
+      dupe.defer.then(() => {
+        if (dupe.get('live') === body.data.liveMatch.id) {
           //if announced, skip it (:
           return client.console(`Already announced ${body.data.liveMatch.id}`.yellow);
         } else {
@@ -28,7 +28,7 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
           if (isEmpty(body.data.liveMatch)) {
             return client.console('No live match data.');
           }
-          owl.set('live', body.data.liveMatch.id);
+          dupe.set('live', body.data.liveMatch.id);
           //it wasn't announced, so we announce it with this code
           // Finds channel and sends msg to channel
           // client.guilds.map(guild => {
@@ -61,7 +61,7 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
             }
           };
           client.guilds.forEach(function(g) {
-            sendMessage(client.settings.get(g.id, 'owl.channel'), { embed });
+            sendMessage(client.ConfigService.config.channel.owl, { embed });
           });
         }
       });

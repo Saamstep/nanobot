@@ -5,5 +5,5 @@ module.exports = function consoleEvent(event) {
   let now = new Date();
   let timeFormat = dateFormat(now);
 
-  console.log('[LOG] ' + '[' + timeFormat + '] ' + event);
+  console.log('[' + timeFormat + '] ' + event);
 };

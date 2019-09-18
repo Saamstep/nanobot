@@ -1,9 +1,5 @@
 exports.run = (client, message, args, veriEnmap, cc) => {
   if (client.isMod(message.author, message, client)) {
-    if (args[2]) {
-      let member = message.mentions.users.first();
-      let roleUser = message.guild.members.get(member.id);
-    }
     switch (args[0]) {
       case 'clearALL_dangerous_be_careful':
         veriEnmap.defer.then(() => {
@@ -13,30 +9,30 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         client.log('All Data Deleted', `Yea... its all gone :|`, 2942691, message, client);
         break;
       case 'addrole':
+        let member = message.mentions.members.first();
+        let roleUser = message.guild.members.get(member.id);
         if (!args[1]) return;
         roleUser.addRole(message.guild.roles.find(r => r.name === `${args[2]}`));
         veriEnmap.push(`${member.id}`, `${args[2]}`, 'roles');
-        message.channel.send(`Updated ${member.username}.`);
+        message.channel.send(`Updated ${member.user.username}.`);
         client.log('Role Added to User', `${member} now has role \`${args[2]}\``, 2942691, message, client);
         break;
       case 'removerole':
+        let m2 = message.mentions.members.first();
+        let r2 = message.guild.members.get(m2.id);
         if (!args[1]) return;
-        roleUser.removeRole(message.guild.roles.find(r => r.name === `${args[2]}`));
-        veriEnmap.remove(`${member.id}`, `${args[2]}`, 'roles');
-        message.channel.send(`Updated ${member.username}.`);
-        client.log(
-          'Role Removed from User',
-          `${member} now does not have role \`${args[2]}\``,
-          2942691,
-          message,
-          client
-        );
+        r2.removeRole(message.guild.roles.find(r => r.name === `${args[2]}`));
+        veriEnmap.remove(`${m2.id}`, `${args[2]}`, 'roles');
+        message.channel.send(`Updated ${m2.user.username}'s roles.`);
+        client.log('Role Removed from User', `${m2} now does not have role \`${args[2]}\``, 2942691, message, client);
         break;
       case 'updatename':
-        veriEnmap.set(`${member.id}`, `${args[2]} ${args[3]}`, 'name');
-        roleUser.setNickname(`${args[2]} ${args[3]}`);
-        message.channel.send(`Updated ${member.username}.`);
-        client.log("User's Name Updated", `${member} now is named ${args[2]} ${args[3]}`, 2942691, message, client);
+        let m = message.mentions.members.first();
+        let r = message.guild.members.get(m.id);
+        veriEnmap.set(`${m.id}`, `${args[2]}`, 'name');
+        r.setNickname(`${m.user.username} (${veriEnmap.get(m.id, 'name')})`);
+        message.channel.send(`Updated ${m.user.username}'s name to ${args[2]}.`);
+        client.log("User's Name Updated", `${m} now is named ${args[2]} ${args[3]}`, 2942691, message, client);
         break;
       case 'seedata':
         veriEnmap.defer.then(() => {
@@ -108,9 +104,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         break;
       default:
         message.channel.send(
-          `\`\`\`${
-            client.ConfigService.config.prefix
-          }verify [clearALL_dangerous_be_careful/addrole/removerole/updatename/seedata] [user] [new]\`\`\``
+          `\`\`\`${client.ConfigService.config.prefix}verify [clearALL_dangerous_be_careful/addrole/removerole/updatename/seedata] [user] [new]\`\`\``
         );
     }
   }

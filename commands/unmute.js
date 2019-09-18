@@ -1,22 +1,43 @@
-exports.run = async (client, message, args) => {
-  let error = require('../modules/errorMod.js');
-  try {
-    let voiceChannels = message.guild.channels.filter(channel => channel.type === 'voice');
-    let sourceVoiceChannel = voiceChannels.find('name', `${message.member.voiceChannel.name}`);
-    let isMod = require('../modules/isMod.js');
+exports.run = (client, message, args) => {
+  if (client.isMod(message.author, message, client)) {
+    message.delete(500);
+    let target =
+      message.mentions.members.first() ||
+      message.guild.roles.find(r => r.name == `${client.ConfigService.config.iamRole}`);
+    let reason = args.join(' ').replace(args[0], '') || 'No reason provided';
+    if (args[0] == 'all') {
+      message.channel
+        .overwritePermissions(target, {
+          SEND_MESSAGES: true
+        })
+        .catch(console.error);
+      message.channel.send(`Unmuted ${target.name} role in **${message.channel.name}**.`);
+      client.log(`@${target.name} role unmuted in #${message.channel.name}`, `${reason}`, 14611073, message, client);
+    } else {
+      message.channel
+        .overwritePermissions(
+          target,
+          {
+            SEND_MESSAGES: null
+          },
+          `@${target.user.username}#${target.user.discriminator} unmuted in #${message.channel.name} by ${message.author.username}`
+        )
+        .then(u =>
+          u.permissionOverwrites
+            .get(target.user.id)
+            .delete(
+              `@${target.user.username}#${target.user.discriminator} unmuted in #${message.channel.name} by ${message.author.username}`
+            )
+        );
 
-    if (isMod(message.author, message, client)) {
-      let sourceVoiceChannelMember = sourceVoiceChannel.members.array();
-      for (let member of sourceVoiceChannelMember) {
-        {
-          await member.setMute(false, `${message.author.tag} used unmuteall command.`).catch(e => console.error(e));
-        }
-      }
-      message.react('👌');
+      message.channel.send(`Removed Mute on ${target.user.username} in **${message.channel.name}**.`);
+      client.log(
+        `@${target.user.username}#${target.user.discriminator} unmuted in #${message.channel.name}`,
+        `${reason}`,
+        14611073,
+        message,
+        client
+      );
     }
-  } catch (e) {
-    let error = require('../modules/errorMod.js');
-    error("You either are not in a voice channel, don't have the correct permissions or messed up badly!", message);
-    console.error(e);
   }
 };

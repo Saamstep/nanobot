@@ -1,6 +1,5 @@
 const Discord = require('discord.js');
 const client = new Discord.Client({ autoReconnect: true });
-const ConfigService = require('./config.js');
 const fs = require('fs');
 const fetch = require('node-fetch');
 const Enmap = require('enmap');
@@ -13,83 +12,7 @@ client.error = require('./modules/errorMod.js');
 client.console = require('./modules/consoleMod.js');
 client.log = require('./modules/logMod.js');
 client.ConfigService = require('./config.js');
-client.login(ConfigService.config.token);
-
-//enmap config (yes we're actually doing it this time)
-client.settings = new Enmap({
-  name: 'bot_config',
-  autoFetch: true,
-  fetchAll: true
-});
-const defaultconfig = {
-  prefix: '?',
-  debug: true,
-  ownerid: '',
-  playing: '',
-  welcome: {
-    enabled: true,
-    joinMsg: 'Welcome **USER** to SERVER',
-    leaveMsg: 'Goodbye USER',
-    channel: 'general'
-  },
-  roles: {
-    mod: 'Mod',
-    admin: 'Admin',
-    smpMember: 'Members',
-    interview: '',
-    join: 'Cool People'
-  },
-  twitch: {
-    enabled: false,
-    channel: 'announcements',
-    streamers: ['samstep']
-  },
-  owl: {
-    enabled: true,
-    channel: 'overwatch'
-  },
-  nicknamer: {
-    enabled: false,
-    channel: '',
-    expression: 'USER (NICK)'
-  },
-  feedback: {
-    enabled: false,
-    channel: '',
-    categories: ['[Review]', '[ASAP]']
-  },
-  urlReact: {
-    enabled: true,
-    urls: ['youtu.be/']
-  },
-  otherChannel: {
-    log: 'logger',
-    poll: 'announcements'
-  },
-  rcon: {
-    enabled: false,
-    port: '',
-    pass: ''
-  },
-  minecraft: {
-    IP: '',
-    port: '',
-    queryPort: '',
-    mcServerConnection: false,
-    topicChannel: ''
-  },
-  mcSMP: {
-    serverName: 'Dev Test',
-    acceptMessage: 'You were accepted! Congratulations!',
-    website: '',
-    denyImg:
-      'http://images.all-free-download.com/images/graphicthumb/delicious_birthday_cake_creative_vector_577659.jpg'
-  },
-  youtube: {
-    channel: '',
-    creators: ['UClOf1XXinvZsy4wKPAkro2A']
-  }
-};
+client.login(client.ConfigService.config.token);
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
@@ -125,7 +48,7 @@ client.on('ready', ready => {
       let eventFunction = require(`./loops/${file}`);
       let eventName = file.split('.')[0];
       setInterval(() => {
-        eventFunction.run(client, owl, youtube, twitch, sendMessage);
+        eventFunction.run(client, dupe, sendMessage);
       }, eventFunction.time);
       client.console(`Started ${eventName} loop event`.cyan);
     });
@@ -137,44 +60,24 @@ client.on('ready', ready => {
     files.forEach(file => {
       let eventFunction = require(`./services/${file}`);
       let eventName = file.split('.')[0];
-      eventFunction.run(client, owl, youtube, twitch, veriEnmap, sendMessage);
+      eventFunction.run(client, dupe, veriEnmap, sendMessage);
       client.console(`Started ${eventName} service`.cyan.dim);
     });
   });
 });
 
-client.on('guildCreate', guild => {
-  client.settings.set(guild.id, defaultconfig);
-  client.console(`Created config enmap entry for guild:\n${guild.id}`);
-});
+//===ALL ENMAPS DECLARED===
 
-//===ALL ENMAPS=== (except conf defaults)
-
-//Twitch Streamer Notifier
-const twitch = new Enmap({
-  name: 'twitch',
+//Dupe Check for Twitch/OWL/YT
+const dupe = new Enmap({
+  name: 'dupeCheck',
   autoFetch: true,
   fetchAll: true
 });
-
-//OverwatchLeague notifier
-const owl = new Enmap({
-  name: 'OWL',
-  autoFetch: true,
-  fetchAll: true
-});
-
 // enmap and data storage object for verification system
 
 const veriEnmap = new Enmap({
   name: 'verification',
-  autoFetch: true,
-  fetchAll: true
-});
-
-//YT notifier
-const youtube = new Enmap({
-  name: 'youtube',
   autoFetch: true,
   fetchAll: true
 });
@@ -208,7 +111,7 @@ async function onJoin(member) {
             .setNickname(`${member.user.username} (${veriEnmap.get(`${member.user.id}`, 'name')})`, 'Joined server.');
           client.console('Updated user ' + member.user.id);
           sendMessage(
-            `${client.settings.get(`${guild.id}`, 'otherChannel.log')}`,
+            `${client.ConfigService.config.channel.log}`,
             `<@${member.user.id}> was updated with all their roles and nicknames after joining.`
           );
           veriEnmap.get(`${member.user.id}`, 'roles').forEach(function(choice) {
@@ -225,14 +128,12 @@ async function onJoin(member) {
             }\nEmail: ${veriEnmap.get(member.user.id, 'email')}\`\`\``
           );
           let newchannel = guild.channels.find(ch => ch.name === `${client.ConfigService.config.channel.joinCh}`);
-          newchannel.send(`✅ **${member.user.username}** has been verified!`);
+          newchannel.send(`✅ **${member.user.username}** has been verified, welcome back!`);
         }
       } else {
         //if they are not in the database (wonder how they got there) then run the following commands
         member.send(
-          `Welcome to **${
-            guild.name
-          }** requires user verification, please fill out the Google form here: https://forms.gle/qGxEx2Vqd7fcLbzD8. Note that you will be kicked if you do not fill the form out.`
+          `Welcome to **${guild.name}** requires user verification, please fill out the Google form here: https://forms.gle/qGxEx2Vqd7fcLbzD8. Note that you will be kicked if you do not fill the form out.`
         );
       }
     });
@@ -264,38 +165,14 @@ module.exports = function cooldown(message, code) {
   }
 };
 
-//MC to Discord - rcon
-
-// var Rcon = require('rcon');
-// var updatedport = Number(client.ConfigService.config.minecraft.rcon.port);
-// var conn = new Rcon(
-//   `${client.ConfigService.config.minecraft.IP}`,
-//   updatedport,
-//   `${client.ConfigService.config.minecraft.rcon.pass}`
-// );
-
-// conn.on('auth', function() {
-//   client.console('RCON | Authed!'.green);
-// });
-// conn.on('end', function() {
-//   client.console('RCON | Socket closed!'.green);
-// });
-
-// if (!ConfigService.config.rconPort == '') {
-//   conn.connect();
-//   client.console('RCON | Connecting to server @ ' + JSON.stringify(conn.host + ':' + conn.port).green);
-// } else {
-//   client.console('RCON | Disabled!'.green);
-// }
-
 client.on('message', message => {
   client.guilds.forEach(function(g) {
-    // MC to Discord message handler
-    if (message.channel.name === `${client.settings.get(`${g.id}`, 'minecraft.topicChannel')}`) {
-      if (message.author.bot) return;
-      let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
-      conn.send(msg);
-    }
+    // MC to Discord message handler (deprecating for now)
+    // if (message.channel.name === `${client.settings.get(`${g.id}`, 'minecraft.topicChannel')}`) {
+    //   if (message.author.bot) return;
+    //   let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
+    //   conn.send(msg);
+    // }
 
     // thumbs up url system
     try {
@@ -319,7 +196,7 @@ client.on('message', message => {
     }
 
     // Checkmarks if the correct IP is typed in chat
-    if (`${client.settings.get(`${g.id}`, 'minecraft.IP')}` !== '') {
+    if (`${client.ConfigService.config.minecraft.serverIP}` !== '') {
       if (message.content.includes(`${client.ConfigService.config.minecraft.IP}`) && !message.author.bot) {
         message.react(`✅`);
       }
@@ -389,24 +266,6 @@ client.on('message', message => {
     }
 
     //New Custom Command File System
-
-    // if (message.content.startsWith('?addcc')) {
-    //   cc.defer.then(() => {
-    //     cc.set(`${args[0]}`, args.join(' ').replace(args[0], ''));
-    //   });
-    // }
-
-    // if (message.content.startsWith('?listall')) {
-    //   cc.defer.then(() => {
-    //     return console.log(cc);
-    //   });
-    // }
-    // if (message.content.startsWith('?deleteall')) {
-    //   cc.defer.then(() => {
-    //     return cc.deleteAll();
-    //   });
-    // }
-
     try {
       if (message.content.startsWith(client.ConfigService.config.prefix) && cc.has(command)) {
         cc.defer.then(() => {

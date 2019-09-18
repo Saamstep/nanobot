@@ -1,16 +1,14 @@
-exports.run = (client, owl, youtube, twitch, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   const fetch = require('node-fetch');
   //YT Video
   async function youtubeNotifier() {
     client.ConfigService.config.youtubeChannels.forEach(async function(id) {
       client.console('YouTube | Searching for new videos...');
       const api = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?key=${
-          client.ConfigService.config.apis.youtube
-        }&channelId=${id}&part=snippet,id&order=date&maxResults=1`
+        `https://www.googleapis.com/youtube/v3/search?key=${client.ConfigService.config.apis.youtube}&channelId=${id}&part=snippet,id&order=date&maxResults=1`
       );
       const channel = await api.json();
-      if (!youtube.has(channel.items[0].id.videoId)) {
+      if (!dupe.has(channel.items[0].id.videoId)) {
         client.console('YouTube | Found channel video to announce!');
         let youtubeURL = `https://youtu.be/${channel.items[0].id.videoId}`;
         const embed = {
@@ -50,9 +48,9 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
         //   }
         // });
         client.guilds.forEach(function(g) {
-          sendMessage(client.settings.get(g.id, 'owl.channel'), { embed });
+          sendMessage(client.ConfigService.config.channel.youtube, { embed });
         });
-        if (channel.items) youtube.set(`${channel.items[0].id.videoId}`, true);
+        if (channel.items) dupe.set(`${channel.items[0].id.videoId}`, true);
       } else {
         client.console(`YouTube | Already announced ${channel.items[0].id.videoId}`);
       }

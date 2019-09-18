@@ -2,8 +2,7 @@ exports.run = (client, message, args) => {
   const error = require('../modules/errorMod.js');
   const ConfigService = require('../config.js');
   let addRole = message.guild.roles.find('name', `${ConfigService.config.iamRole}`);
-  let expression = client.settings
-    .get(`${message.channel.id}`, 'nicknamer.expression')
+  let expression = client.ConfigService.config.nicknamer.expression
     .replace('USER', message.author.username)
     .replace('NICK', args[0]);
   if (message.channel.id !== ConfigService.config.nickChannelid) {
@@ -14,7 +13,6 @@ exports.run = (client, message, args) => {
         member.setNickname(expression);
       });
     } catch (err) {
-      // console.error(err);
       return;
     }
   }

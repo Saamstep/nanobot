@@ -1,4 +1,4 @@
-exports.run = (client, owl, youtube, twitch, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   const fetch = require('node-fetch');
   //OWL Team Logos
   function logos(output) {
@@ -16,18 +16,16 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
       const response = await fetch('https://api.overwatchleague.com/news');
       const body = await response.json();
       //check to see if we already announced the lastest article
-      owl.defer.then(() => {
-        if (owl.get('news') === body.blogs[0].blogId) {
+      dupe.defer.then(() => {
+        if (dupe.get('news') === body.blogs[0].blogId) {
           //if announced, skip it (:
           return client.console(`Already announced ${body.blogs[0].blogId}`.yellow);
         } else {
-          owl.set('news', body.blogs[0].blogId);
+          dupe.set('news', body.blogs[0].blogId);
           //it wasn't announced, so we annoucne it with this code
           // Finds channel and sends msg to channel
           const embed = {
-            description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${
-              body.blogs[0].defaultUrl
-            })`,
+            description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${body.blogs[0].defaultUrl})`,
             url: `${body.blogs[0].defaultUrl}`,
             color: 16752385,
             timestamp: body.blogs[0].publish,
@@ -54,7 +52,7 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
           //   }
           // });
           client.guilds.forEach(function(g) {
-            sendMessage(client.settings.get(g.id, 'owl.channel'), { embed });
+            sendMessage(client.ConfigService.config.channel.owl, { embed });
           });
         }
       });

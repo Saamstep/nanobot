@@ -1,12 +1,10 @@
-exports.run = (client, owl, youtube, twitch, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   const fetch = require('node-fetch');
   // mc channel topic:
   async function topic() {
     try {
       const response = await fetch(
-        `http://mcapi.us/server/status?ip=${client.ConfigService.config.minecraft.IP}&port=${
-          client.ConfigService.config.minecraft.port
-        }`
+        `http://mcapi.us/server/status?ip=${client.ConfigService.config.minecraft.IP}&port=${client.ConfigService.config.minecraft.port}`
       );
 
       const body = await response.json();
@@ -26,9 +24,7 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
           let channel = guild.channels.find(channel => channel.name === `mc-channel`);
           if (channel) {
             channel.setTopic(
-              `${ConfigService.config.serverName} | ${body.server.name} | ${body.players.now}/${
-                body.players.max
-              } online`
+              `${ConfigService.config.serverName} | ${body.server.name} | ${body.players.now}/${body.players.max} online`
             );
             client.console('MC --> Discord | Set topic!');
           }

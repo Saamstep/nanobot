@@ -1,4 +1,4 @@
-exports.run = (client, owl, youtube, twitch, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   const fetch = require('node-fetch');
   async function twitchNotifier() {
     // List of streamers to get notifications for
@@ -17,7 +17,7 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
         let game = '';
         let pfp = '';
         let display = '';
-        if (body.data[0] && !twitch.has(element)) {
+        if (body.data[0] && !dupe.has(element)) {
           const gameID = await fetch(`https://api.twitch.tv/helix/games?id=${body.data[0].game_id}`, {
             headers: {
               'Client-ID': `${client.ConfigService.config.apis.twitch}`
@@ -39,17 +39,17 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
         //if not live. dont send anything! but check if streamer is in checker and remove streamer
         if (!body.data[0]) {
           client.console('Twitch | Found ' + element.magenta.dim + ' is not live');
-          twitch.defer.then(() => {
-            if (twitch.has(element)) {
+          dupe.defer.then(() => {
+            if (dupe.has(element)) {
               client.console('Twitch | Found ' + element.magenta.dim + ' was live and is no longer.');
-              twitch.delete(element);
+              dupe.delete(element);
             }
           });
         } else {
           //if they go offline set them to status offline
-          twitch.defer.then(() => {
+          dupe.defer.then(() => {
             //if live... run this code
-            if (!twitch.has(element)) {
+            if (!dupe.has(element)) {
               // Message formatter for the notificiations
               const embed = {
                 description: '**' + body.data[0].title + '**',
@@ -91,9 +91,9 @@ exports.run = (client, owl, youtube, twitch, sendMessage) => {
               };
 
               // Add streamer name to a set
-              twitch.set(element, true);
+              dupe.set(element, true);
               client.guilds.forEach(function(g) {
-                sendMessage(client.settings.get(g.id, 'owl.channel'), { embed });
+                sendMessage(client.ConfigService.config.channel.owl, { embed });
               });
               client.console('Twitch | Found ' + element.magenta.dim + ' is live! Sent the announcement.');
             }

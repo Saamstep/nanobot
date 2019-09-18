@@ -3,21 +3,23 @@ const colors = require('colors');
 const CONFIG_PATH = './config.json';
 
 const failAndExit = () => {
-  console.error('config.js: Error loading Nano config file. Please make a config.json at the root directory and try again.'.underline.red);
+  console.error(
+    'config.js: Error loading Nano config file. Please make a config.json at the root directory and try again.'
+      .underline.red
+  );
   process.exit(1);
-}
+};
 
 // Singleton structure in JS
-var ConfigService = (function () {
-
+var ConfigService = (function() {
   var data;
   try {
     data = fs.readFileSync(CONFIG_PATH);
-  } catch(e) {
+  } catch (e) {
     failAndExit();
   }
 
-  if (data) { 
+  if (data) {
     this.config = JSON.parse(data);
   } else {
     failAndExit();
@@ -34,16 +36,11 @@ var ConfigService = (function () {
     }
 
     console.log(`Value after ${this.config[property]}`);
-    
-    fs.writeFile(
-      CONFIG_PATH,
-      JSON.stringify(config, null, 2),
-      err => console.error
-    );
-  }
+
+    fs.writeFile(CONFIG_PATH, JSON.stringify(config, null, 2), err => console.error);
+  };
 
   return this;
 })();
-
 
 module.exports = ConfigService;

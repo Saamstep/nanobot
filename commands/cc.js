@@ -1,11 +1,10 @@
 exports.run = (client, message, args, veriEnmap, cc) => {
   const error = require('../modules/errorMod.js');
-  const ConfigService = require('../config.js');
   const fs = require('fs');
   let msg = args.join(' ').replace(args[0], '');
   msg = msg.replace(/\s/, '');
   msg = msg.replace(args[1], '');
-
+  msg = msg.trim();
   const isAdmin = require('../modules/isAdmin.js');
   if (client.isAdmin(message.author, message, true, client)) {
     if (args[0] === 'add') {
@@ -39,13 +38,16 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         for (i in keys) {
           msg += `${keys[i]} - ${values[i]}\n`;
         }
-        message.channel.send(`\`\`\`${msg}\`\`\``);
-        console.log(cc);
+        if (msg == '') {
+          message.channel.send('No custom commands.');
+        } else {
+          return message.channel.send(`\`\`\`${msg}\`\`\``);
+        }
       });
     }
     if (!args[0]) {
       message.channel.send(
-        `${ConfigService.config.prefix}cc [add | del | list] [commandname] [text if adding command]`,
+        `${client.ConfigService.config.prefix}cc [add | del | list] [commandname] [text if adding command]`,
         {
           code: 'asciidoc'
         }

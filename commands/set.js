@@ -312,20 +312,12 @@ exports.run = (client, message, args) => {
       default:
         //usage
         message.channel.send(
-          `['Bot_Settings']\n\n"You can edit these values with '${
-            ConfigService.config.prefix
-          }set [option] [new value]'\nOptions are the names in gold with with no spaces and no caps!\nEx: ?set logchannel logger"` +
-            `\n\n\n'General'\nPrefix: "${ConfigService.config.prefix}"\nDebug: "${
-              ConfigService.config.debug
-            }"\n'Channels'\nLog Channel: "#${ConfigService.config.log}"\n\Poll Channel: "#${
-              ConfigService.config.pollchannel
-            }"\nJoin Channel: "#${ConfigService.config.joinCh}"\nTwitch Channel: "#${
-              ConfigService.config.twitchChannel
-            }"` +
+          `['Bot_Settings']\n\n"You can edit these values with '${ConfigService.config.prefix}set [option] [new value]'\nOptions are the names in gold with with no spaces and no caps!\nEx: ?set logchannel logger"` +
+            `\n\n\n'General'\nPrefix: "${ConfigService.config.prefix}"\nDebug: "${ConfigService.config.debug}"\n'Channels'\nLog Channel: "#${ConfigService.config.channel.log}"\n\Poll Channel: "#${ConfigService.config.channel.poll}"\nJoin Channel: "#${ConfigService.config.channel.join}"\nTwitch Channel: "#${ConfigService.config.channel.twitch}"` +
             `\nAccept Message: "${ConfigService.config.acceptMessage}"\nIP: "${ConfigService.config.mcIP}"\nPort: "${
               ConfigService.config.mcPort
             } (Leave empty if none)"\nWebsite: "${ConfigService.config.website}"\nSupport Channel "${
-              ConfigService.config.supportChannelid
+              ConfigService.config.channel.supportID
             }"\nSupport Tags: "${ConfigService.config.supportTags.join(', ')}"\n'Text'\nJoin Message: "${
               ConfigService.config.joinMsg
             }"\nLeave Message: "${ConfigService.config.leaveMsg}"\nNickname Channel: "${
@@ -334,10 +326,10 @@ exports.run = (client, message, args) => {
             `\nThumbs Up URLs: "${ConfigService.config.urls}"\nStreamers: "${ConfigService.config.streamers.join(
               ', '
             )}"\n'MC_Server'\nServer Name: "${ConfigService.config.serverName}"\n'Roles'\nMod Role: "${
-              ConfigService.config.modrolename
-            }"\nAdmin Role: "${ConfigService.config.adminrolename}"\nMember Role: "${
-              ConfigService.config.memberrole
-            }"\nTwitch Mention: "${ConfigService.config.mentionNotify}"`,
+              ConfigService.config.roles.mod
+            }"\nAdmin Role: "${ConfigService.config.roles.admin}"\nMember Role: "${
+              ConfigService.config.roles.member
+            }"\nTwitch Mention: "${ConfigService.config.twitchMentionNotify}"`,
           { code: 'ml' }
         );
     }

@@ -1,5 +1,6 @@
 exports.run = (client, message, args) => {
   message.channel.startTyping(1);
+  console.log(message.guild.members);
   function sender() {
     message.delete(0);
     let member = message.guild.member(message.mentions.users.first());
