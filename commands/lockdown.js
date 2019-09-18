@@ -2,7 +2,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   if (client.isMod(message.author, message, client)) {
     message.delete(500);
     let category = message.guild.channels.find(ch => ch.name == 'All');
-    let role = message.guild.roles.find(r => r.name == `${client.ConfigService.config.iamRole}`);
+    let role = message.guild.roles.find(r => r.name == `${client.ConfigService.config.roles.iamRole}`);
     let mode = '';
     if (category.permissionOverwrites.get(role.id).deny == 2048) {
       mode = 'DISABLED';

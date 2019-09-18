@@ -3,7 +3,7 @@ exports.run = (client, message, args) => {
     message.delete(500);
     let target =
       message.mentions.members.first() ||
-      message.guild.roles.find(r => r.name == `${client.ConfigService.config.iamRole}`);
+      message.guild.roles.find(r => r.name == `${client.ConfigService.config.roles.iamRole}`);
     let reason = args.join(' ').replace(args[0], '') || 'No reason provided';
     if (args[0] == 'all') {
       message.channel
