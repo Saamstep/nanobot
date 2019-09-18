@@ -162,7 +162,7 @@ exports.run = (client, dupe, veriEnmap, sendMessage) => {
           }
         });
       })
-      .listen(4000);
+      .listen(3000);
   }
   typeFormServer();
 };
