@@ -8,8 +8,8 @@ exports.run = (client, message, args) => {
     member.send(msgSender);
     message.channel.stopTyping(true);
   }
+
   const ConfigService = require('../config.js');
-  let isAdmin = require('../modules/isAdmin.js');
   if (client.isAdmin(message.author, message, true, client)) {
     if (args[0] == null) {
       return message.channel.send(`${ConfigService.config.prefix}dm [@user] [message]`, { code: 'asciidoc' });
