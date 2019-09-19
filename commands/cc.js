@@ -56,4 +56,4 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   }
 };
 
-exports.description = 'Allows admins to add/remove custom commands.';
+exports.description = 'Allows admins to add/remove/list custom commands.';

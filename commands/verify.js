@@ -109,3 +109,5 @@ exports.run = (client, message, args, veriEnmap, cc) => {
     }
   }
 };
+
+exports.description = 'Verification System: command manager';

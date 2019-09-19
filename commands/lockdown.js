@@ -24,3 +24,5 @@ exports.run = (client, message, args, veriEnmap, cc) => {
     client.log(`Lockdown`, `**${mode}**`, 14611073, message, client);
   }
 };
+
+exports.description = "Allows moderators to mute all in 'All' category.";

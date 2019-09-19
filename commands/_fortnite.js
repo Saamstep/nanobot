@@ -1,51 +1,51 @@
 exports.run = (client, message, args) => {
-	// const request = require('request');
+  // const request = require('request');
 
-	// message.channel.startTyping(1);
+  // message.channel.startTyping(1);
 
-	// // START
-	// var platform = args[0];
-	// var epicID = args[1];
+  // // START
+  // var platform = args[0];
+  // var epicID = args[1];
 
-	// let options = {
-	//   url: `https://api.fortnitetracker.com/v1/profile/${platform}/${epicID}`,
-	//   method: 'GET',
-	//   headers: {
-	//     'User-Agent': 'D.js-Bot-Dev',
-	//     'TRN-Api-Key': `${config.trn_api_key}`
-	//   }
-	// };
+  // let options = {
+  //   url: `https://api.fortnitetracker.com/v1/profile/${platform}/${epicID}`,
+  //   method: 'GET',
+  //   headers: {
+  //     'User-Agent': 'D.js-Bot-Dev',
+  //     'TRN-Api-Key': `${config.trn_api_key}`
+  //   }
+  // };
 
-	// request(options, function(error, response, body) {
-	//   const error = require('../modules/errorMod.js');
-	//   try {
-	//     body = JSON.parse(body);
+  // request(options, function(error, response, body) {
+  //   const error = require('../modules/errorMod.js');
+  //   try {
+  //     body = JSON.parse(body);
 
-	//     if (body.error) {
-	//       error(body.error, message);
-	//       return message.channel.stopTyping(true);
-	//     }
-	//     message.channel.send(
-	//       '**Username**' +
-	//         body.epicUserHandle +
-	//         '\n\n**Score**' +
-	//         body.p9[0].stats.lifeTimeStats.key.Score
-	//     );
-	//   } catch {
-	//     error(
-	//       'Either there was a fatal error or there were invalid paramaters.',
-	//       message
-	//     );
-	//     return message.channel.stopTyping(true);
-	//   }
+  //     if (body.error) {
+  //       error(body.error, message);
+  //       return message.channel.stopTyping(true);
+  //     }
+  //     message.channel.send(
+  //       '**Username**' +
+  //         body.epicUserHandle +
+  //         '\n\n**Score**' +
+  //         body.p9[0].stats.lifeTimeStats.key.Score
+  //     );
+  //   } catch {
+  //     error(
+  //       'Either there was a fatal error or there were invalid paramaters.',
+  //       message
+  //     );
+  //     return message.channel.stopTyping(true);
+  //   }
 
-	//   if (error) {
-	//     return console.log(error);
-	//   }
-	// });
-	// message.channel.stopTyping(true);
+  //   if (error) {
+  //     return console.log(error);
+  //   }
+  // });
+  // message.channel.stopTyping(true);
 
-	message.reply(';)');
+  message.reply(';)');
 };
 
-exports.description = 'Un-functional Fortnite command.';
+exports.description = '(Non functional) Fortnite command.';

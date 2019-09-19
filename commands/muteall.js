@@ -10,18 +10,16 @@ exports.run = async (client, message, args) => {
       for (let member of sourceVoiceChannelMember) {
         {
           if (member.id !== message.author.id) {
-            await member.setMute(true, `${message.author.tag} used muteall command.`).catch((e) => console.error(e));
+            await member.setMute(true, `${message.author.tag} used muteall command.`).catch(e => console.error(e));
           }
         }
       }
       message.react('👌');
-
     }
   } catch (e) {
     let error = require('../modules/errorMod.js');
-    error("You either are not in a voice channel, don't have the correct permissions or messed up badly!", message)
+    error("You either are not in a voice channel, don't have the correct permissions or messed up badly!", message);
     console.error(e);
   }
-
-
-}
+};
+exports.description = 'Allows moderators to server mute all users except message author';

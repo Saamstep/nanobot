@@ -32,4 +32,4 @@ exports.run = async (client, message, args) => {
   cooldown(message, cmd);
 };
 
-exports.description = 'Checks Discord status.';
+exports.description = 'Checks Discord server status.';

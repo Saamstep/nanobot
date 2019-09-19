@@ -9,12 +9,12 @@ exports.run = async (client, message, args) => {
   let msg = args.join(' ');
   try {
     message.channel.startTyping();
-    const response = await fetch(
-      `https://some-random-api.ml/chatbot/?message=${msg}`
-    );
+    const response = await fetch(`https://some-random-api.ml/chatbot/?message=${msg}`);
     const reply = await response.json();
     message.channel.send(reply.response);
   } catch (e) {
     console.error(e);
   }
 };
+
+exports.description = 'Chat with a cleverbot!';

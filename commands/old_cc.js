@@ -39,4 +39,4 @@ exports.run = (client, message, args, cc) => {
   }
 };
 
-exports.description = 'Allows admins to add/remove custom commands.';
+exports.description = '(DEPRECATED) Allows admins to add/remove custom commands.';

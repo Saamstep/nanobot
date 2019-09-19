@@ -22,3 +22,5 @@ exports.run = async (client, message, args) => {
   }
   cooldown(message, cmd);
 };
+
+exports.description = 'Gets a random meme';

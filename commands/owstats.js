@@ -13,9 +13,7 @@ exports.run = async (client, message, args) => {
 
     if (!args[0]) {
       return message.channel.send(
-        `${ConfigService.config.prefix}ow [user#0000] [region] [platform]\n${
-          ConfigService.config.prefix
-        }ow [user-0000] (Defaults region/platform to PC)`,
+        `${ConfigService.config.prefix}ow [user#0000] [region] [platform]\n${ConfigService.config.prefix}ow [user-0000] (Defaults region/platform to PC)`,
         { code: 'asciidoc' }
       );
     }
@@ -29,9 +27,7 @@ exports.run = async (client, message, args) => {
     //syntax command
     if (args[0] == 'help') {
       return message.channel.send(
-        `${ConfigService.config.prefix}ow [user-0000] [region] [platform]\n${
-          ConfigService.config.prefix
-        }ow [user-0000] (Defaults region/platform to PC)`,
+        `${ConfigService.config.prefix}ow [user-0000] [region] [platform]\n${ConfigService.config.prefix}ow [user-0000] (Defaults region/platform to PC)`,
         { code: 'asciidoc' }
       );
     }
@@ -150,9 +146,7 @@ exports.run = async (client, message, args) => {
       }
     } else {
       message.channel.send(
-        `${ConfigService.config.prefix}ow [user-0000] [region] [platform]\n${
-          ConfigService.config.prefix
-        }ow [user-0000] (Defaults region/platform to PC)`,
+        `${ConfigService.config.prefix}ow [user-0000] [region] [platform]\n${ConfigService.config.prefix}ow [user-0000] (Defaults region/platform to PC)`,
         { code: 'asciidoc' }
       );
       return message.channel.stopTyping(true);
@@ -161,4 +155,4 @@ exports.run = async (client, message, args) => {
   cooldown(message, cmd);
 };
 
-exports.description = 'Grab simple Overwatch stats for a user.';
+exports.description = '(DEPRECATED) Grab simple Overwatch stats for a user.';

@@ -59,3 +59,4 @@ exports.run = (client, message, args) => {
     }
   }
 };
+exports.description = '(DEPRECATED) Allows admins to change bot configuration';

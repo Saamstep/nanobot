@@ -34,3 +34,5 @@ exports.run = (client, message, args) => {
     }
   }
 };
+
+exports.description = 'Allows admins to mute specified user in current channel';

@@ -41,3 +41,4 @@ exports.run = (client, message, args) => {
     }
   }
 };
+exports.description = 'Allows moderators to server unmute all/specific user(s) in current channel';

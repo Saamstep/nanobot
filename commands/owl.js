@@ -42,9 +42,7 @@ exports.run = async (client, message, args) => {
         const response = await fetch('https://api.overwatchleague.com/news');
         const body = await response.json();
         const embed = {
-          description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${
-            body.blogs[0].defaultUrl
-          })`,
+          description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${body.blogs[0].defaultUrl})`,
           url: `${body.blogs[0].defaultUrl}`,
           color: 16752385,
           timestamp: body.blogs[0].publish,
@@ -155,9 +153,7 @@ exports.run = async (client, message, args) => {
             }
             let media = '';
             for (k in body.competitors[j].competitor.accounts) {
-              media += `[${body.competitors[j].competitor.accounts[k].accountType}](${
-                body.competitors[j].competitor.accounts[k].value
-              })\n`;
+              media += `[${body.competitors[j].competitor.accounts[k].accountType}](${body.competitors[j].competitor.accounts[k].value})\n`;
             }
             const embed = {
               url: 'https://discordapp.com',
@@ -318,4 +314,4 @@ exports.run = async (client, message, args) => {
       );
   }
 };
-exports.description = 'OverwatchLeague command';
+exports.description = 'OverwatchLeague information command';

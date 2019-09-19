@@ -20,3 +20,4 @@ exports.run = (client, message, args, veriEnmap) => {
     log('User Reset', `${member} was reset`, 2942691, message, client);
   }
 };
+exports.description = 'Verification System: reset a user completely.';

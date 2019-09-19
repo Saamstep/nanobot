@@ -8,15 +8,10 @@ exports.run = (client, message, args) => {
     case 'club':
       async function teamCmd() {
         try {
-          const response = await fetch(
-            `https://www.varsityesports.com/api/club/${args[1]}`,
-            {}
-          );
+          const response = await fetch(`https://www.varsityesports.com/api/club/${args[1]}`, {});
           const body = await response.json();
           const embed = {
-            description: `Club page [here](https://www.varsityesports.com/club/${
-              args[1]
-            })`,
+            description: `Club page [here](https://www.varsityesports.com/club/${args[1]})`,
             url: `https://www.varsityesports.com/club/${args[1]}`,
             color: 16460832,
             footer: {
@@ -26,8 +21,7 @@ exports.run = (client, message, args) => {
             author: {
               name: 'Team Lookup',
               url: 'http://www.varsityesports.com/club/' + args[1],
-              icon_url:
-                'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
+              icon_url: 'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
             },
             fields: [
               {
@@ -46,10 +40,7 @@ exports.run = (client, message, args) => {
           };
           message.channel.send({ embed });
         } catch (e) {
-          errorMod(
-            'Could not reach Varsity API, contact the bot owner',
-            message
-          );
+          errorMod('Could not reach Varsity API, contact the bot owner', message);
         }
       }
       teamCmd();
@@ -57,28 +48,16 @@ exports.run = (client, message, args) => {
     case 'roster':
       async function rosterCmd() {
         try {
-          const response = await fetch(
-            `https://www.varsityesports.com/api/club/0/roster/${args[1]}`,
-            {}
-          );
+          const response = await fetch(`https://www.varsityesports.com/api/club/0/roster/${args[1]}`, {});
           const body = await response.json();
           let rosterList = ' ';
           for (let j in body.rosterPositions) {
-            rosterList +=
-              `- ` +
-              body.rosterPositions[j].firstName +
-              ' ' +
-              body.rosterPositions[j].lastName +
-              '.\n';
+            rosterList += `- ` + body.rosterPositions[j].firstName + ' ' + body.rosterPositions[j].lastName + '.\n';
           }
 
           const embed = {
-            description: `Roster page [here](https://www.varsityesports.com/club/${
-              body.clubId
-            }/roster/${args[1]})`,
-            url: `https://www.varsityesports.com/club/${body.clubId}/roster/${
-              args[1]
-            }`,
+            description: `Roster page [here](https://www.varsityesports.com/club/${body.clubId}/roster/${args[1]})`,
+            url: `https://www.varsityesports.com/club/${body.clubId}/roster/${args[1]}`,
             color: 16460832,
             footer: {
               icon_url: 'https://i.imgur.com/kOYV3lA.png',
@@ -86,11 +65,8 @@ exports.run = (client, message, args) => {
             },
             author: {
               name: 'Roster Lookup',
-              url: `https://www.varsityesports.com/club/${body.clubId}/roster/${
-                args[1]
-              }`,
-              icon_url:
-                'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
+              url: `https://www.varsityesports.com/club/${body.clubId}/roster/${args[1]}`,
+              icon_url: 'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
             },
             fields: [
               {
@@ -109,10 +85,7 @@ exports.run = (client, message, args) => {
           };
           message.channel.send({ embed });
         } catch (e) {
-          errorMod(
-            'Could not reach Varsity API, contact the bot owner',
-            message
-          );
+          errorMod('Could not reach Varsity API, contact the bot owner', message);
           console.error(e);
         }
       }
@@ -125,19 +98,12 @@ exports.run = (client, message, args) => {
           if (!args[1] && args[0] == 'tournament') {
             return errorMod('Please provide a game to search.', message);
           }
-          const response = await fetch(
-            `https://www.varsityesports.com/api/toornament`,
-            {}
-          );
+          const response = await fetch(`https://www.varsityesports.com/api/toornament`, {});
           const body = await response.json();
           let tourneys = ' ';
           for (let j in body) {
             if (body[j].name.includes(args[1])) {
-              tourneys += `[**${
-                body[j].name
-              }**](https://www.toornament.com/tournaments/${
-                body[j].id
-              }/stages/)\n`;
+              tourneys += `[**${body[j].name}**](https://www.toornament.com/tournaments/${body[j].id}/stages/)\n`;
             }
           }
 
@@ -155,8 +121,7 @@ exports.run = (client, message, args) => {
             author: {
               name: 'Tournaments',
               url: `https://www.varsityesports.com/toornaments`,
-              icon_url:
-                'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
+              icon_url: 'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
             },
             fields: [
               {
@@ -168,10 +133,7 @@ exports.run = (client, message, args) => {
 
           message.channel.send({ embed });
         } catch (e) {
-          errorMod(
-            'Could not reach Varsity API, contact the bot owner',
-            message
-          );
+          errorMod('Could not reach Varsity API, contact the bot owner', message);
           console.error(e);
         }
       }
@@ -179,10 +141,10 @@ exports.run = (client, message, args) => {
       break;
     default:
       message.channel.send(
-        `\`\`\`${
-          ConfigService.config.prefix
-        }varsity [club/roster/tournament] [club ID/roster ID/game search]\`\`\``
+        `\`\`\`${ConfigService.config.prefix}varsity [club/roster/tournament] [club ID/roster ID/game search]\`\`\``
       );
       break;
   }
 };
+
+exports.description = '(DEPRECATED) varsityesports.net stats command';

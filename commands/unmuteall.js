@@ -20,3 +20,5 @@ exports.run = async (client, message, args) => {
     console.error(e);
   }
 };
+
+exports.description = 'Allows moderators to unmute all users in current voice channel';
