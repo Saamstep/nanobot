@@ -89,6 +89,8 @@ const cc = new Enmap({
   fetchAll: true
 });
 
+client.ccSize = cc.size;
+
 async function onJoin(member) {
   try {
     //check if DB is ready
@@ -208,11 +210,12 @@ client.on('message', message => {
 
   //Support channel code
 
-  if (message.channel.name === `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
+  if (message.channel.id == `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
     const tag = client.ConfigService.config.supportTags;
-    if (tag.some(word => message.content.includes(word))) {
+    let manager = message.guild.roles.find(r => r.name == 'Community Manager');
+    if (tag.some(word => message.content.startsWith(word))) {
       pMreact();
-    } else if (client.isAdmin(message.author, message, false, client)) {
+    } else if (client.isAdmin(message.author, message, false, client) || message.member.roles.has(manager.id)) {
       if (message.content.startsWith('check')) {
         let args = message.content.split(' ').slice(1);
         message.channel.fetchMessage(args[0]).then(msg => {

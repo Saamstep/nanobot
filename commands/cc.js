@@ -39,9 +39,9 @@ exports.run = (client, message, args, veriEnmap, cc) => {
           msg += `${keys[i]} - ${values[i]}\n`;
         }
         if (msg == '') {
-          message.channel.send('No custom commands.');
+          return message.channel.send('No custom commands.');
         } else {
-          return message.channel.send(`\`\`\`${msg}\`\`\``);
+          return message.channel.send(`\`\`\`Total Commands: ${cc.size}\n${msg}\`\`\``);
         }
       });
     }

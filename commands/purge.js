@@ -1,16 +1,12 @@
 exports.run = (client, message, args) => {
-  let log = require('../modules/logMod.js');
-
-  let number = Number(args[0]);
-  number = parseInt(number + 1);
-  message.channel.bulkDelete(number, true);
-  message.channel.send(`♻ | Deleted ${number - 1} messages`).then(msg => {
-    setTimeout(msg.delete(), 3000);
-  });
-  log(
-    'Purge',
-    `Purged ${number - 1} of messages in ${message.channel}`,
-    14424069,
-    message
-  );
+  async function cmd() {
+    let number = Number(args[0]);
+    number = parseInt(number);
+    await message.channel.bulkDelete(number, true);
+    await message.channel.send(`♻ | Deleted ${number} messages`).then(msg => {
+      msg.delete(3000);
+    });
+    client.log('Purge', `Purged ${number} of messages in ${message.channel}`, 14424069, message, client);
+  }
+  cmd();
 };

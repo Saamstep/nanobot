@@ -29,7 +29,7 @@ exports.run = async function(client, member, message) {
       }
     });
   } catch (e) {
-    console.log(e);
+    client.console(e);
   }
 
   // Discord status URL
@@ -45,16 +45,18 @@ exports.run = async function(client, member, message) {
   }
 
   if (body.status.description == 'All Systems Operational') {
-    console.log('\nAll Discord systems operational!\n'.green.dim);
+    console.log(' ');
+    client.console('All Discord systems operational!\n'.green.dim);
   } else {
-    console.log(
+    client.console(
       'There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/ \n'.red
     );
   }
   // End discord status
   const cmds = await fs.readdir(commandsFolder);
-  console.log('Loading '.green + cmds.length + ' commands'.green);
-  console.log(
+  client.console('Loading '.green + cmds.length + ' commands'.green);
+  client.console('Loading '.green + client.ccSize + ' custom commands'.green);
+  client.console(
     `${client.user.username}`.underline.magenta +
       ' online!\n'.magenta.reset +
       'Connected to: '.cyan +
@@ -62,6 +64,6 @@ exports.run = async function(client, member, message) {
       ' guilds'.cyan
   );
   if (ConfigService.config.debug === 'on') {
-    console.log('\n');
+    client.console('\n');
   }
 };
