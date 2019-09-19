@@ -135,7 +135,7 @@ async function onJoin(member) {
       } else {
         //if they are not in the database (wonder how they got there) then run the following commands
         member.send(
-          `Welcome to **${guild.name}** requires user verification, please fill out the Google form here: https://forms.gle/qGxEx2Vqd7fcLbzD8. Note that you will be kicked if you do not fill the form out.`
+          `Welcome to **${guild.name}**, we require user verification, please fill out the Google form here: https://forms.gle/8YyJqV3Nnd7VJyYPA. Note that you will be kicked if you do not fill the form out.`
         );
       }
     });
