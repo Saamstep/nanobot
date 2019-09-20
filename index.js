@@ -151,15 +151,9 @@ client.on('userUpdate', (oldUser, newUser) => {
   if (oldUser.username != newUser.username) {
     try {
       veriEnmap.defer.then(() => {
-        if (veriEnmap.exists(`${newUser.id}`, 'name')) {
-          let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-          let u = guild.fetchMember(newUser);
-          u.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, 'name')})`);
-        } else {
-          return newUser.send(
-            `This is a reminder to verify yourself in the **VCHS Esports** Official Discord! Please check the #join channel for furthur instructions.`
-          );
-        }
+        let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+        let u = guild.members.get(newUser.id);
+        u.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, 'name')})`);
       });
     } catch (e) {
       return;
