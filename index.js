@@ -146,11 +146,13 @@ async function onJoin(member) {
   }
 }
 
-client.on('guildMemberUpdate', (oldMember, newMember) => {
-  if (oldMember.user.username != newMember.user.username) {
+client.on('userUpdate', (oldUser, newUser) => {
+  sendMessage(client.ConfigService.config.channel.log, `Updated ${oldUser.username}'s nickname to ${newUser.username}`);
+  if (oldUser.username != newUser.username) {
+    console.log('detected');
     try {
       veriEnmap.defer.then(() => {
-        newMember.setNickname(`${newMember.user.username} (${veriEnmap.get(`${newMember.id}`, 'name')})`);
+        newUser.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, 'name')})`);
       });
     } catch (e) {
       console.error(e);
