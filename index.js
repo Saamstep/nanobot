@@ -149,13 +149,20 @@ async function onJoin(member) {
 client.on('userUpdate', (oldUser, newUser) => {
   sendMessage(client.ConfigService.config.channel.log, `Updated ${oldUser.username}'s nickname to ${newUser.username}`);
   if (oldUser.username != newUser.username) {
-    console.log('detected');
     try {
       veriEnmap.defer.then(() => {
-        newUser.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, 'name')})`);
+        if (veriEnmap.exists(`${newUser.id}`, 'name')) {
+          let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+          let u = guild.fetchMember(newUser);
+          u.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, 'name')})`);
+        } else {
+          return newUser.send(
+            `This is a reminder to verify yourself in the **VCHS Esports** Official Discord! Please check the #join channel for furthur instructions.`
+          );
+        }
       });
     } catch (e) {
-      console.error(e);
+      return;
     }
   } else {
     return;
