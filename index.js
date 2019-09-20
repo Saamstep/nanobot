@@ -146,6 +146,20 @@ async function onJoin(member) {
   }
 }
 
+client.on('guildMemberUpdate', (oldMember, newMember) => {
+  if (oldMember.user.username != newMember.user.username) {
+    try {
+      veriEnmap.defer.then(() => {
+        newMember.setNickname(`${newMember.user.username} (${veriEnmap.get(`${newMember.id}`, 'name')})`);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    return;
+  }
+});
+
 client.on('guildMemberAdd', member => {
   onJoin(member);
 });
