@@ -46,24 +46,21 @@ exports.run = async function(client, member, message) {
 
   if (body.status.description == 'All Systems Operational') {
     console.log(' ');
-    client.console('All Discord systems operational!\n'.green.dim);
+    client.console('Discord Servers | All systems operational!'.green.dim);
   } else {
     client.console(
-      'There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/ \n'.red
+      'There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/'.red
     );
   }
   // End discord status
   const cmds = await fs.readdir(commandsFolder);
-  client.console('Loading '.green + cmds.length + ' commands'.green);
-  client.console('Loading '.green + client.ccSize + ' custom commands'.green);
+  client.console('Commands | Loaded '.green + cmds.length + ' commands'.green);
+  client.console('Commands | Loaded '.green + client.ccSize + ' custom commands'.green);
   client.console(
-    `${client.user.username}`.underline.magenta +
-      ' online!\n'.magenta.reset +
-      'Connected to: '.cyan +
-      guildNames.white +
-      ' guilds'.cyan
+    `Bot Account | `.cyan + `${client.user.username}#${client.user.discriminator}`.bold.cyan + ' bot online!'.cyan.reset
   );
+  client.console('Guilds | Connected to => '.cyan + guildNames.bold.cyan);
   if (ConfigService.config.debug === 'on') {
-    client.console('\n');
+    console.log('Debug mode is on\n');
   }
 };

@@ -16,9 +16,7 @@ exports.run = async (client, message, args) => {
         var domain = Object.keys(body[status])[0];
         var connected = body[status][domain];
 
-        responseString += `**${domain}:** ${
-          connected ? ':white_check_mark:\n' : ':x:\n'
-        }`;
+        responseString += `**${domain}:** ${connected ? ':white_check_mark:\n' : ':x:\n'}`;
       }
       message.channel.send(responseString);
       message.channel.stopTyping(true);
