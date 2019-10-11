@@ -107,6 +107,7 @@ const events = {
 client.on('raw', async event => {
   if (!events.hasOwnProperty(event.t)) return;
   const { d: data } = event;
+  if (data.message_id != client.ConfigService.config.roleReact.message) return;
   if (client.ConfigService.config.roleReact.emojis.includes(event.d.emoji.id)) {
     //user that reacted
     let user = client.users.get(data.user_id);
@@ -121,17 +122,27 @@ client.on('raw', async event => {
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
-  console.log(`${user.username} reacted with "${reaction.emoji.id}".`);
-  let index = client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id);
-  let roleName = client.ConfigService.config.roleReact.roles[index];
-  user.send(`Given you: ${roleName}`);
-  let g = client.guilds.get(reaction.emoji.guild.id);
-  let role = g.roles.find(r => r.name == roleName);
-  console.log(role);
+  let roleName =
+    client.ConfigService.config.roleReact.roles[
+      client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
+    ];
+  let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
+  let member = reaction.message.guild.members.find(m => m.id == user.id);
+  member.send(`You were given the role **${roleName}**`);
+  veriEnmap.push(`${member.id}`, `${roleName}`, 'roles');
+  member.addRole(role.id);
 });
 
 client.on('messageReactionRemove', (reaction, user) => {
-  console.log(`${user.username} removed their "${reaction.emoji.id}" reaction.`);
+  let roleName =
+    client.ConfigService.config.roleReact.roles[
+      client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
+    ];
+  let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
+  let member = reaction.message.guild.members.find(m => m.id == user.id);
+  member.send(`Removed **${roleName}** from you`);
+  veriEnmap.remove(`${member.id}`, `${roleName}`, 'roles');
+  member.removeRole(role.id);
 });
 
 async function onJoin(member) {
