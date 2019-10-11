@@ -75,4 +75,4 @@ exports.run = (client, dupe, sendMessage) => {
   }
 };
 
-exports.time = 5000;
+exports.time = 300000;
