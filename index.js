@@ -82,6 +82,7 @@ const dupe = new Enmap({
   autoFetch: true,
   fetchAll: true
 });
+
 // enmap and data storage object for verification system
 
 const veriEnmap = new Enmap({
@@ -96,8 +97,42 @@ const cc = new Enmap({
   autoFetch: true,
   fetchAll: true
 });
-
 client.ccSize = cc.size;
+
+//role react sys
+const events = {
+  MESSAGE_REACTION_ADD: 'messageReactionAdd',
+  MESSAGE_REACTION_REMOVE: 'messageReactionRemove'
+};
+client.on('raw', async event => {
+  if (!events.hasOwnProperty(event.t)) return;
+  const { d: data } = event;
+  if (client.ConfigService.config.roleReact.emojis.includes(event.d.emoji.id)) {
+    //user that reacted
+    let user = client.users.get(data.user_id);
+    const channel = client.channels.get(data.channel_id);
+    if (channel.messages.has(data.message_id)) return;
+    const message = await channel.fetchMessage(data.message_id);
+
+    const emojiKey = data.emoji.id ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
+    const reaction = message.reactions.get(emojiKey);
+    client.emit(events[event.t], reaction, user);
+  }
+});
+
+client.on('messageReactionAdd', (reaction, user) => {
+  console.log(`${user.username} reacted with "${reaction.emoji.id}".`);
+  let index = client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id);
+  let roleName = client.ConfigService.config.roleReact.roles[index];
+  user.send(`Given you: ${roleName}`);
+  let g = client.guilds.get(reaction.emoji.guild.id);
+  let role = g.roles.find(r => r.name == roleName);
+  console.log(role);
+});
+
+client.on('messageReactionRemove', (reaction, user) => {
+  console.log(`${user.username} removed their "${reaction.emoji.id}" reaction.`);
+});
 
 async function onJoin(member) {
   if (client.ConfigService.config.services.joinSys == true) {
@@ -159,6 +194,7 @@ async function onJoin(member) {
   }
 }
 
+//username update
 client.on('userUpdate', (oldUser, newUser) => {
   sendMessage(client.ConfigService.config.channel.log, `Updated ${oldUser.username}'s nickname to ${newUser.username}`);
   if (oldUser.username != newUser.username) {
