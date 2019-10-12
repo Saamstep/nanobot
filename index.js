@@ -122,6 +122,7 @@ client.on('raw', async event => {
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
+  if (user.bot) return;
   let roleName =
     client.ConfigService.config.roleReact.roles[
       client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
@@ -134,6 +135,7 @@ client.on('messageReactionAdd', (reaction, user) => {
 });
 
 client.on('messageReactionRemove', (reaction, user) => {
+  if (user.bot) return;
   let roleName =
     client.ConfigService.config.roleReact.roles[
       client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
