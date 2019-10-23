@@ -121,6 +121,8 @@ client.on('raw', async event => {
   }
 });
 
+
+
 client.on('messageReactionAdd', (reaction, user) => {
   if (user.bot) return;
   let roleName =

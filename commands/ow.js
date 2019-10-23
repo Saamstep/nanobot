@@ -2,8 +2,7 @@ exports.run = async (client, message, args) => {
   // ---Variables---
   const fetch = require('node-fetch');
 
-  let errorMsg =
-    'There was an error contacting the API or your BattleTag is invalid.';
+  let errorMsg = 'There was an error contacting the API or your BattleTag is invalid.';
 
   //Delete command call message
   message.delete(0);
@@ -22,14 +21,12 @@ exports.run = async (client, message, args) => {
       for (let j in body) {
         searchResults += `__**${body[j].name}**__\n${body[
           j
-        ].platform.toUpperCase()}\n<https://www.overbuff.com/players/${
-          body[j].platform
-        }/${body[j].urlName}>\n`;
+        ].platform.toUpperCase()}\n<https://www.overbuff.com/players/${body[j].platform}/${body[j].urlName}>\n`;
       }
       message.channel.send(searchResults);
     } catch (e) {
       if (e) {
-        error(errorMsg, message);
+        client.error(errorMsg, message);
       }
     }
   } else {
@@ -37,9 +34,7 @@ exports.run = async (client, message, args) => {
     // First we need to see if args for region and platform are included
     // if (!args[1] && args[2]) {
     try {
-      const request = await fetch(
-        `https://ovrstat.com/stats/pc/us/${battletag}`
-      );
+      const request = await fetch(`https://ovrstat.com/stats/pc/us/${battletag}`);
       const stats = await request.json();
       //Check for private profile before doing anything else!
       if (stats.message) {
@@ -48,13 +43,11 @@ exports.run = async (client, message, args) => {
       if (stats.private === true) {
         // Here's the message format for the stats
         const embed = {
-          description:
-            '[OverBuff](https://overbuff.com/players/pc/' + battletag + ')',
+          description: '[OverBuff](https://overbuff.com/players/pc/' + battletag + ')',
           url: 'https://overbuff.com/players/pc/' + battletag,
           color: 16617745,
           footer: {
-            icon_url:
-              'https://github.com/s32x/ovrstat/raw/master/static/assets/logo.png',
+            icon_url: 'https://github.com/s32x/ovrstat/raw/master/static/assets/logo.png',
             text: 'OvrStat'
           },
           thumbnail: {
@@ -76,8 +69,7 @@ exports.run = async (client, message, args) => {
             },
             {
               name: 'Most Recent Rank',
-              value:
-                '[Click Here](https://overbuff.com/search?q=' + battletag + ')'
+              value: '[Click Here](https://overbuff.com/search?q=' + battletag + ')'
             }
           ]
         };
@@ -96,13 +88,11 @@ exports.run = async (client, message, args) => {
 
         // Here's the message format for the stats
         const embed = {
-          description:
-            '[OverBuff](https://overbuff.com/players/pc/' + battletag + ')',
+          description: '[OverBuff](https://overbuff.com/players/pc/' + battletag + ')',
           url: 'https://overbuff.com/players/pc/' + battletag,
           color: 16617745,
           footer: {
-            icon_url:
-              'https://github.com/s32x/ovrstat/raw/master/static/assets/logo.png',
+            icon_url: 'https://github.com/s32x/ovrstat/raw/master/static/assets/logo.png',
             text: 'OvrStat'
           },
           thumbnail: {
@@ -143,5 +133,4 @@ exports.run = async (client, message, args) => {
     // }
   }
 };
-exports.description =
-  'New Overwatch command with a better API and improved formatting.';
+exports.description = 'New Overwatch command with a better API and improved formatting.';

@@ -1,53 +1,21 @@
-const ConfigService = require('../config.js');
-const errorMod = require('../modules/errorMod');
 const fetch = require('node-fetch');
 const fs = require('fs');
-const logger = require('../modules/consoleMod.js');
-const colors = require('colors');
-
 exports.run = async (client, message, args) => {
   const cooldown = require('../index.js');
   async function cmd() {
-    message.channel.startTyping(1);
-
-    var mcIP = args[0] ? args[0] : `${ConfigService.config.mcIP}`; // Your MC server IP
-    var mcPort = ConfigService.config.mcPort;
-    var statusURL = 'https://api.mcsrvstat.us/2/' + mcIP + ':' + mcPort;
+    var mcIP = args[0]
+      ? args[0]
+      : `${client.ConfigService.config.minecraft.serverIP}:${client.ConfigService.config.minecraft.port}`; // Your MC server IP
+    var statusURL = 'https://api.mcsrvstat.us/2/' + mcIP;
     try {
       const response = await fetch(statusURL);
       const stats = await response.json();
 
-      // image decoder
-      // let serverIcon = new Buffer.from(
-      //   stats.icon.split(';base64').pop(),
-      //   'base64'
-      // );
-      // let icon = mcIP.replace('.', '-') + '.png';
-      // if (fs.existsSync(icon)) {
-      //   fs.unlink(icon, err => {
-      //     if (err) logger('Could not delete '.red + icon.red.bold + '\n' + err);
-      //   });
-      // }
-      // fs.writeFile(icon, serverIcon, err => {
-      //   if (err) {
-      //     logger(
-      //       'Server Stats | Server Icon could not be created.\n'.red + err
-      //     );
-      //   }
-      // });
-
-      //playerlist
-      let playerList = '';
-      if (!stats.players.list) {
-        playerList = 'N/A';
-      } else if (!stats.players.list.length > 0) {
-        playerList = 'Nobody is playing.';
-      } else if (stats.players.list.length > 0) {
-        playerList = stats.players.list.join('\n');
-      }
-
-      if (args[0] === ConfigService.config.mcIP || !args[0]) {
-        // MC SMP COMMAND STATS
+      // ALL OTHER SERVERS
+      if (stats.online) {
+        let icon = new Buffer.from(stats.icon.replace('data:image/png;base64,', ''), 'base64');
+        let output = stats.hostname.replace('.', '-') + '.png';
+        // fs.writeFileSync('../icons/' + output, icon);
         const embed = {
           url: 'https://mcsrvstat.us/',
           color: 10276707,
@@ -56,11 +24,11 @@ exports.run = async (client, message, args) => {
             icon_url: client.user.avatarURL,
             text: 'Server Status'
           },
-          // thumbnail: {
-          //   url: 'attachment://mc-samstep.ga.png'
-          // },
+          thumbnail: {
+            url: 'attachment://../icons/' + output
+          },
           author: {
-            name: ConfigService.config.serverName + ' SMP',
+            name: args[0],
             url: 'https://mcsrvstat.us/',
             icon_url: 'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
           },
@@ -74,55 +42,22 @@ exports.run = async (client, message, args) => {
               value: stats.motd.clean.join(' ')
             },
             {
-              name: 'Players',
-              value: playerList
+              name: 'Version',
+              value: stats.version
             }
           ]
         };
         message.channel.send({ embed });
       } else {
-        // ALL OTHER SERVERS
-        if (stats.online == true) {
-          const embed = {
-            url: 'https://mcsrvstat.us/',
-            color: 10276707,
-            timestamp: Date.now(),
-            footer: {
-              icon_url: client.user.avatarURL,
-              text: 'Server Status'
-            },
-            // thumbnail: {
-            //   url: icon
-            // },
-            author: {
-              name: args[0],
-              url: 'https://mcsrvstat.us/',
-              icon_url: 'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
-            },
-            fields: [
-              {
-                name: 'Online',
-                value: stats.players.online + '/' + stats.players.max
-              },
-              {
-                name: 'MOTD',
-                value: stats.motd.clean.join(' ')
-              },
-              {
-                name: 'Players',
-                value: playerList
-              }
-            ]
-          };
-          message.channel.send({ embed });
-        }
+        message.channel.send('Not online');
       }
     } catch (e) {
       console.log(e);
-      return errorMod('Error getting Minecraft server status.', message);
+      return client.error('Error getting Minecraft server status.', message);
     }
   }
   // cooldown(message, cmd);
+  message.channel.send('Getting status for server');
   cmd();
 };
 
