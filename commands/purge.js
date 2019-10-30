@@ -12,5 +12,9 @@ exports.run = (client, message, args) => {
     cmd();
   }
 };
-
-exports.description = 'Allows moderators to purge x messages in current channel.';
+exports.cmd = {
+  enabled: true,
+  category: 'Moderation',
+  level: 1,
+  description: 'Allows moderators to purge x messages in current channel.'
+};

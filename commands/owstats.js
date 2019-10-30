@@ -154,5 +154,9 @@ exports.run = async (client, message, args) => {
   }
   cooldown(message, cmd);
 };
-
-exports.description = '(DEPRECATED) Grab simple Overwatch stats for a user.';
+exports.cmd = {
+  enabled: true,
+  category: 'Games',
+  level: 0,
+  description: '(DEPRECATED) Grab simple Overwatch stats for a user.'
+};

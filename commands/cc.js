@@ -56,4 +56,9 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   }
 };
 
-exports.description = 'Allows admins to add/remove/list custom commands.';
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 2,
+  description: 'Allows admins to manage the custom commands of the bot.'
+};

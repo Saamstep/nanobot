@@ -16,4 +16,9 @@ exports.run = (client, message, args) => {
       .then(vc => message.channel.send(`🔒 Successfully locked **${vc.name}**`));
   }
 };
-exports.description = 'Locks/unlocks a voice channel to current member count.';
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Locks/unlocks voice channel to current voice channel count.'
+};

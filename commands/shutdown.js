@@ -10,5 +10,9 @@ exports.run = (client, message, args) => {
     });
   }
 };
-
-exports.description = 'Allows owner to force shutdown the bot.';
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 3,
+  description: 'Allows owner to force shutdown the bot.'
+};

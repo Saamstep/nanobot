@@ -15,3 +15,9 @@ exports.run = async (client, message, args) => {
     client.error('Please join a voice channel!', message);
   }
 };
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Create a poll with a upvote/downvote choice.'
+};

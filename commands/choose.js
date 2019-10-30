@@ -15,4 +15,9 @@ exports.run = (client, message, args) => {
   }
 };
 
-exports.description = 'Choose between two listed things.';
+exports.cmd = {
+  enabled: true,
+  category: 'Fun',
+  level: 0,
+  description: 'Choose between two items'
+};

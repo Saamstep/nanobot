@@ -36,4 +36,9 @@ exports.run = (client, message, args) => {
     cmd();
   }
 };
-exports.description = 'Allows admins to boot users from the voice channel.';
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 1,
+  description: 'Boot a user from the voice channel.'
+};

@@ -16,5 +16,9 @@ exports.run = (client, message, args) => {
     }
   }
 };
-
-exports.description = 'Allows admins to send a message as the bot.';
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 2,
+  description: 'Allows admins to send a message as the bot.'
+};

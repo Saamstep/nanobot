@@ -8,14 +8,11 @@ exports.run = async (client, message, args) => {
   async function cmd() {
     message.channel.startTyping(1);
     try {
-      const response = await fetch(
-        'https://api.thedogapi.com/v1/images/search',
-        {
-          headers: {
-            'x-api-key': `${ConfigService.config.catAPI}`
-          }
+      const response = await fetch('https://api.thedogapi.com/v1/images/search', {
+        headers: {
+          'x-api-key': `${ConfigService.config.catAPI}`
         }
-      );
+      });
       const body = await response.json();
       message.channel.send(' ', { file: body[0].url });
     } catch (e) {
@@ -26,4 +23,9 @@ exports.run = async (client, message, args) => {
   cooldown(message, cmd);
 };
 
-exports.description = 'Get a random dog image.';
+exports.cmd = {
+  enabled: true,
+  category: 'Fun',
+  level: 0,
+  description: 'Get a dog image'
+};

@@ -44,3 +44,10 @@ exports.run = (client, message, args) => {
     })
     .catch(e => console.error(e));
 };
+
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Create a poll with a upvote/downvote choice.'
+};

@@ -68,3 +68,9 @@ exports.run = (client, message, args, veriEnmap, cc) => {
     message.channel.send({ embed });
   });
 };
+exports.cmd = {
+  enabled: true,
+  category: 'Fun',
+  level: 0,
+  description: 'Create/view your profile'
+};

@@ -17,4 +17,9 @@ exports.run = (client, message, args) => {
     return cooldown(message, cmd);
   }
 };
-exports.description = 'Calculates bot response time';
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Get bot response time'
+};

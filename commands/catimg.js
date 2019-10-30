@@ -18,4 +18,9 @@ exports.run = async (client, message, args) => {
   message.channel.stopTyping(true);
 };
 
-exports.description = 'Get a random cat image.';
+exports.cmd = {
+  enabled: true,
+  category: 'Fun',
+  level: 0,
+  description: 'Get a random cat image.'
+};

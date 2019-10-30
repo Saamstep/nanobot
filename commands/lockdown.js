@@ -25,4 +25,9 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   }
 };
 
-exports.description = "Allows moderators to mute all in 'All' category.";
+exports.cmd = {
+  enabled: true,
+  category: 'Moderation',
+  level: 2,
+  description: 'Set your real name when you join for the first time.'
+};

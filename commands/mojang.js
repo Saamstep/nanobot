@@ -27,4 +27,9 @@ exports.run = async (client, message, args) => {
   cooldown(message, cmd);
 };
 
-exports.description = 'Gets Mojang server status.';
+exports.cmd = {
+  enabled: true,
+  category: 'Games',
+  level: 0,
+  description: 'Get mojang server status'
+};

@@ -20,3 +20,10 @@ exports.run = (client, message, args) => {
       message.channel.send(`\`\`\`${client.ConfigService.config.prefix}hsel [list/game] [search]\`\`\``);
   }
 };
+
+exports.cmd = {
+  enabled: true,
+  category: 'VCHS Esports',
+  level: 0,
+  description: 'Interact with the toornament API.'
+};

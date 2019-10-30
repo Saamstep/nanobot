@@ -14,8 +14,10 @@ exports.run = async (client, message, args) => {
       // ALL OTHER SERVERS
       if (stats.online) {
         let icon = new Buffer.from(stats.icon.replace('data:image/png;base64,', ''), 'base64');
-        let output = stats.hostname.replace('.', '-') + '.png';
-        // fs.writeFileSync('../icons/' + output, icon);
+        // let output = stats.hostname.replace('/./g', '-') + '.png';
+        // fs.writeFileSync('./icons/' + output, icon);
+        const attachment = new client.Discord.Attachment(icon, `${mcIP}.png`);
+
         const embed = {
           url: 'https://mcsrvstat.us/',
           color: 10276707,
@@ -25,12 +27,12 @@ exports.run = async (client, message, args) => {
             text: 'Server Status'
           },
           thumbnail: {
-            url: 'attachment://../icons/' + output
+            url: 'attachment://' + attachment.file.name
           },
           author: {
             name: args[0],
             url: 'https://mcsrvstat.us/',
-            icon_url: 'https://gamepedia.cursecdn.com/minecraft_gamepedia/0/01/Grass_Block_TextureUpdate.png'
+            icon_url: 'https://gamepedia.cursecdn.com/minecraft_gamepedia/4/44/Grass_Block_Revision_6.png'
           },
           fields: [
             {
@@ -47,9 +49,13 @@ exports.run = async (client, message, args) => {
             }
           ]
         };
-        message.channel.send({ embed });
+        // console.log(output);
+        message.channel.send({ files: [attachment], embed });
       } else {
-        message.channel.send('Not online');
+        client.error(
+          "I'm having trouble finding that server, please make sure you typed the IP in correctly!",
+          message
+        );
       }
     } catch (e) {
       console.log(e);
@@ -57,8 +63,15 @@ exports.run = async (client, message, args) => {
     }
   }
   // cooldown(message, cmd);
-  message.channel.send('Getting status for server');
-  cmd();
-};
 
-exports.description = 'Get server status for said Minecraft server.';
+  message.channel.send(client.load + ' Minecraft Server Status: `' + args[0] + '`').then(async m => {
+    await cmd();
+    await m.delete();
+  });
+};
+exports.cmd = {
+  enabled: true,
+  category: 'Games',
+  level: 0,
+  description: 'Get server status for said Minecraft server.'
+};

@@ -1,20 +1,18 @@
-module.exports = function isMod(user, message, client) {
+module.exports = function isMod(user, message, client, msg) {
   const ConfigService = require('../config.js');
-  let mod = message.member.roles.find('name', `${client.ConfigService.config.roles.mod}`);
-  let admin = message.member.roles.find('name', `${client.ConfigService.config.roles.admin}`);
+  let mod = message.member.roles.find(n => n.name == `${client.ConfigService.config.roles.mod}`);
+  let admin = message.member.roles.find(n => n.name == `${client.ConfigService.config.roles.admin}`);
   let error = require('../modules/errorMod.js');
   try {
-    if (!message.member.roles.has(mod.id)) {
-      return false;
-    } else {
+    if (message.member.roles.has(mod.id)) {
       return true;
+    } else if (message.member.roles.has(admin.id) || message.author.id == ConfigService.config.ownerid) {
+      return true;
+    } else {
+      return false;
     }
   } catch {
-    if (message.author.id == ConfigService.config.ownerid || message.member.roles.has(admin.id)) {
-      return true;
-    } else {
-      let role = ConfigService.config.mod;
-      error(`You are missing the \`${role}\` permission role.`, message);
-    }
+    let role = client.ConfigService.config.roles.mod;
+    if (msg) error(`You are missing the \`${role}\` permission role.`, message);
   }
 };

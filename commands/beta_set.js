@@ -5,4 +5,9 @@ exports.run = (client, message, args) => {
     message.channel.send(`Updated config property \`${args[0]}\` to \`${args[1]}\``);
   }
 };
-exports.description = '(Dev) update config property';
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 3,
+  description: 'Change config properties'
+};

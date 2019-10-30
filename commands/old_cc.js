@@ -38,5 +38,9 @@ exports.run = (client, message, args, cc) => {
     }
   }
 };
-
-exports.description = '(DEPRECATED) Allows admins to add/remove custom commands.';
+exports.cmd = {
+  enabled: false,
+  category: 'Admin',
+  level: 2,
+  description: 'Allows admins to add/remove custom commands'
+};

@@ -16,5 +16,9 @@ exports.run = (client, message, args) => {
     }
   }
 };
-
-exports.description = 'Allows Mods to reload a command.';
+exports.cmd = {
+  enabled: true,
+  category: 'Moderation',
+  level: 1,
+  description: 'reload a command'
+};

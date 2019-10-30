@@ -49,5 +49,9 @@ exports.run = (client, message, args) => {
     }
   }
 };
-
-exports.description = 'Allows mods to enable Discord slowmode via command';
+exports.cmd = {
+  enabled: true,
+  category: 'Moderation',
+  level: 1,
+  description: 'Allows mods to enable Discord slowmode via command'
+};

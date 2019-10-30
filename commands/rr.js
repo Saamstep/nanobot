@@ -27,5 +27,9 @@ exports.run = (client, message, args) => {
     message.channel.send(`**-** ${string} for user sucessfully!`);
   }
 };
-
-exports.description = 'Allows admins to remove role from a user.';
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 2,
+  description: 'Allows admins to remove role from a user.'
+};

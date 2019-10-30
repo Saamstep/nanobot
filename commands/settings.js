@@ -40,4 +40,9 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   //   console.log(helpMsg + '\n' + msg);
   message.channel.send('I hate JSON objects.');
 };
-exports.description = 'Fancy config system that we will never use.';
+exports.cmd = {
+  enabled: false,
+  category: 'Admin',
+  level: 3,
+  description: 'Enmap config system that will not be used'
+};

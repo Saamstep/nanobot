@@ -110,4 +110,9 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   }
 };
 
-exports.description = 'Verification System: command manager';
+exports.cmd = {
+  enabled: true,
+  category: 'VCHS Esports',
+  level: 1,
+  description: 'Verification control command'
+};

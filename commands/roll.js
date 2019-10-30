@@ -8,5 +8,9 @@ exports.run = (client, message, args) => {
 
   cmd();
 };
-
-exports.description = 'Rolls a dice.';
+exports.cmd = {
+  enabled: true,
+  category: 'Fun',
+  level: 0,
+  description: 'Roll a dice.'
+};

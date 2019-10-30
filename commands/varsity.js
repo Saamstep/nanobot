@@ -147,4 +147,9 @@ exports.run = (client, message, args) => {
   }
 };
 
-exports.description = '(DEPRECATED) varsityesports.net stats command';
+exports.cmd = {
+  enabled: true,
+  category: 'VCHS Esports',
+  level: 1,
+  description: 'Varsity Esports interaction with Discord.(Some features do not work)'
+};

@@ -29,3 +29,9 @@ exports.run = async (client, message, args) => {
 
   message.channel.send({ embed });
 };
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Create a poll with a upvote/downvote choice.'
+};

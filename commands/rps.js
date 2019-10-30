@@ -27,5 +27,10 @@ exports.run = (client, message, args) => {
   // analyze();
   message.reply(';)');
 };
+exports.cmd = {
+  enabled: false,
+  category: 'Fun',
+  level: 0,
+  description: '(WIP) Rock, paper, scissors.'
+};
 
-exports.description = '(Non functional) Rock, paper, scissors.';

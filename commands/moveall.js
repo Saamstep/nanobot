@@ -22,5 +22,9 @@ exports.run = async (client, message, args) => {
     error("You either are not in a voice channel, don't have the correct permissions or messed up badly!", message);
   }
 };
-
-exports.description = 'Move all users from current voice channel to channel specified';
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 1,
+  description: 'Move all users from current voice channel to channel specified'
+};

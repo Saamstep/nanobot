@@ -11,3 +11,9 @@ exports.run = async (client, message, args) => {
     vc.edit({ name: `🔴 ${current}` });
   }
 };
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Mark the current voice channel as live (with a red dot)'
+};

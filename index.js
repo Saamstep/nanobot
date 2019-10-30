@@ -5,6 +5,7 @@ const fetch = require('node-fetch');
 const Enmap = require('enmap');
 
 //modules init.
+client.Discord = require('discord.js');
 client.isAdmin = require('./modules/isAdmin.js');
 client.isMod = require('./modules/isMod.js');
 client.isOwner = require('./modules/isOwner.js');
@@ -42,6 +43,7 @@ function sendMessage(name, msg) {
 
 //controls all loop checkers
 client.on('ready', ready => {
+  client.load = client.emojis.find(emoji => emoji.name === 'NANOloading');
   fs.readdir('./loops/', (err, files) => {
     if (err) return client.console(err);
     files.forEach(file => {
@@ -120,8 +122,6 @@ client.on('raw', async event => {
     client.emit(events[event.t], reaction, user);
   }
 });
-
-
 
 client.on('messageReactionAdd', (reaction, user) => {
   if (user.bot) return;
@@ -260,14 +260,15 @@ client.on('message', message => {
   //   conn.send(msg);
   // }
 
-  // thumbs up url system
-  try {
-    let urls = client.ConfigService.config.urls;
-    if (urls.some(url => message.content.includes(url)) && !message.author.bot) {
-      return message.react(`👍`);
+  //links in general
+  if (message.channel.name == 'general') {
+    if (
+      message.content.match(
+        '^(http://www.|https://www.|http://|https://)?[a-z0-9]+([-.]{1}[a-z0-9]+)*.[a-z]{2,5}(:[0-9]{1,5})?(/.*)?$'
+      )
+    ) {
+      message.channel.send('True!');
     }
-  } catch (e) {
-    console.error(e);
   }
 
   // Nicknamer [p]iam command
@@ -340,7 +341,42 @@ client.on('message', message => {
       } else {
         try {
           let commandFile = require(`./commands/${command}.js`);
-          commandFile.run(client, message, args, veriEnmap, cc);
+          if (!commandFile.cmd.enabled) return client.error('This command is disabled', message);
+          /*
+          ==Levels==
+          0 - @everyone
+          1 - Mod
+          2 - Admin
+          3 - Owner only
+          */
+          function run() {
+            commandFile.run(client, message, args, veriEnmap, cc);
+          }
+
+          switch (commandFile.cmd.level) {
+            case 0:
+              run();
+              break;
+            case 1:
+              if (client.isMod(message.author, message, client)) {
+                run();
+              }
+              break;
+            case 2:
+              if (client.isAdmin(message.author, message, true, client)) {
+                run();
+              }
+              break;
+            case 3:
+              if (client.isOwner(message, true, client)) {
+                run();
+              }
+              break;
+            default:
+              message.channel.send(
+                "There seems to be an error with permissions... This isn't good. Make sure your Admin, Mod and Owner fields are filled out"
+              );
+          }
         } catch (e) {
           console.error(e);
         }

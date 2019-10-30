@@ -17,4 +17,9 @@ exports.run = async (client, message, args) => {
   }
 };
 
-exports.description = 'Chat with a cleverbot!';
+exports.cmd = {
+  enabled: true,
+  category: 'Fun',
+  level: 0,
+  description: 'Have a conversation with the bot!'
+};

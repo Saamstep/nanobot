@@ -20,4 +20,9 @@ exports.run = (client, message, args) => {
   }
 };
 
-exports.description = 'Allows mods to send a message with reactions to take a poll.';
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 1,
+  description: 'Create a yes/no style vote poll'
+};

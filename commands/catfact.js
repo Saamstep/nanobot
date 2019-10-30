@@ -19,5 +19,9 @@ exports.run = async (client, message, args) => {
   }
   cooldown(message, cmd);
 };
-
-exports.description = 'Get a random cat fact.';
+exports.cmd = {
+  enabled: true,
+  category: 'Fun',
+  level: 0,
+  description: 'Get a random cat fact.'
+};

@@ -28,4 +28,9 @@ exports.run = (client, message, args) => {
     return errorMod('This user is a member', message);
   }
 };
-exports.description = 'Allows mods to deny members.';
+exports.cmd = {
+  enabled: false,
+  category: 'MinecraftSMP',
+  level: 2,
+  description: 'Allows to deny members.'
+};

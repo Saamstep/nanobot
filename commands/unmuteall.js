@@ -21,4 +21,9 @@ exports.run = async (client, message, args) => {
   }
 };
 
-exports.description = 'Allows moderators to unmute all users in current voice channel';
+exports.cmd = {
+  enabled: true,
+  category: 'Moderation',
+  level: 1,
+  description: 'Allows moderators to server unmute all user(s) in current voice channel'
+};

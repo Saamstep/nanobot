@@ -24,5 +24,10 @@ exports.run = (client, message, args) => {
   );
   // .catch(err => console.error);
 };
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Set your real name when you join for the first time.'
+};
 
-exports.description = 'Set your real name when you join for the first time.';

@@ -314,4 +314,9 @@ exports.run = async (client, message, args) => {
       );
   }
 };
-exports.description = 'OverwatchLeague information command';
+exports.cmd = {
+  enabled: true,
+  category: 'Games',
+  level: 0,
+  description: 'OverwatchLeague information command'
+};

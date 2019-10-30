@@ -27,4 +27,9 @@ exports.run = (client, message, args) => {
   }
 };
 
-exports.description = 'Shows all commands.';
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Get a list of all commands and bot help'
+};

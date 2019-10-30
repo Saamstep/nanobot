@@ -24,5 +24,9 @@ exports.run = (client, message, args) => {
     message.channel.send(`**+** ${string} for user sucessfully!`);
   }
 };
-
-exports.description = 'Allows admins to add role to a user.';
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 2,
+  description: 'Allows admins to add roles to another user.'
+};

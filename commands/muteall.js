@@ -22,4 +22,9 @@ exports.run = async (client, message, args) => {
     console.error(e);
   }
 };
-exports.description = 'Allows moderators to server mute all users except message author';
+exports.cmd = {
+  enabled: true,
+  category: 'Moderation',
+  level: 1,
+  description: 'Allows mods to mute all user (except person who ran the command in current voice channel'
+};

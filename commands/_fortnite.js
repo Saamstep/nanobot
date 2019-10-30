@@ -47,5 +47,9 @@ exports.run = (client, message, args) => {
 
   message.reply(';)');
 };
-
-exports.description = '(Non functional) Fortnite command.';
+exports.cmd = {
+  enabled: false,
+  category: 'Game Stats',
+  level: 0,
+  description: 'Fortnite stats'
+};

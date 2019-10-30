@@ -101,9 +101,7 @@ exports.run = (client, message, args) => {
   if (reportOptions == null) {
     async function nothing() {
       message.channel.send(
-        `${ConfigService.config.prefix}report types\n${
-          ConfigService.config.prefix
-        }report [@user] [reason #]`,
+        `${ConfigService.config.prefix}report types\n${ConfigService.config.prefix}report [@user] [reason #]`,
         { code: 'aciidoc' }
       );
       await message.channel.stopTyping(true);
@@ -124,5 +122,9 @@ exports.run = (client, message, args) => {
     message.channel.stopTyping(true);
   }
 };
-
-exports.description = 'Lets you report a user.';
+exports.cmd = {
+  enabled: true,
+  category: 'Utility',
+  level: 0,
+  description: 'Report a user based on preset categories'
+};

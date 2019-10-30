@@ -47,4 +47,9 @@ exports.run = (client, message, args) => {
     }
   }
 };
-exports.description = 'Admin setup for role react system.';
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 2,
+  description: 'Setup command for role react system'
+};

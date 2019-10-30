@@ -133,4 +133,9 @@ exports.run = async (client, message, args) => {
     // }
   }
 };
-exports.description = 'New Overwatch command with a better API and improved formatting.';
+exports.cmd = {
+  enabled: true,
+  category: 'Games',
+  level: 0,
+  description: 'New Overwatch command with a better API and improved formatting.'
+};

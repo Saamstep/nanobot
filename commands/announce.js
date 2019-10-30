@@ -33,4 +33,10 @@ exports.run = (client, message, args) => {
     message.delete(0);
   }
 };
-exports.description = 'Allows admins to make announcements as the bot';
+
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 2,
+  description: 'Allows admins to make announcements as the bot'
+};

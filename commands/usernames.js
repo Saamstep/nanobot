@@ -3,9 +3,7 @@ exports.run = async (client, message, args) => {
 
   let uuid = '';
   try {
-    const response = await fetch(
-      `https://api.mojang.com/users/profiles/minecraft/${args[0]}`
-    );
+    const response = await fetch(`https://api.mojang.com/users/profiles/minecraft/${args[0]}`);
     const body = await response.json();
     uuid = body.id;
   } catch (e) {
@@ -13,9 +11,7 @@ exports.run = async (client, message, args) => {
   }
 
   try {
-    const response2 = await fetch(
-      `https://api.mojang.com/user/profiles/${uuid}/names`
-    );
+    const response2 = await fetch(`https://api.mojang.com/user/profiles/${uuid}/names`);
     const body = await response2.json();
     let msg = `**Username History for \`${args[0]}\`**\n`;
     for (let j in body) {
@@ -27,4 +23,9 @@ exports.run = async (client, message, args) => {
   }
 };
 
-exports.description = 'Lookup Minecraft usernames';
+exports.cmd = {
+  enabled: true,
+  category: 'Games',
+  level: 0,
+  description: 'Lookup Minecraft username history'
+};

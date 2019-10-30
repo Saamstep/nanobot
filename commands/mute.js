@@ -34,5 +34,9 @@ exports.run = (client, message, args) => {
     }
   }
 };
-
-exports.description = 'Allows admins to mute specified user in current channel';
+exports.cmd = {
+  enabled: true,
+  category: 'Moderation',
+  level: 1,
+  description: 'Allows mods to mute specified user in current channel'
+};

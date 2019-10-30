@@ -13,4 +13,9 @@ exports.run = (client, message, args, conn) => {
   }
 };
 
-exports.description = 'Allows you to run MC Server commands using Remote Console';
+exports.cmd = {
+  enabled: false,
+  category: 'MinecraftSMP',
+  level: 2,
+  description: 'Allows admins to send commands to a connected Minecraft Server'
+};

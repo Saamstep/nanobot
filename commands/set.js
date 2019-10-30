@@ -335,4 +335,9 @@ exports.run = (client, message, args) => {
     }
   }
 };
-exports.description = "Allows admins to change the bot's settings.";
+exports.cmd = {
+  enabled: true,
+  category: 'Admin',
+  level: 2,
+  description: "Allows admins to change the bot's settings."
+};

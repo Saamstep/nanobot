@@ -22,4 +22,9 @@ exports.run = (client, message, args) => {
     }
   }
 };
-exports.description = 'Allows admins to setup interviews.';
+exports.cmd = {
+  enabled: false,
+  category: 'MinecraftSMP',
+  level: 0,
+  description: 'Give interview role to user'
+};
