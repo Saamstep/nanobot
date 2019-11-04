@@ -87,7 +87,7 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
     console.log(request.url);
     response.writeHead(200);
     response.end('Hello Node.js Server!');
-    var parts = url.parse(request.url);
+    var parts = url.parse(request.url, true);
     var challenge = parts.query['hub.challenge'];
     console.log(`challenge: ${challenge}`);
   };
