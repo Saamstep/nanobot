@@ -42,6 +42,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
           'hub.topic': `https://api.twitch.tv/helix/streams?user_id=${userReq.data[0].id}`
         };
         const addStreamer = await fetch('https://api.twitch.tv/helix/webhooks/hub', {
+          method: 'POST',
           headers: {
             'Client-ID': `${client.ConfigService.config.apis.twitch}`
           },
