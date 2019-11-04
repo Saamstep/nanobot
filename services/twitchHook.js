@@ -83,11 +83,13 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
     .listen(9697);
   const url = require('url');
   const requestHandler = (request, response) => {
-    console.log(request.headers);
-    console.log(request.url);
-    response.writeHead(200);
     var parts = url.parse(request.url, true);
     var challenge = parts.query['hub.challenge'];
+    if (challenge == undefined) {
+      return;
+    } else {
+      response.writeHead(200);
+    }
     console.log(`challenge: ${challenge}`);
     response.end(challenge);
   };
