@@ -47,7 +47,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
             'hub.topic': 'https://api.twitch.tv/helix/streams?user_id=' + userReq.data[0].id
           })
         }).then(val => {
-          console.log(val);
+          // console.log(val);
         });
         // const cb = await addStreamer.text();
 

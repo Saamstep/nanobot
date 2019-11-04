@@ -76,6 +76,7 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
               }
             };
             sendMessage(client.ConfigService.config.channel.twitch, { embed });
+            res.end('success');
           }
         } else {
           var parts = url.parse(req.url, true);
@@ -85,7 +86,6 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
           res.end(challenge);
         }
       });
-      res.end('<h1>TwitchLive</h1>');
     })
     .listen(9696);
 };
