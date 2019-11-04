@@ -50,7 +50,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
           console.log(val);
         });
         // const cb = await addStreamer.text();
-        console.log(cb);
+
         break;
       case 'remove':
         break;
