@@ -81,14 +81,16 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
       res.end('<h1>TwitchLive</h1>');
     })
     .listen(9697);
-
+  const url = require('url');
   const requestHandler = (request, response) => {
     console.log(request.headers);
     console.log(request.url);
     response.writeHead(200);
     response.end('Hello Node.js Server!');
+    var parts = url.parse(request.url);
+    var challenge = parts.query['hub.challenge'];
+    console.log(`challenge: ${challenge}`);
   };
-  const url = require('url');
 
   http.createServer(requestHandler).listen(9696, err => {
     if (err) {
