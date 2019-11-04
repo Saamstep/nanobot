@@ -11,6 +11,15 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
     const userData = req.json();
     return await userData;
   }
+  async function getGame(game) {
+    const re = await fetch(`https://api.twitch.tv/helix/games?id=${game}`, {
+      headers: {
+        'Client-ID': `${client.ConfigService.config.apis.twitch}`
+      }
+    });
+    const ga = await re.json();
+    return await ga;
+  }
   http
     .createServer(function(req, res) {
       let body = '';
@@ -25,10 +34,12 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
           //   .update(JSON.stringify(req.body))
           //   .digest('hex');
           // if (incoming == undefined) return client.console('TwitchHook | Unauthorized request!');
+
           client.console('TwitchHook Found');
           let data = JSON.parse(body).data[0];
           if (data.type == 'live') {
             const user = await getUser(data.user_name);
+            const game = await getGame(data.game_id);
             let pfp = user.data[0].profile_image_url;
             const embed = {
               title: `${user.data[0].display_name} is live on Twitch!`,
@@ -46,9 +57,14 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
                   inline: true
                 },
                 {
+                  name: 'Game',
+                  value: `${game.data[0].name}`,
+                  inline: true
+                },
+                {
                   name: 'Started on',
                   value: `${date(data.started_at, 'm/d/yy @ hh:MM TT')}`,
-                  inline: true
+                  inline: false
                 }
               ],
               image: {
@@ -57,8 +73,8 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
               thumbnail: {
                 url: `${pfp}`
               }
-            };
-            sendMessage('testing', { embed });
+            };  
+            sendMessage(client.ConfigService.config.channel.twitch, { embed });
           }
         }
       });
