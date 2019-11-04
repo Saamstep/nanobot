@@ -2,6 +2,7 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
   const http = require('http');
   const date = require('dateformat');
   const fetch = require('node-fetch');
+  const url = require('url');
   async function getUser(name) {
     const req = await fetch(`https://api.twitch.tv/helix/users?login=${name}`, {
       headers: {
@@ -34,59 +35,57 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
           //   .update(JSON.stringify(req.body))
           //   .digest('hex');
           // if (incoming == undefined) return client.console('TwitchHook | Unauthorized request!');
-          var parts = url.parse(request.url, true);
-          var challenge = parts.query['hub.challenge'];
-          if (challenge == undefined) {
-            client.console('TwitchHook Found');
-            let data = JSON.parse(body).data[0];
-            if (data.type == 'live') {
-              const user = await getUser(data.user_name);
-              const game = await getGame(data.game_id);
-              let pfp = user.data[0].profile_image_url;
-              const embed = {
-                title: `${user.data[0].display_name} is live on Twitch!`,
-                description: `${data.title}`,
-                url: `https://twitch.tv/${data.user_name}`,
-                color: 9442302,
-                footer: {
-                  icon_url: client.user.avatarURL,
-                  text: client.user.username + ' - Twitch'
+
+          client.console('TwitchHook Found');
+          let data = JSON.parse(body).data[0];
+          if (data.type == 'live') {
+            const user = await getUser(data.user_name);
+            const game = await getGame(data.game_id);
+            let pfp = user.data[0].profile_image_url;
+            const embed = {
+              title: `${user.data[0].display_name} is live on Twitch!`,
+              description: `${data.title}`,
+              url: `https://twitch.tv/${data.user_name}`,
+              color: 9442302,
+              footer: {
+                icon_url: client.user.avatarURL,
+                text: client.user.username + ' - Twitch'
+              },
+              fields: [
+                {
+                  name: 'Viewers',
+                  value: `${data.viewer_count}`,
+                  inline: true
                 },
-                fields: [
-                  {
-                    name: 'Viewers',
-                    value: `${data.viewer_count}`,
-                    inline: true
-                  },
-                  {
-                    name: 'Game',
-                    value: `${game.data[0].name}`,
-                    inline: true
-                  },
-                  {
-                    name: 'Started on',
-                    value: `${date(data.started_at, 'm/d/yy @ hh:MM TT')}`,
-                    inline: false
-                  }
-                ],
-                image: {
-                  url: `${data.thumbnail_url.replace(`{width}`, '1920').replace(`{height}`, '1080')}`
+                {
+                  name: 'Game',
+                  value: `${game.data[0].name}`,
+                  inline: true
                 },
-                thumbnail: {
-                  url: `${pfp}`
+                {
+                  name: 'Started on',
+                  value: `${date(data.started_at, 'm/d/yy @ hh:MM TT')}`,
+                  inline: false
                 }
-              };
-              sendMessage(client.ConfigService.config.channel.twitch, { embed });
-            }
-          } else {
-            res.writeHead(200);
-            console.log(`challenge: ${challenge}`);
-            res.send(challenge);
+              ],
+              image: {
+                url: `${data.thumbnail_url.replace(`{width}`, '1920').replace(`{height}`, '1080')}`
+              },
+              thumbnail: {
+                url: `${pfp}`
+              }
+            };
+            sendMessage(client.ConfigService.config.channel.twitch, { embed });
           }
+        } else {
+          var parts = url.parse(req.url, true);
+          var challenge = parts.query['hub.challenge'];
+          console.log(`Challenge: ${challenge}`);
+          res.writeHead(200);
+          res.end(challenge);
         }
       });
       res.end('<h1>TwitchLive</h1>');
     })
-    .listen(9697);
-  const url = require('url');
+    .listen(9696);
 };
