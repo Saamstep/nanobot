@@ -35,20 +35,22 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         if (!args[1]) return client.error('Please specify a streamer to add!', message);
         const userReq = await getUser(args[1]);
         if (userReq.data[0].length < 1) return client.error('That streamer does not exist!', message);
-        console.log(userReq);
-        const options = {
-          'hub.callback': 'http://mywb.vcs.net:9696',
-          'hub.mode': 'subscribe',
-          'hub.topic': `https://api.twitch.tv/helix/streams?user_id=${userReq.data[0].id}`
-        };
         const addStreamer = await fetch('https://api.twitch.tv/helix/webhooks/hub', {
           method: 'POST',
           headers: {
-            'Client-ID': `${client.ConfigService.config.apis.twitch}`
+            'Client-ID': `${client.ConfigService.config.apis.twitch}`,
+            'Content-Type': 'application/json'
           },
-          body: JSON.stringify(options)
+          body: JSON.stringify({
+            'hub.callback': 'http://mywb.vcs.net:9696',
+            'hub.mode': 'subscribe',
+            'hub.topic': 'https://api.twitch.tv/helix/streams?user_id=' + userReq.data[0].id
+          })
+        }).then(val => {
+          console.log(val);
         });
-        console.log(addStreamer);
+        // const cb = await addStreamer.text();
+        console.log(cb);
         break;
       case 'remove':
         break;

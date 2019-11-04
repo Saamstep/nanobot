@@ -73,12 +73,27 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
               thumbnail: {
                 url: `${pfp}`
               }
-            };  
+            };
             sendMessage(client.ConfigService.config.channel.twitch, { embed });
           }
         }
       });
       res.end('<h1>TwitchLive</h1>');
     })
-    .listen(9696);
+    .listen(9697);
+
+  const requestHandler = (request, response) => {
+    console.log(request.headers);
+    console.log(request.url);
+    response.writeHead(200);
+    response.end('Hello Node.js Server!');
+  };
+  const url = require('url');
+
+  http.createServer(requestHandler).listen(9696, err => {
+    if (err) {
+      return console.log('something bad happened', err);
+    }
+    console.log(`server is listening on 9696`);
+  });
 };
