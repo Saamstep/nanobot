@@ -45,7 +45,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
           headers: {
             'Client-ID': `${client.ConfigService.config.apis.twitch}`
           },
-          body: JSON.parse(options)
+          body: JSON.stringify(options)
         });
         console.log(addStreamer);
         break;
