@@ -44,7 +44,8 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
           body: JSON.stringify({
             'hub.callback': 'http://mywb.vcs.net:9696',
             'hub.mode': 'subscribe',
-            'hub.topic': 'https://api.twitch.tv/helix/streams?user_id=' + userReq.data[0].id
+            'hub.topic': 'https://api.twitch.tv/helix/streams?user_id=' + userReq.data[0].id,
+            'hub.lease_seconds': 0
           })
         }).then(val => {
           // console.log(val);
