@@ -39,6 +39,7 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
 
           client.console('TwitchHook Found');
           let data = JSON.parse(body).data[0];
+          if (data < 1) return;
           if (data.type == 'live') {
             const user = await getUser(data.user_name);
             const game = await getGame(data.game_id);
