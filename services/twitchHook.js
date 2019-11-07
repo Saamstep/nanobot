@@ -29,7 +29,6 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
         body += chunk;
       });
       req.on('end', async function() {
-        console.log(body);
         if (body) {
           // let hash = crypto
           //   .createHmac(incoming[0], secret)
@@ -83,8 +82,7 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
         } else {
           var parts = url.parse(req.url, true);
           var challenge = parts.query['hub.challenge'];
-          console.log(`Challenge: ${challenge}`);
-          console.log(body);
+          if (challenge == undefined) return res.end('error');
           res.writeHead(200);
           res.end(challenge);
         }

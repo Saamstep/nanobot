@@ -7,10 +7,11 @@ exports.run = (client, message, args) => {
     mcsmp: [],
     esports: [],
     admin: [],
-    games: [],
-    other: []
+    games: []
   };
+  let loading = client.emojis.find(emoji => emoji.name === 'NANOloading');
   let commands = fs.readdirSync('./commands/');
+  message.channel.startTyping();
   // files.forEach(file => {
   let mod = false;
   let ad = false;
@@ -49,7 +50,7 @@ exports.run = (client, message, args) => {
         arrays.games.push(template);
         break;
       default:
-        arrays.other.push(template);
+        return;
     }
   });
 
@@ -65,10 +66,13 @@ exports.run = (client, message, args) => {
         text: `${client.user.username}`
       }
     };
-    message.author.send({ embed });
+    setTimeout(function() {
+      message.author.send({ embed });
+    }, 1000);
     // setTimeoutmessage.channel.send(arrays[arr]);
   });
   message.react('✅');
+  message.channel.stopTyping();
 };
 
 exports.cmd = {

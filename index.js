@@ -14,6 +14,7 @@ client.console = require('./modules/consoleMod.js');
 client.log = require('./modules/logMod.js');
 client.ConfigService = require('./config.js');
 client.login(client.ConfigService.config.token);
+client.load = client.emojis.find(emoji => emoji.name === 'NANOloading');
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir('./events/', (err, files) => {
@@ -43,7 +44,6 @@ function sendMessage(name, msg) {
 
 //controls all loop checkers
 client.on('ready', ready => {
-  client.load = client.emojis.find(emoji => emoji.name === 'NANOloading');
   fs.readdir('./loops/', (err, files) => {
     if (err) return client.console(err);
     files.forEach(file => {

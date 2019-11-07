@@ -49,7 +49,7 @@ exports.run = (client, message, args) => {
 };
 exports.cmd = {
   enabled: false,
-  category: 'Game Stats',
+  category: 'Games',
   level: 0,
   description: 'Fortnite stats'
 };

@@ -5,7 +5,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   // var date = new Date(args[0] + `/${now.getFullYear}`);
   // console.log(date);
   let team = `${args[0]} ${args[1]}`;
-  let day = '';
+  // let day = '';
   let time = '';
   if (listTeams.indexOf(team) == -1) {
     console.log(team);
