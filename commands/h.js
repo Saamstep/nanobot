@@ -9,7 +9,7 @@ exports.run = (client, message, args) => {
     admin: [],
     games: []
   };
-  let loading = client.emojis.find(emoji => emoji.name === 'NANOloading');
+
   let commands = fs.readdirSync('./commands/');
   message.channel.startTyping();
   // files.forEach(file => {
