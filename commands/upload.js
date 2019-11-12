@@ -1,6 +1,7 @@
 exports.run = async (client, message, args, veriEnmap, cc) => {
   const fetch = require('node-fetch');
   //Get URL of clip
+  console.log('test live push');
   if (!args[0] || !args[0].includes('https://clips.twitch.tv'))
     return client.error('Please provide a valid Twitch clips URL!', message);
   //https://clips.twitch.tv/AwkwardHelplessSalamanderSwiftRage
