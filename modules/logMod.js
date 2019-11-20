@@ -1,8 +1,4 @@
 module.exports = function logEvent(event, reason, color, message, client) {
-  const ConfigService = require('../config.js');
-
-  let now = new Date();
-
   const embed = {
     color: color,
     footer: {
@@ -12,20 +8,23 @@ module.exports = function logEvent(event, reason, color, message, client) {
     },
     author: {
       name: `${event}`,
-      icon_url: 'https://icon-library.net/images/administrator-icon/administrator-icon-1.jpg'
+      icon_url:
+        "https://icon-library.net/images/administrator-icon/administrator-icon-1.jpg"
     },
     fields: [
       {
-        name: 'Reason',
+        name: "Reason",
         value: `${reason}`
       },
       {
-        name: 'Executed By',
+        name: "Executed By",
         value: `${message.author}`
       }
     ]
   };
 
-  let logchannel = message.guild.channels.find(ch => ch.name == `${client.ConfigService.config.channel.log}`);
+  let logchannel = message.guild.channels.find(
+    ch => ch.name == `${client.ConfigService.config.channel.log}`
+  );
   logchannel.send({ embed });
 };

@@ -1,22 +1,24 @@
 exports.run = (client, dupe, sendMessage) => {
-  const fetch = require('node-fetch');
+  const fetch = require("node-fetch");
   //YT Video
   async function youtubeNotifier() {
+    if (client.ConfigService.config.youtubeChannels.length < 1)
+      return console.log("YT | empty");
     client.ConfigService.config.youtubeChannels.forEach(async function(id) {
-      client.console('YouTube | Searching for new videos...');
+      client.console("YouTube | Searching for new videos...");
       const api = await fetch(
         `https://www.googleapis.com/youtube/v3/search?key=${client.ConfigService.config.apis.youtube}&channelId=${id}&part=snippet,id&order=date&maxResults=1`
       );
       const channel = await api.json();
       if (!dupe.has(channel.items[0].id.videoId)) {
-        client.console('YouTube | Found channel video to announce!');
+        client.console("YouTube | Found channel video to announce!");
         let youtubeURL = `https://youtu.be/${channel.items[0].id.videoId}`;
         const embed = {
           url: `${youtubeURL}`,
           color: 15076647,
           timestamp: `${channel.items[0].snippet.publishedAt}`,
           footer: {
-            text: 'YouTube Notifier'
+            text: "YouTube Notifier"
           },
           image: {
             url: `${channel.items[0].snippet.thumbnails.medium.url}`
@@ -24,15 +26,16 @@ exports.run = (client, dupe, sendMessage) => {
           author: {
             name: `${channel.items[0].snippet.channelTitle} Uploaded`,
             url: `${youtubeURL}`,
-            icon_url: 'https://seeklogo.com/images/Y/youtube-square-logo-3F9D037665-seeklogo.com.png'
+            icon_url:
+              "https://seeklogo.com/images/Y/youtube-square-logo-3F9D037665-seeklogo.com.png"
           },
           fields: [
             {
-              name: 'Title',
+              name: "Title",
               value: `${channel.items[0].snippet.title}`
             },
             {
-              name: 'Video Link',
+              name: "Video Link",
               value: `${youtubeURL}`
             }
           ]
@@ -52,7 +55,9 @@ exports.run = (client, dupe, sendMessage) => {
 
         if (channel.items) dupe.set(`${channel.items[0].id.videoId}`, true);
       } else {
-        client.console(`YouTube | Already announced ${channel.items[0].id.videoId}`);
+        client.console(
+          `YouTube | Already announced ${channel.items[0].id.videoId}`
+        );
       }
     });
   }

@@ -1,50 +1,104 @@
 exports.run = (client, message, args, veriEnmap, cc) => {
-  const schedule = require('node-schedule');
-  const listTeams = ['OW Blue', 'OW White', 'RL Blue', 'RL White'];
-  var day = Date.now();
-  // var date = new Date(args[0] + `/${now.getFullYear}`);
-  // console.log(date);
-  let team = `${args[0]} ${args[1]}`;
-  // let day = '';
-  let time = '';
+  const schedule = require("node-schedule");
+  const listTeams = ["OW Team Blue", "OW Team White", "RL Team Blue", "RL Team White"];
+  let year = new Date().getFullYear();
+  let now = new Date();
+  let team = `${listTeams[args[0] - 1]}`;
+  let type = args[1];
+  let day = "";
+  let time = "";
+  let listOfTeams = "";
+  let count = 1;
+  if (!args[1] || !team) return client.error("```!schedule [team name] [scrim/match]```", message);
+  listTeams.forEach(t => {
+    listOfTeams += `[${count}] ${t}\n`;
+    count++;
+  });
   if (listTeams.indexOf(team) == -1) {
-    console.log(team);
-    return client.error(`Please select an active team!\n\`\`\`${listTeams.join('\n')}\`\`\``, message);
+    return client.error(`Please select an active team!\n\`\`\`${listOfTeams}\`\`\``, message);
   }
+  // if (type != 'scrim' || type != 'match') return client.error('Must be type scrim or match', message);
   async function cmd() {
-    await message.channel.send('Please input the day of the match');
+    await message.channel.send(`Please input the day of the match \`ex: ${now.getMonth() + 1}/${now.getDate()}\``);
     await message.channel
       .awaitMessages(response => response.author.id == message.author.id, {
         max: 1,
-        errors: ['time']
+        time: 30000,
+        errors: ["time"]
       })
       .then(collected => {
         day += collected.first();
       })
       .catch(() => {
-        message.channel.send('There was no date inputed within the time limit!');
+        return client.error("There was no date inputed within the time limit!", message);
       });
-    await message.channel.send('Input the time');
+    await message.channel.send("Input the time (24 hour time ONLY) `ex: 17:00 `(5PM)");
     await message.channel
       .awaitMessages(response => response.author.id == message.author.id, {
         max: 1,
-        errors: ['time']
+        time: 30000,
+        errors: ["time"]
       })
       .then(collected => {
         time += collected.first();
       })
       .catch(() => {
-        message.channel.send('There was no time inputed within the time limit!');
+        return client.error("There was no time inputed within the time limit!", message);
       });
-    await console.log(day + time);
-    await day.set;
+    var d = `${day}/${year}/${time}`;
+    let dArr = d.split("/");
+    // year, month, day, hours, minutes, seconds, miliseconds;
+    let ts = new Date(`${dArr[2]}`, `${parseInt(dArr[0] - 1).toString()}`, `${dArr[1]}`, `${dArr[3].split(":")[0]}`, `${dArr[3].split(":")[1]}`, "00");
+    let ts1hr = new Date(`${dArr[2]}`, `${parseInt(dArr[0] - 1).toString()}`, `${dArr[1]}`, `${parseInt(dArr[3].split(":")[0] - 1).toString()}`, `${dArr[3].split(":")[1]}`, "00");
+
+    const embed = {
+      description: "",
+      author: {
+        name: "Reminder"
+      },
+      footer: {
+        text: `${client.user.username} - Reminders`,
+        icon_url: client.user.avatarURL
+      },
+      color: 9712287,
+      fields: []
+    };
+    embed.description = "Sucessfully created reminder";
+    embed.fields.push({ name: `Type`, value: `${type}` });
+    embed.fields.push({ name: `Team`, value: `${team}` });
+    embed.fields.push({ name: `Time of`, value: `${ts}` });
+    message.channel.send({ embed });
+
+    embed.fields = [];
+
+    function toCasters() {}
+
+    function toTeam(member) {
+      embed.description = `You have an event coming up! Please make sure to be on time.`;
+      embed.fields.push({ name: `Type`, value: `${type}` });
+      embed.fields.push({ name: `Team`, value: `${team}` });
+      embed.fields.push({ name: `Time of event`, value: `${ts}` });
+      embed.fields.push({ name: `Sent By`, value: `@${message.author.username}` });
+      member.send({ embed });
+    }
+    embed.fields = [];
+    schedule.scheduleJob(ts, function() {
+      message.guild.members.forEach(m => {
+        if (m.roles.has(message.guild.roles.find(r => r.name == `${team}`).id)) {
+          toTeam(m);
+        } else {
+          return;
+        }
+      });
+    });
+    // message.channel.send(ts);
   }
   cmd();
 };
 
 exports.cmd = {
   enabled: true,
-  category: 'VCHS Esports',
+  category: "VCHS Esports",
   level: 3,
-  description: 'Schedule matches with reminders!'
+  description: "Schedule matches with reminders!"
 };

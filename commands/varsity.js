@@ -8,11 +8,11 @@ exports.run = (client, message, args) => {
     case 'club':
       async function teamCmd() {
         try {
-          const response = await fetch(`https://www.varsityesports.com/api/club/${args[1]}`, {});
+          const response = await fetch(`https://mobile.varsityesports.com/api/club/${args[1]}`, {});
           const body = await response.json();
           const embed = {
-            description: `Club page [here](https://www.varsityesports.com/club/${args[1]})`,
-            url: `https://www.varsityesports.com/club/${args[1]}`,
+            description: `Club page [here](https://mobile.varsityesports.com/club/${args[1]})`,
+            url: `https://mobile.varsityesports.com/club/${args[1]}`,
             color: 16460832,
             footer: {
               icon_url: 'https://i.imgur.com/kOYV3lA.png',
@@ -20,7 +20,7 @@ exports.run = (client, message, args) => {
             },
             author: {
               name: 'Team Lookup',
-              url: 'http://www.varsityesports.com/club/' + args[1],
+              url: 'http://www.mobile.varsityesports.com/club/' + args[1],
               icon_url: 'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
             },
             fields: [
@@ -48,7 +48,7 @@ exports.run = (client, message, args) => {
     case 'roster':
       async function rosterCmd() {
         try {
-          const response = await fetch(`https://www.varsityesports.com/api/club/0/roster/${args[1]}`, {});
+          const response = await fetch(`https://mobile.varsityesports.com/api/club/0/roster/${args[1]}`, {});
           const body = await response.json();
           let rosterList = ' ';
           for (let j in body.rosterPositions) {
@@ -56,8 +56,8 @@ exports.run = (client, message, args) => {
           }
 
           const embed = {
-            description: `Roster page [here](https://www.varsityesports.com/club/${body.clubId}/roster/${args[1]})`,
-            url: `https://www.varsityesports.com/club/${body.clubId}/roster/${args[1]}`,
+            description: `Roster page [here](https://mobile.varsityesports.com/club/${body.clubId}/roster/${args[1]})`,
+            url: `https://mobile.varsityesports.com/club/${body.clubId}/roster/${args[1]}`,
             color: 16460832,
             footer: {
               icon_url: 'https://i.imgur.com/kOYV3lA.png',
@@ -65,7 +65,7 @@ exports.run = (client, message, args) => {
             },
             author: {
               name: 'Roster Lookup',
-              url: `https://www.varsityesports.com/club/${body.clubId}/roster/${args[1]}`,
+              url: `https://mobile.varsityesports.com/club/${body.clubId}/roster/${args[1]}`,
               icon_url: 'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
             },
             fields: [
@@ -98,12 +98,12 @@ exports.run = (client, message, args) => {
           if (!args[1] && args[0] == 'tournament') {
             return errorMod('Please provide a game to search.', message);
           }
-          const response = await fetch(`https://www.varsityesports.com/api/toornament`, {});
+          const response = await fetch(`https://mobile.varsityesports.com/api/toornament`, {});
           const body = await response.json();
           let tourneys = ' ';
           for (let j in body) {
             if (body[j].name.includes(args[1])) {
-              tourneys += `[**${body[j].name}**](https://www.toornament.com/tournaments/${body[j].id}/stages/)\n`;
+              tourneys += `[**${body[j].name}**](https://toornament.com/tournaments/${body[j].id}/stages/)\n`;
             }
           }
 
@@ -111,8 +111,8 @@ exports.run = (client, message, args) => {
             tourneys = 'No results.';
           }
           const embed = {
-            description: `View all tournaments [here](https://www.varsityesports.com/toornaments)`,
-            url: `https://www.varsityesports.com/toornaments`,
+            description: `View all tournaments [here](https://mobile.varsityesports.com/toornaments)`,
+            url: `https://mobile.varsityesports.com/toornaments`,
             color: 16460832,
             footer: {
               icon_url: 'https://i.imgur.com/kOYV3lA.png',
@@ -120,7 +120,7 @@ exports.run = (client, message, args) => {
             },
             author: {
               name: 'Tournaments',
-              url: `https://www.varsityesports.com/toornaments`,
+              url: `https://mobile.varsityesports.com/toornaments`,
               icon_url: 'https://static-assets.varsityesports.com/images/hsel_jumbo.png'
             },
             fields: [

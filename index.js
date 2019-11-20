@@ -1,30 +1,30 @@
-const Discord = require('discord.js');
+const Discord = require("discord.js");
 const client = new Discord.Client({ autoReconnect: true });
-const fs = require('fs');
-const fetch = require('node-fetch');
-const Enmap = require('enmap');
+const fs = require("fs");
+const fetch = require("node-fetch");
+const Enmap = require("enmap");
 
 //modules init.
-client.Discord = require('discord.js');
-client.isAdmin = require('./modules/isAdmin.js');
-client.isMod = require('./modules/isMod.js');
-client.isOwner = require('./modules/isOwner.js');
-client.error = require('./modules/errorMod.js');
-client.console = require('./modules/consoleMod.js');
-client.log = require('./modules/logMod.js');
-client.ConfigService = require('./config.js');
+client.Discord = require("discord.js");
+client.isAdmin = require("./modules/isAdmin.js");
+client.isMod = require("./modules/isMod.js");
+client.isOwner = require("./modules/isOwner.js");
+client.error = require("./modules/errorMod.js");
+client.console = require("./modules/consoleMod.js");
+client.log = require("./modules/logMod.js");
+client.ConfigService = require("./config.js");
 client.login(client.ConfigService.config.token);
-client.load = client.emojis.find(emoji => emoji.name === 'NANOloading');
+client.load = client.emojis.find(emoji => emoji.name === "NANOloading");
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
-fs.readdir('./events/', (err, files) => {
-  if (err) return client.console(err);
+fs.readdir("./events/", (err, files) => {
+  if (err) return client.console(err, "warn", "Events Loop");
   files.forEach(file => {
-    if (file.startsWith('.')) {
+    if (file.startsWith(".")) {
       return;
     }
     let eventFunction = require(`./events/${file}`);
-    let eventName = file.split('.')[0];
+    let eventName = file.split(".")[0];
     // super-secret recipe to call events with all their proper arguments *after* the `client` var.
     client.on(eventName, (...message) => eventFunction.run(client, ...message));
   });
@@ -43,34 +43,34 @@ function sendMessage(name, msg) {
 }
 
 //controls all loop checkers
-client.on('ready', ready => {
-  fs.readdir('./loops/', (err, files) => {
-    if (err) return client.console(err);
+client.on("ready", ready => {
+  fs.readdir("./loops/", (err, files) => {
+    if (err) return client.console(err, "warn", "Events Loop");
     files.forEach(file => {
       let eventFunction = require(`./loops/${file}`);
-      let eventName = file.split('.')[0];
+      let eventName = file.split(".")[0];
       if (client.ConfigService.config.loops[eventName] == true) {
         setInterval(() => {
           eventFunction.run(client, dupe, sendMessage);
         }, eventFunction.time);
-        client.console(`Loops | Started ${eventName} loop event`.cyan);
+        client.console(`${eventName}: Started `.cyan, "info", "Loops");
       } else {
-        client.console(`Loops | ${eventName} loop is disabled`.cyan.bold);
+        client.console(`${eventName}: Disabled `.cyan.dim, "info", "Loops");
       }
     });
   });
 
   //runs services once to keep them alive
-  fs.readdir('./services/', (err, files) => {
-    if (err) return client.console(err);
+  fs.readdir("./services/", (err, files) => {
+    if (err) return client.console(err, "warn", "Services");
     files.forEach(file => {
       let eventFunction = require(`./services/${file}`);
-      let eventName = file.split('.')[0];
+      let eventName = file.split(".")[0];
       if (client.ConfigService.config.services[eventName] == true) {
         eventFunction.run(client, dupe, veriEnmap, sendMessage);
-        client.console(`Services | Started ${eventName} service`.cyan.dim);
+        client.console(`${eventName}: Started`.cyan, "info", "Services");
       } else {
-        client.console(`Services | ${eventName} service is disabled`.cyan.bold);
+        client.console(`${eventName}: Disabled`.cyan.dim, "info", "Services");
       }
     });
   });
@@ -80,7 +80,7 @@ client.on('ready', ready => {
 
 //Dupe Check for Twitch/OWL/YT
 const dupe = new Enmap({
-  name: 'dupeCheck',
+  name: "dupeCheck",
   autoFetch: true,
   fetchAll: true
 });
@@ -88,25 +88,25 @@ const dupe = new Enmap({
 // enmap and data storage object for verification system
 
 const veriEnmap = new Enmap({
-  name: 'verification',
+  name: "verification",
   autoFetch: true,
   fetchAll: true
 });
 
 //Custom command
 const cc = new Enmap({
-  name: 'cc',
+  name: "cc",
   autoFetch: true,
   fetchAll: true
 });
 client.ccSize = cc.size;
 
-//role react sys
+//role react system start -------------
 const events = {
-  MESSAGE_REACTION_ADD: 'messageReactionAdd',
-  MESSAGE_REACTION_REMOVE: 'messageReactionRemove'
+  MESSAGE_REACTION_ADD: "messageReactionAdd",
+  MESSAGE_REACTION_REMOVE: "messageReactionRemove"
 };
-client.on('raw', async event => {
+client.on("raw", async event => {
   if (!events.hasOwnProperty(event.t)) return;
   const { d: data } = event;
   if (data.message_id != client.ConfigService.config.roleReact.message) return;
@@ -117,38 +117,46 @@ client.on('raw', async event => {
     if (channel.messages.has(data.message_id)) return;
     const message = await channel.fetchMessage(data.message_id);
 
-    const emojiKey = data.emoji.id ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
+    const emojiKey = data.emoji.id
+      ? `${data.emoji.name}:${data.emoji.id}`
+      : data.emoji.name;
     const reaction = message.reactions.get(emojiKey);
     client.emit(events[event.t], reaction, user);
   }
 });
 
-client.on('messageReactionAdd', (reaction, user) => {
+client.on("messageReactionAdd", (reaction, user) => {
   if (user.bot) return;
   let roleName =
     client.ConfigService.config.roleReact.roles[
-      client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
+    client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
     ];
-  let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
+  let role = client.guilds
+    .get(reaction.emoji.guild.id)
+    .roles.find(r => r.name == roleName);
   let member = reaction.message.guild.members.find(m => m.id == user.id);
   member.send(`You were given the role **${roleName}**`);
-  veriEnmap.push(`${member.id}`, `${roleName}`, 'roles');
+  veriEnmap.push(`${member.id}`, `${roleName}`, "roles");
   member.addRole(role.id);
 });
 
-client.on('messageReactionRemove', (reaction, user) => {
+client.on("messageReactionRemove", (reaction, user) => {
   if (user.bot) return;
   let roleName =
     client.ConfigService.config.roleReact.roles[
-      client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
+    client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
     ];
-  let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
+  let role = client.guilds
+    .get(reaction.emoji.guild.id)
+    .roles.find(r => r.name == roleName);
   let member = reaction.message.guild.members.find(m => m.id == user.id);
   member.send(`Removed **${roleName}** from you`);
-  veriEnmap.remove(`${member.id}`, `${roleName}`, 'roles');
+  veriEnmap.remove(`${member.id}`, `${roleName}`, "roles");
   member.removeRole(role.id);
 });
+// role react system end -------------
 
+//veriEnamp system
 async function onJoin(member) {
   if (client.ConfigService.config.services.joinSys == true) {
     try {
@@ -158,10 +166,16 @@ async function onJoin(member) {
         //if the user is not in the guild, do not crash!
         //if the discord id is in db, it means they are verified :D so add roles, nickname etc
         if (veriEnmap.has(`${member.user.id}`)) {
-          let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
+          let addRole = guild.roles.find(
+            r => r.name === `${client.ConfigService.config.roles.iamRole}`
+          );
           //if they dont have default role, run commands
           if (
-            !guild.member(member.user.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)
+            !guild
+              .member(member.user.id)
+              .roles.find(
+                r => r.name === `${client.ConfigService.config.roles.iamRole}`
+              )
           ) {
             // add the roles
             guild.members
@@ -171,27 +185,41 @@ async function onJoin(member) {
             // set nickname
             guild.members
               .get(member.user.id)
-              .setNickname(`${member.user.username} (${veriEnmap.get(`${member.user.id}`, 'name')})`, 'Joined server.');
-            client.console('Updated user ' + member.user.id);
+              .setNickname(
+                `${member.user.username} (${veriEnmap.get(
+                  `${member.user.id}`,
+                  "name"
+                )})`,
+                "Joined server."
+              );
+            client.console("Updated user " + member.user.id);
             sendMessage(
               `${client.ConfigService.config.channel.log}`,
               `<@${member.user.id}> was updated with all their roles and nicknames after joining.`
             );
-            veriEnmap.get(`${member.user.id}`, 'roles').forEach(function(choice) {
-              let role = guild.roles.find(r => r.name === `${choice}`);
-              guild.members.get(member.user.id).addRole(role);
-            });
-            let hsClass = guild.roles.find(r => r.name === `${veriEnmap.get(member.user.id, 'class')}`);
+            veriEnmap
+              .get(`${member.user.id}`, "roles")
+              .forEach(function (choice) {
+                let role = guild.roles.find(r => r.name === `${choice}`);
+                guild.members.get(member.user.id).addRole(role);
+              });
+            let hsClass = guild.roles.find(
+              r => r.name === `${veriEnmap.get(member.user.id, "class")}`
+            );
             guild.members.get(member.user.id).addRole(hsClass);
             member.send(
               `You have been sucessfully verified in the Discord server **${
-                guild.name
+              guild.name
               }**. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${
-                member.user.username
-              }\nEmail: ${veriEnmap.get(member.user.id, 'email')}\`\`\``
+              member.user.username
+              }\nEmail: ${veriEnmap.get(member.user.id, "email")}\`\`\``
             );
-            let newchannel = guild.channels.find(ch => ch.name === `${client.ConfigService.config.channel.joinCh}`);
-            newchannel.send(`✅ **${member.user.username}** has been verified, welcome back!`);
+            let newchannel = guild.channels.find(
+              ch => ch.name === `${client.ConfigService.config.channel.joinCh}`
+            );
+            newchannel.send(
+              `✅ **${member.user.username}** has been verified, welcome back!`
+            );
           }
         } else {
           //if they are not in the database (wonder how they got there) then run the following commands
@@ -210,14 +238,39 @@ async function onJoin(member) {
 }
 
 //username update
-client.on('userUpdate', (oldUser, newUser) => {
-  sendMessage(client.ConfigService.config.channel.log, `Updated ${oldUser.username}'s nickname to ${newUser.username}`);
+client.on("userUpdate", (oldUser, newUser) => {
   if (oldUser.username != newUser.username) {
     try {
       veriEnmap.defer.then(() => {
         let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
         let u = guild.members.get(newUser.id);
-        u.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, 'name')})`);
+        u.setNickname(
+          `${newUser.username} (${veriEnmap.get(`${newUser.id}`, "name")})`
+        );
+        const embed = {
+          color: 16075062,
+          timestamp: Date.now(),
+          footer: {
+            icon_url: client.user.avatarURL,
+            text: `${client.user.username} Verification`
+          },
+          author: {
+            name: "Username Updated"
+          },
+          fields: [
+            {
+              name: "Old",
+              value: oldUser.username,
+              inline: true
+            },
+            {
+              name: "New",
+              value: newUser.username,
+              inline: true
+            }
+          ]
+        };
+        sendMessage(client.ConfigService.config.channel.log, { embed });
       });
     } catch (e) {
       return;
@@ -227,32 +280,32 @@ client.on('userUpdate', (oldUser, newUser) => {
   }
 });
 
-client.on('guildMemberAdd', member => {
+client.on("guildMemberAdd", member => {
   if (member.guild.id == client.ConfigService.config.guild) {
     onJoin(member);
   } else {
-    console.log('not = to guild.');
+    return;
   }
 });
 
 //cooldown
 const talkedRecently = new Set();
 module.exports = function cooldown(message, code) {
-  const error = require('./modules/errorMod.js');
+  const error = require("./modules/errorMod.js");
 
   if (talkedRecently.has(message.author.id)) {
-    return error('Wait 6 seconds before typing this again.', message);
+    return error("Wait 5 seconds before typing this again.", message);
   } else {
     code();
 
     talkedRecently.add(message.author.id);
     setTimeout(() => {
       talkedRecently.delete(message.author.id);
-    }, 6000);
+    }, 5000);
   }
 };
 
-client.on('message', message => {
+client.on("message", message => {
   // MC to Discord message handler (deprecating for now)
   // if (message.channel.name === `${client.settings.get(`${g.id}`, 'minecraft.topicChannel')}`) {
   //   if (message.author.bot) return;
@@ -261,19 +314,19 @@ client.on('message', message => {
   // }
 
   //links in general
-  if (message.channel.name == 'general') {
-    if (
-      message.content.match(
-        '^(http://www.|https://www.|http://|https://)?[a-z0-9]+([-.]{1}[a-z0-9]+)*.[a-z]{2,5}(:[0-9]{1,5})?(/.*)?$'
-      )
-    ) {
-      message.channel.send('True!');
-    }
+  let link = /(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/igm
+  if (message.channel.id == "476921107778109442" && link.test(message.content) && !client.isMod(message.author, message, client, false)) {
+    message.delete(0)
+    message.channel.send("No links allowed here! Please use <#498912077499334712>").then(m => {
+      m.delete(4000);
+    })
   }
 
   // Nicknamer [p]iam command
   try {
-    if (message.channel.name === `${client.ConfigService.config.channel.nickID}`) {
+    if (
+      message.channel.name === `${client.ConfigService.config.channel.nickID}`
+    ) {
       if (message.content !== `${client.ConfigService.config.prefix}iam`) {
         message.delete(0);
       }
@@ -283,40 +336,53 @@ client.on('message', message => {
   }
 
   // Checkmarks if the correct IP is typed in chat
-  if (`${client.ConfigService.config.minecraft.serverIP}` !== '') {
-    if (message.content.includes(`${client.ConfigService.config.minecraft.IP}`) && !message.author.bot) {
+  if (`${client.ConfigService.config.minecraft.serverIP}` !== "") {
+    if (
+      message.content.includes(`${client.ConfigService.config.minecraft.IP}`) &&
+      !message.author.bot
+    ) {
       message.react(`✅`);
     }
   }
   // Support Channel Code
   async function pMreact() {
-    await message.react('⬆');
-    await message.react('⬇');
+    await message.react("⬆");
+    await message.react("⬇");
   }
 
-  //Support channel code
-
-  if (message.channel.id == `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
+  if (
+    message.channel.id == `${client.ConfigService.config.channel.supportID}` &&
+    !message.author.bot
+  ) {
     const tag = client.ConfigService.config.supportTags;
-    let manager = message.guild.roles.find(r => r.name == 'Community Manager');
+    let manager = message.guild.roles.find(r => r.name == "Community Manager");
     if (tag.some(word => message.content.startsWith(word))) {
       pMreact();
-    } else if (client.isAdmin(message.author, message, false, client) || message.member.roles.has(manager.id)) {
-      if (message.content.startsWith('check')) {
-        let args = message.content.split(' ').slice(1);
+    } else if (
+      client.isAdmin(message.author, message, false, client) ||
+      message.member.roles.has(manager.id)
+    ) {
+      if (message.content.startsWith("check")) {
+        let args = message.content.split(" ").slice(1);
         message.channel.fetchMessage(args[0]).then(msg => {
-          msg.react('✅');
+          msg.react("✅");
         });
         message.delete(0);
       }
-      if (message.content.startsWith('delete')) {
-        let args = message.content.split(' ').slice(1);
-        let reason = args.join(' ');
-        reason = reason.replace(args[0], '\n');
+      if (message.content.startsWith("delete")) {
+        let args = message.content.split(" ").slice(1);
+        let reason = args.join(" ");
+        reason = reason.replace(args[0], "\n");
         message.delete(0);
         message.channel.fetchMessage(args[0]).then(msg => {
           msg.delete(0);
-          msg.author.send('Your suggestion `' + msg.content + '` was removed by an admin for: ```' + reason + '```');
+          msg.author.send(
+            "Your suggestion `" +
+            msg.content +
+            "` was removed by an admin for: ```" +
+            reason +
+            "```"
+          );
         });
       }
     } else {
@@ -328,10 +394,10 @@ client.on('message', message => {
   if (!message.content.startsWith(client.ConfigService.config.prefix)) return;
   if (!message.guild || message.author.bot) return;
 
-  let command = message.content.split(' ')[0];
+  let command = message.content.split(" ")[0];
   command = command.slice(config.prefix.length);
   client.config = config;
-  let args = message.content.split(' ').slice(1);
+  let args = message.content.split(" ").slice(1);
 
   // Regular command file manager
   try {
@@ -341,7 +407,8 @@ client.on('message', message => {
       } else {
         try {
           let commandFile = require(`./commands/${command}.js`);
-          if (!commandFile.cmd.enabled) return client.error('This command is disabled', message);
+          if (!commandFile.cmd.enabled)
+            return client.error("This command is disabled", message);
           /*
           ==Levels==
           0 - @everyone
@@ -373,8 +440,8 @@ client.on('message', message => {
               }
               break;
             default:
-              message.channel.send(
-                "There seems to be an error with permissions... This isn't good. Make sure your Admin, Mod and Owner fields are filled out"
+              client.error(
+                "There seems to be an error with permissions... This isn't good. Make sure your Admin, Mod and Owner fields have been inputted correctly.", message
               );
           }
         } catch (e) {
@@ -383,14 +450,17 @@ client.on('message', message => {
       }
     });
   } catch (err) {
-    if (client.ConfigService.config.debug === true) {
+    if (client.ConfigService.config.debug == true) {
       console.error(err);
     }
   }
 
   //New Custom Command File System
   try {
-    if (message.content.startsWith(client.ConfigService.config.prefix) && cc.has(command)) {
+    if (
+      message.content.startsWith(client.ConfigService.config.prefix) &&
+      cc.has(command)
+    ) {
       cc.defer.then(() => {
         message.channel.send(cc.get(command));
       });

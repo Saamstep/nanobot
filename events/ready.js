@@ -1,66 +1,87 @@
-const ConfigService = require('../config.js');
-const colors = require('colors');
-const fetch = require('node-fetch');
-const commandsFolder = './commands/';
-const ccFolder = './commands/cc/';
-const CommandList = require('../commandList.js');
-const fs = require('fs').promises;
+const colors = require("colors");
+const fetch = require("node-fetch");
+const fs = require("fs");
+
+//throw err function
+const err = function(s) {
+  throw s.red.bold;
+};
 
 exports.run = async function(client, member, message) {
-  const guildNames = client.guilds.map(g => g.name).join(', ');
-  client.user
+  await console.log(
+    `+--------------------${`Nano Startup`.inverse}--------------------+`.yellow
+  );
+
+  // Check discord status
+  try {
+    var url = "https://srhpyqt94yxb.statuspage.io/api/v2/status.json/";
+    const response = await fetch(url);
+    const body = await response.json();
+
+    if (!response.ok) {
+      err(
+        "DISCORD_STATUS_REQUEST. The Discord API gave us a baaad response..."
+      );
+    }
+
+    if (body.status.description == "All Systems Operational") {
+      client.console(
+        "All systems operational!".blue.bold,
+        "info",
+        "Discord Status"
+      );
+    } else {
+      client.console(
+        "There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/"
+          .red,
+        "warn",
+        "Ready"
+      );
+    }
+  } catch (e) {
+    err("DISCORD_STATUS_REQUEST. The Discord API gave us a baaad response...");
+  }
+  //Tell the console the bot is online!
+  await client.console(
+    ``.blue +
+      `${client.user.username}#${client.user.discriminator}`.bold.blue +
+      " bot online!".blue.reset,
+    "info",
+    "Bot"
+  );
+
+  //list guilds connected to
+  await client.console(
+    "Connected to => ".blue +
+      client.guilds.map(g => g.name).join(", ").bold.blue,
+    "info",
+    "Guilds"
+  );
+
+  //Load commands
+  const cmds = await fs.readdirSync("./commands");
+  await client.console(
+    "Loaded ".green + cmds.length + " commands".green,
+    "info",
+    "Commands"
+  );
+  //Load custom commands
+  await client.console(
+    "Loaded ".green + client.ccSize + " custom commands".green,
+    "info",
+    "Commands"
+  );
+  //set playing status
+  await client.user
     .setPresence({
-      game: { name: `${ConfigService.config.defaultGame}`, type: 0 }
+      game: { name: `${client.ConfigService.config.defaultGame}`, type: 0 }
     })
     .catch(console.error);
-
-  // Iterate over all commands in command folder and add to CommandList
-  try {
-    const commands = await fs.readdir(commandsFolder);
-    commands.forEach(file => {
-      if (file === 'cc') {
-        return;
-      }
-      if (file.startsWith('.')) {
-        return;
-      } else {
-        let cmdfiles = require(`../commands/${file}`);
-        CommandList.addCommand(file.toString().replace('.js', ''), false, cmdfiles.description);
-      }
-    });
-  } catch (e) {
-    client.console(e);
-  }
-
-  // Discord status URL
-  var url = 'https://srhpyqt94yxb.statuspage.io/api/v2/status.json/';
-
-  // Start discord status
-  const response = await fetch(url);
-
-  const body = await response.json();
-
-  if (!response.ok) {
-    throw Error('Error: DISCORD_STATUS_REQUEST. The Discord API gave us a baaad response...');
-  }
-
-  if (body.status.description == 'All Systems Operational') {
-    console.log(' ');
-    client.console('Discord Servers | All systems operational!'.green.dim);
-  } else {
-    client.console(
-      'There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/'.red
-    );
-  }
-  // End discord status
-  const cmds = await fs.readdir(commandsFolder);
-  client.console('Commands | Loaded '.green + cmds.length + ' commands'.green);
-  client.console('Commands | Loaded '.green + client.ccSize + ' custom commands'.green);
-  client.console(
-    `Bot Account | `.cyan + `${client.user.username}#${client.user.discriminator}`.bold.cyan + ' bot online!'.cyan.reset
+  await client.console(
+    `Presence set to ${client.ConfigService.config.defaultGame.underline}`.green
   );
-  client.console('Guilds | Connected to => '.cyan + guildNames.bold.cyan);
-  if (ConfigService.config.debug === 'on') {
-    console.log('Debug mode is on\n');
+  //print to console if debug mode enabled
+  if (client.ConfigService.config.debug == true) {
+    client.console("Debug is enabled:\n".green);
   }
 };

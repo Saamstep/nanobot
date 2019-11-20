@@ -101,6 +101,7 @@ exports.run = (client, dupe, sendMessage) => {
       } catch (e) {
         client.console(e);
       }
+
     });
   }
   twitchNotifier();

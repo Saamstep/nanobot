@@ -67,7 +67,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         if (!args[1]) return client.error('You must provide a Twitch username!', message);
         let user = await getUser(`${args[1]}`);
         if (user.data[0].length < 1) return client.error('That streamer does not exist!', message);
-        const embed = {
+        embed = {
           title: `${user.data[0].display_name} on Twitch`,
           // description: `${user.data[0].title}`,
           url: `https://twitch.tv/${user.data[0].login}`,
@@ -135,8 +135,43 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
           message.channel.send({ embed });
         }
         break;
+      case 'clip':
+        if (!args[1] || !args[1].includes('https://clips.twitch.tv'))
+          return client.error(
+            'Please provide a valid Twitch clip URL!\n`   Ex: https://clips.twitch.tv/CovertBlazingNigiriSoBayed`',
+            message
+          );
+        //https://clips.twitch.tv/AwkwardHelplessSalamanderSwiftRage
+        let id = args[1].slice(24);
+
+        const clipRequest = await fetch('https://api.twitch.tv/helix/clips?id=' + id, {
+          headers: {
+            'Client-ID': client.ConfigService.config.apis.twitch
+          }
+        });
+        const clip = await clipRequest.json();
+        if (clip.data < 1 || clip.data == undefined)
+          return client.error(clip.message + ' \n`Ex: https://clips.twitch.tv/CovertBlazingNigiriSoBayed`', message);
+
+        // let name = clip.data[0].title;
+        // let creator = clip.data[0].creator_name;
+        // let bcaster = clip.data[0].broadcaster_name;
+        const download = await fetch(`https://clips.twitch.tv/api/v1/clips/${id}/status`);
+        const DLfile = await download.json();
+        let fileURL = DLfile.quality_options[0].source;
+        const embed = {
+          description: `[[Click to Download]](${fileURL})`,
+          author: {
+            name: clip.data[0].title + ' - ' + clip.data[0].broadcaster_name,
+            icon_url: 'https://carlisletheacarlisletheatre.org/images/fortnite-background-clipart-logo-7.jpg'
+          },
+          image: {
+            url: clip.data[0].thumbnail_url
+          }
+        };
+        message.channel.send({ embed });
       default:
-        if (!args[0]) return client.error('twitch add|remove|list|live [user (if applicable)]', message);
+        if (!args[0]) return client.error('twitch add|remove|list|live|clip [user|clip URL (if applicable)]', message);
         break;
     }
   }
