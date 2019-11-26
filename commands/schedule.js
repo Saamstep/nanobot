@@ -1,6 +1,6 @@
 exports.run = (client, message, args, veriEnmap, cc) => {
   const schedule = require("node-schedule");
-  const listTeams = ["OW Team Blue", "OW Team White", "RL Team Blue", "RL Team White"];
+  const listTeams = ["OW Team Blue", "OW Team White", "RL Team Blue", "RL Team White", "LoL Team", "Fortnite Players", "Madden Players", "SSB Ultimate Players", "Minecraft Hunger Games"];
   let year = new Date().getFullYear();
   let now = new Date();
   let team = `${listTeams[args[0] - 1]}`;
@@ -9,17 +9,17 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   let time = "";
   let listOfTeams = "";
   let count = 1;
-  if (!args[1] || !team) return client.error("```!schedule [team name] [scrim/match]```", message);
+  if (!args[1] || !team) return client.error("```!schedule [team number] [type (scrim/match)]```", message);
   listTeams.forEach(t => {
     listOfTeams += `[${count}] ${t}\n`;
     count++;
   });
   if (listTeams.indexOf(team) == -1) {
-    return client.error(`Please select an active team!\n\`\`\`${listOfTeams}\`\`\``, message);
+    return client.error(`Please select an active team! Use the number identifiers.\n\`\`\`${listOfTeams}\`\`\``, message);
   }
-  // if (type != 'scrim' || type != 'match') return client.error('Must be type scrim or match', message);
+
   async function cmd() {
-    await message.channel.send(`Please input the day of the match \`ex: ${now.getMonth() + 1}/${now.getDate()}\``);
+    await message.channel.send(`Please input the day of the ${type} \`ex: ${now.getMonth() + 1}/${now.getDate()}\``);
     await message.channel
       .awaitMessages(response => response.author.id == message.author.id, {
         max: 1,
@@ -89,6 +89,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
       embed.fields.push({ name: `Time of event`, value: `${ts}` });
       embed.fields.push({ name: `Sent By`, value: `@${message.author.username}` });
       member.send({ embed });
+      message.guild.channels.find(c => c.name == "team-announcements").send(`<@&${message.guild.roles.find(r => r.name == `${team}`).id}>`, { embed });
     }
     embed.fields = [];
     schedule.scheduleJob(ts, function() {
@@ -102,7 +103,11 @@ exports.run = (client, message, args, veriEnmap, cc) => {
     });
     if (type == "match") toCasters();
   }
-  cmd();
+  if (args[1] == "scrim" || args[1] == "match") {
+    cmd();
+  } else {
+    return client.error("Invalid type! Please choose **scrim** OR **match**.", message);
+  }
 };
 
 exports.cmd = {

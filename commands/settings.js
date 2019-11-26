@@ -1,50 +1,64 @@
-exports.run = (client, message, args, veriEnmap, cc) => {
-  const fs = require("fs");
-  // let obj = "";
-  // let settings = JSON.parse(fs.readFileSync("./config.json"));
-  // for (i in settings) {
-  //   let set = settings[i];
-  //   if (i == "token" || i == "apis") continue;
-  //   if (typeof settings[i] == "object") {
-  //     obj += settings[i];
-  //     for (var prop in set) {
-  //       if (Array.isArray(set[prop])) {
-  //         obj += set[prop].join(", ") + "\n";
-  //         console.log("is array.");
-  //       } else {
-  //         obj += `${prop} > ${set[prop]}\n`;
-  //       }
-  //     }
-  //   } else {
-  //     obj += `${i} :: ${settings[i]}\n`;
-  //   }
-  // }
-  // console.log(obj);
-  // message.channel.send(obj);
-  let set = JSON.parse(fs.readFileSync("./config.json"));
-  let msg = "";
-  for (var prop in set) {
-    if (prop == "token" || prop == "apis" || prop == "mail") continue;
-    if (typeof set[prop] === "object") {
-      for (var type in set[prop]) {
-        if (msg.includes(prop)) {
-          msg += `${type} :: ${Object.values(prop)}\n`;
-        } else {
-          msg += `\n= ${prop} =\n${type} :: ${type[set[prop]]}\n`;
-        }
-      }
+exports.run = async (client, message, args, veriEnmap, cc) => {
+  fs = require("fs");
+  var m = JSON.parse(fs.readFileSync("./config.json").toString());
+  const data = m;
+
+  function hasNoDisabled(input) {
+    if (input == "token" || input == "ownerid" || input.includes("apis")) {
+      return false;
     } else {
-      msg += `${prop} : : ${JSON.stringify(prop[set])}\n`;
+      return true;
     }
   }
-  const helpMsg = `= Help =\n- Variables\nUSER :: Username of user referencing\nSERVER :: The server's name.\nNot avaliable for all settings.\n-----------------`;
-  message.channel.send(`\`\`\`asciidoc\n${helpMsg}\n${msg}\`\`\``);
-  console.log(helpMsg + "\n" + msg);
-  // message.channel.send('I hate JSON objects.');
+  function push(out) {
+    fs.writeFileSync("./test.json", JSON.stringify(out, null, 4));
+  }
+
+  switch (args[0]) {
+    case "add":
+      break;
+    case "remove":
+      break;
+    case "edit":
+      if (hasNoDisabled(args[1]) && !args[1].includes(",")) {
+        data[args[1]] = args[2];
+        push(data);
+      }
+      if (hasNoDisabled(args[1]) && args[1].includes(".")) {
+        let copy = args[1].split(".");
+        data.copy[0].copy[1];
+      }
+      break;
+    default:
+      let msg = `${client.user.username} Settings | Change these config properties (except owner ID lol)\n-------\n<General>\n`;
+      for (i in data) {
+        if (i == "apis" || i == "token" || i == "mail") continue;
+        if (Object.prototype.toString.call(data[i]) === "[object Object]") {
+          for (k = 0; k < Object.keys(data[i]).length; k++) {
+            if (!msg.includes(i)) msg += "\n<" + i + ">\n";
+            msg += "< " + Object.keys(data[i])[k] + " > ";
+            if (Array.isArray(Object.values(data[i])[k])) {
+              msg +=
+                Object.values(data[i])
+                  [k].join(" | ")
+                  .replace("_", "-") + "\n";
+            } else {
+              msg += Object.values(data[i])[k] + "\n";
+            }
+          }
+        } else {
+          let output = data[i];
+          if (Array.isArray(output)) output = data[i].join(" | ").replace("_", "-");
+          msg += "< " + i + " > " + output + "\n";
+        }
+      }
+      message.channel.send(`\`\`\`md\n${msg}\`\`\``);
+      break;
+  }
 };
 exports.cmd = {
   enabled: true,
-  category: "Admin",
+  category: "Utility",
   level: 3,
-  description: "Enmap config system that will not be used"
+  description: "View and change bot settings"
 };
