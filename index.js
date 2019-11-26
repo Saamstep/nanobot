@@ -117,9 +117,7 @@ client.on("raw", async event => {
     if (channel.messages.has(data.message_id)) return;
     const message = await channel.fetchMessage(data.message_id);
 
-    const emojiKey = data.emoji.id
-      ? `${data.emoji.name}:${data.emoji.id}`
-      : data.emoji.name;
+    const emojiKey = data.emoji.id ? `${data.emoji.name}:${data.emoji.id}` : data.emoji.name;
     const reaction = message.reactions.get(emojiKey);
     client.emit(events[event.t], reaction, user);
   }
@@ -127,13 +125,8 @@ client.on("raw", async event => {
 
 client.on("messageReactionAdd", (reaction, user) => {
   if (user.bot) return;
-  let roleName =
-    client.ConfigService.config.roleReact.roles[
-    client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
-    ];
-  let role = client.guilds
-    .get(reaction.emoji.guild.id)
-    .roles.find(r => r.name == roleName);
+  let roleName = client.ConfigService.config.roleReact.roles[client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)];
+  let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
   let member = reaction.message.guild.members.find(m => m.id == user.id);
   member.send(`You were given the role **${roleName}**`);
   veriEnmap.push(`${member.id}`, `${roleName}`, "roles");
@@ -142,13 +135,8 @@ client.on("messageReactionAdd", (reaction, user) => {
 
 client.on("messageReactionRemove", (reaction, user) => {
   if (user.bot) return;
-  let roleName =
-    client.ConfigService.config.roleReact.roles[
-    client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)
-    ];
-  let role = client.guilds
-    .get(reaction.emoji.guild.id)
-    .roles.find(r => r.name == roleName);
+  let roleName = client.ConfigService.config.roleReact.roles[client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)];
+  let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
   let member = reaction.message.guild.members.find(m => m.id == user.id);
   member.send(`Removed **${roleName}** from you`);
   veriEnmap.remove(`${member.id}`, `${roleName}`, "roles");
@@ -166,67 +154,36 @@ async function onJoin(member) {
         //if the user is not in the guild, do not crash!
         //if the discord id is in db, it means they are verified :D so add roles, nickname etc
         if (veriEnmap.has(`${member.user.id}`)) {
-          let addRole = guild.roles.find(
-            r => r.name === `${client.ConfigService.config.roles.iamRole}`
-          );
+          let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
           //if they dont have default role, run commands
-          if (
-            !guild
-              .member(member.user.id)
-              .roles.find(
-                r => r.name === `${client.ConfigService.config.roles.iamRole}`
-              )
-          ) {
+          if (!guild.member(member.user.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
             // add the roles
             guild.members
               .get(member.user.id)
               .addRole(addRole)
               .catch(console.error);
             // set nickname
-            guild.members
-              .get(member.user.id)
-              .setNickname(
-                `${member.user.username} (${veriEnmap.get(
-                  `${member.user.id}`,
-                  "name"
-                )})`,
-                "Joined server."
-              );
+            guild.members.get(member.user.id).setNickname(`${member.user.username} (${veriEnmap.get(`${member.user.id}`, "name")})`, "Joined server.");
             client.console("Updated user " + member.user.id);
-            sendMessage(
-              `${client.ConfigService.config.channel.log}`,
-              `<@${member.user.id}> was updated with all their roles and nicknames after joining.`
-            );
-            veriEnmap
-              .get(`${member.user.id}`, "roles")
-              .forEach(function (choice) {
-                let role = guild.roles.find(r => r.name === `${choice}`);
-                guild.members.get(member.user.id).addRole(role);
-              });
-            let hsClass = guild.roles.find(
-              r => r.name === `${veriEnmap.get(member.user.id, "class")}`
-            );
+            sendMessage(`${client.ConfigService.config.channel.log}`, `<@${member.user.id}> was updated with all their roles and nicknames after joining.`);
+            veriEnmap.get(`${member.user.id}`, "roles").forEach(function(choice) {
+              let role = guild.roles.find(r => r.name === `${choice}`);
+              guild.members.get(member.user.id).addRole(role);
+            });
+            let hsClass = guild.roles.find(r => r.name === `${veriEnmap.get(member.user.id, "class")}`);
             guild.members.get(member.user.id).addRole(hsClass);
             member.send(
-              `You have been sucessfully verified in the Discord server **${
-              guild.name
-              }**. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${
-              member.user.username
-              }\nEmail: ${veriEnmap.get(member.user.id, "email")}\`\`\``
+              `You have been sucessfully verified in the Discord server **${guild.name}**. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${member.user.username}\nEmail: ${veriEnmap.get(
+                member.user.id,
+                "email"
+              )}\`\`\``
             );
-            let newchannel = guild.channels.find(
-              ch => ch.name === `${client.ConfigService.config.channel.joinCh}`
-            );
-            newchannel.send(
-              `✅ **${member.user.username}** has been verified, welcome back!`
-            );
+            let newchannel = guild.channels.find(ch => ch.name === `${client.ConfigService.config.channel.joinCh}`);
+            newchannel.send(`✅ **${member.user.username}** has been verified, welcome back!`);
           }
         } else {
           //if they are not in the database (wonder how they got there) then run the following commands
-          if (member)
-            member.send(
-              `Welcome to **${guild.name}**, we require user verification, please fill out the Google form here: https://forms.gle/8YyJqV3Nnd7VJyYPA. Note that you will be kicked if you do not fill the form out.`
-            );
+          if (member) member.send(`Welcome to **${guild.name}**, we require user verification, please fill out the Google form here: https://forms.gle/8YyJqV3Nnd7VJyYPA. Note that you will be kicked if you do not fill the form out.`);
         }
       });
 
@@ -244,9 +201,7 @@ client.on("userUpdate", (oldUser, newUser) => {
       veriEnmap.defer.then(() => {
         let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
         let u = guild.members.get(newUser.id);
-        u.setNickname(
-          `${newUser.username} (${veriEnmap.get(`${newUser.id}`, "name")})`
-        );
+        u.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, "name")})`);
         const embed = {
           color: 16075062,
           timestamp: Date.now(),
@@ -314,19 +269,17 @@ client.on("message", message => {
   // }
 
   //links in general
-  let link = /(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/igm
+  let link = /(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gim;
   if (message.channel.id == "476921107778109442" && link.test(message.content) && !client.isMod(message.author, message, client, false)) {
-    message.delete(0)
+    message.delete(0);
     message.channel.send("No links allowed here! Please use <#498912077499334712>").then(m => {
       m.delete(4000);
-    })
+    });
   }
 
   // Nicknamer [p]iam command
   try {
-    if (
-      message.channel.name === `${client.ConfigService.config.channel.nickID}`
-    ) {
+    if (message.channel.name === `${client.ConfigService.config.channel.nickID}`) {
       if (message.content !== `${client.ConfigService.config.prefix}iam`) {
         message.delete(0);
       }
@@ -335,33 +288,18 @@ client.on("message", message => {
     console.error(err);
   }
 
-  // Checkmarks if the correct IP is typed in chat
-  if (`${client.ConfigService.config.minecraft.serverIP}` !== "") {
-    if (
-      message.content.includes(`${client.ConfigService.config.minecraft.IP}`) &&
-      !message.author.bot
-    ) {
-      message.react(`✅`);
-    }
-  }
   // Support Channel Code
   async function pMreact() {
     await message.react("⬆");
     await message.react("⬇");
   }
 
-  if (
-    message.channel.id == `${client.ConfigService.config.channel.supportID}` &&
-    !message.author.bot
-  ) {
+  if (message.channel.id == `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
     const tag = client.ConfigService.config.supportTags;
     let manager = message.guild.roles.find(r => r.name == "Community Manager");
     if (tag.some(word => message.content.startsWith(word))) {
       pMreact();
-    } else if (
-      client.isAdmin(message.author, message, false, client) ||
-      message.member.roles.has(manager.id)
-    ) {
+    } else if (client.isAdmin(message.author, message, false, client) || message.member.roles.has(manager.id)) {
       if (message.content.startsWith("check")) {
         let args = message.content.split(" ").slice(1);
         message.channel.fetchMessage(args[0]).then(msg => {
@@ -376,13 +314,7 @@ client.on("message", message => {
         message.delete(0);
         message.channel.fetchMessage(args[0]).then(msg => {
           msg.delete(0);
-          msg.author.send(
-            "Your suggestion `" +
-            msg.content +
-            "` was removed by an admin for: ```" +
-            reason +
-            "```"
-          );
+          msg.author.send("Your suggestion `" + msg.content + "` was removed by an admin for: ```" + reason + "```");
         });
       }
     } else {
@@ -407,8 +339,7 @@ client.on("message", message => {
       } else {
         try {
           let commandFile = require(`./commands/${command}.js`);
-          if (!commandFile.cmd.enabled)
-            return client.error("This command is disabled", message);
+          if (!commandFile.cmd.enabled) return client.error("This command is disabled", message);
           /*
           ==Levels==
           0 - @everyone
@@ -440,9 +371,7 @@ client.on("message", message => {
               }
               break;
             default:
-              client.error(
-                "There seems to be an error with permissions... This isn't good. Make sure your Admin, Mod and Owner fields have been inputted correctly.", message
-              );
+              client.error("There seems to be an error with permissions... This isn't good. Make sure your Admin, Mod and Owner fields have been inputted correctly.", message);
           }
         } catch (e) {
           console.error(e);
@@ -457,10 +386,7 @@ client.on("message", message => {
 
   //New Custom Command File System
   try {
-    if (
-      message.content.startsWith(client.ConfigService.config.prefix) &&
-      cc.has(command)
-    ) {
+    if (message.content.startsWith(client.ConfigService.config.prefix) && cc.has(command)) {
       cc.defer.then(() => {
         message.channel.send(cc.get(command));
       });

@@ -1,21 +1,17 @@
 exports.run = (client, dupe, sendMessage) => {
-  const fetch = require('node-fetch');
+  const fetch = require("node-fetch");
   // mc channel topic:
   async function topic() {
     try {
-      const response = await fetch(
-        `http://mcapi.us/server/status?ip=${client.ConfigService.config.minecraft.IP}&port=${client.ConfigService.config.minecraft.port}`
-      );
+      const response = await fetch(`http://mcapi.us/server/status?ip=${client.ConfigService.config.minecraft.IP}&port=${client.ConfigService.config.minecraft.port}`);
 
       const body = await response.json();
 
       if (body.online === false) {
         client.guilds.map(guild => {
-          let channel = guild.channels.find(
-            channel => channel.name === `${client.ConfigService.config.channel.mcBridge}`
-          );
+          let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.mcBridge}`);
           if (channel) {
-            channel.setTopic('Server Offline');
+            channel.setTopic("Server Offline");
           }
         });
       }
@@ -23,10 +19,8 @@ exports.run = (client, dupe, sendMessage) => {
         client.guilds.map(guild => {
           let channel = guild.channels.find(channel => channel.name === `mc-channel`);
           if (channel) {
-            channel.setTopic(
-              `${ConfigService.config.serverName} | ${body.server.name} | ${body.players.now}/${body.players.max} online`
-            );
-            client.console('MC --> Discord | Set topic!');
+            channel.setTopic(`${client.user.username} | ${body.server.name} | ${body.players.now}/${body.players.max} online`);
+            client.console("MC --> Discord | Set topic!");
           }
         });
       }

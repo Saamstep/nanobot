@@ -1,0 +1,105 @@
+{
+  "prefix": "!",
+  "token": "MzMwNTUxMjQ3NDUzMTU5NDI0.XUe7BA.XiGvGxHgyzCkXPLT8-P7ddJawXI",
+  "ownerid": "136637808063414272",
+  "joinMsg": "**USER** joined the server.",
+  "leaveMsg": "**USER** left the server",
+  "defaultGame": "Mode: Nano",
+  "debug": true,
+  "roles": {
+    "mod": "Developer",
+    "admin": "Developer",
+    "bot": "Bots that Work",
+    "iamRole": "VCHS"
+  },
+  "youtubeChannels": [
+    "UCa7jska-MUVvnD6s6c04gF9A",
+    "UCFAiFyGs6oDiF1Nf-rRJpZA"
+  ],
+  "nicknamer": {
+    "expression": "USER (NICK)"
+  },
+  "roleReact": {
+    "enabled": true,
+    "roles": [
+      "Cool People",
+      "Support"
+    ],
+    "emojis": [
+      "602641194803003425",
+      "602636374742401034"
+    ],
+    "message": "633377404911616048"
+  },
+  "loops": {
+    "mcTopic": false,
+    "owlLive": false,
+    "owlNews": false,
+    "twitch": false,
+    "ytNotifier": true,
+    "hsel": false
+  },
+  "services": {
+    "joinSys": false,
+    "mcToDiscord": false,
+    "twitchHook": true
+  },
+  "channel": {
+    "log": "logger",
+    "poll": "testing",
+    "joinCh": "general",
+    "mcBridge": "",
+    "supportID": "602631908450369567",
+    "nickID": "",
+    "twitch": "testing",
+    "owl": "testing",
+    "youtube": "testing"
+  },
+  "mail": {
+    "user": "discordbot.samstep",
+    "pass": "UhtNBDE7nWqMRKt"
+  },
+  "smp": {
+    "acceptMessage": "You were accepted! Congratulations!",
+    "website": "",
+    "denyImg": "http://images.all-free-download.com/images/graphicthumb/delicious_birthday_cake_creative_vector_577659.jpg"
+  },
+  "apis": {
+    "cat": "1b0424cf-10d9-46d5-ba45-73cf69af2c74",
+    "twitch": "zowaeelt5n1dxr2seu3a6ycym2lwav",
+    "youtube": "AIzaSyBxWe_KQs8t1tsajxRVTnITACCnXVVNYBY",
+    "toornament": "5DtvSIwpmK_cCJo1Ywj4qrB1zcleArwyQXiErGxzVHE"
+  },
+  "urls": [],
+  "supportTags": [
+    "[Game]",
+    "[General]",
+    "[Discord]",
+    "[Club]"
+  ],
+  "streamers": [
+    "vchs_esports",
+    "greencheezin",
+    "bk1031",
+    "nullpointer128",
+    "overwatchleague",
+    "b0baxp",
+    "rexerdouble",
+    "suiri",
+    "butteredthetoast",
+    "lightwhisp",
+    "maxx5",
+    "remon123",
+    "ppenguins",
+    "samstep",
+    "shioow",
+    "tg6s85",
+    "fennesse",
+    "rexerdouble",
+    "owpancake",
+    "aimbotcalvin",
+    "apple"
+  ],
+  "twitchMentionNotify": " ",
+  "guild": "602225388034457610"
+}

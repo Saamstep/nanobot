@@ -71,7 +71,16 @@ exports.run = (client, message, args, veriEnmap, cc) => {
 
     embed.fields = [];
 
-    function toCasters() {}
+    function toCasters() {
+      embed.description = `A match has been scheduled! `;
+      embed.fields.push({ name: `Type`, value: `${type}` });
+      embed.fields.push({ name: `Team`, value: `${team}` });
+      embed.fields.push({ name: `Time of event`, value: `${ts}` });
+      embed.fields.push({ name: `Sent By`, value: `@${message.author.username}` });
+      message.guild.channels.find(ch => ch.name == "casters").send("@Casters", { embed });
+    }
+
+    embed.fields = [];
 
     function toTeam(member) {
       embed.description = `You have an event coming up! Please make sure to be on time.`;
@@ -91,7 +100,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         }
       });
     });
-    // message.channel.send(ts);
+    if (type == "match") toCasters();
   }
   cmd();
 };
