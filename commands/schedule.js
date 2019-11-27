@@ -10,15 +10,18 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   let listOfTeams = "";
   let count = 1;
   if (!args[1] || !team) return client.error("```!schedule [team number] [type (scrim/match)]```", message);
+  //number the teams list
   listTeams.forEach(t => {
     listOfTeams += `[${count}] ${t}\n`;
     count++;
   });
+  //check if team is on list
   if (listTeams.indexOf(team) == -1) {
     return client.error(`Please select an active team! Use the number identifiers.\n\`\`\`${listOfTeams}\`\`\``, message);
   }
 
   async function cmd() {
+    //ask for day
     await message.channel.send(`Please input the day of the ${type} \`ex: ${now.getMonth() + 1}/${now.getDate()}\``);
     await message.channel
       .awaitMessages(response => response.author.id == message.author.id, {
@@ -32,7 +35,8 @@ exports.run = (client, message, args, veriEnmap, cc) => {
       .catch(() => {
         return client.error("There was no date inputed within the time limit!", message);
       });
-    await message.channel.send("Input the time (24 hour time ONLY) `ex: 17:00 `(5PM)");
+    //asks for time in 24hr format
+    await message.channel.send("Input the time (24 hour time ONLY) `ex: 17:00 (5PM)`");
     await message.channel
       .awaitMessages(response => response.author.id == message.author.id, {
         max: 1,
@@ -45,10 +49,12 @@ exports.run = (client, message, args, veriEnmap, cc) => {
       .catch(() => {
         return client.error("There was no time inputed within the time limit!", message);
       });
+    //convert to timestamp
     var d = `${day}/${year}/${time}`;
     let dArr = d.split("/");
-    // year, month, day, hours, minutes, seconds, miliseconds;
+    // NEW TIMESTAMP --> year, month, day, hours, minutes, seconds, miliseconds;
     let ts = new Date(`${dArr[2]}`, `${parseInt(dArr[0] - 1).toString()}`, `${dArr[1]}`, `${dArr[3].split(":")[0]}`, `${dArr[3].split(":")[1]}`, "00");
+    //timestamp 1hr before for reminder
     let ts1hr = new Date(`${dArr[2]}`, `${parseInt(dArr[0] - 1).toString()}`, `${dArr[1]}`, `${parseInt(dArr[3].split(":")[0] - 1).toString()}`, `${dArr[3].split(":")[1]}`, "00");
 
     const embed = {
@@ -63,6 +69,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
       color: 9712287,
       fields: []
     };
+
     embed.description = "Sucessfully created reminder";
     embed.fields.push({ name: `Type`, value: `${type}` });
     embed.fields.push({ name: `Team`, value: `${team}` });
@@ -72,7 +79,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
     embed.fields = [];
 
     function toCasters() {
-      embed.description = `A match has been scheduled! `;
+      embed.description = `A match has been scheduled!`;
       embed.fields.push({ name: `Type`, value: `${type}` });
       embed.fields.push({ name: `Team`, value: `${team}` });
       embed.fields.push({ name: `Time of event`, value: `${ts}` });
@@ -93,6 +100,15 @@ exports.run = (client, message, args, veriEnmap, cc) => {
     }
     embed.fields = [];
     schedule.scheduleJob(ts, function() {
+      message.guild.members.forEach(m => {
+        if (m.roles.has(message.guild.roles.find(r => r.name == `${team}`).id)) {
+          toTeam(m);
+        } else {
+          return;
+        }
+      });
+    });
+    schedule.scheduleJob(ts1hr, function() {
       message.guild.members.forEach(m => {
         if (m.roles.has(message.guild.roles.find(r => r.name == `${team}`).id)) {
           toTeam(m);

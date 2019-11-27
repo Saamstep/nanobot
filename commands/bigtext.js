@@ -1,26 +1,21 @@
 exports.run = (client, message, args) => {
   let components = args
-    .join(' ')
+    .join(" ")
     .toLowerCase()
-    .split('');
+    .split("");
   message.delete(0);
-  const emojiChars = require('../emojiCharacters');
-  // if (components.includes(' ')) {
-  //   let pos = components.indexOf(' ');
-  //   components[pos] = 'space';
-  // }
-  console.log(components);
-  let msg = '';
+  const emojiChars = require("../emojiCharacters");
+  let msg = "";
   for (i in components) {
     const letter = components[i];
-    msg += letter.replace(letter, `${emojiChars.text[letter] || ' '}`);
+    msg += letter.replace(letter, `${emojiChars.text[letter] || " "}`);
   }
   message.channel.send(msg);
 };
 
 exports.cmd = {
   enabled: true,
-  category: 'Fun',
+  category: "Fun",
   level: 0,
-  description: 'Make text bigger and better than before!'
+  description: "Make text bigger and better than before!"
 };

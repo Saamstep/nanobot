@@ -6,3 +6,4 @@ data
 html
 https
 toornament.json
+.env

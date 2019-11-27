@@ -1,18 +1,18 @@
-const errorMod = require('../modules/errorMod');
-const fetch = require('node-fetch');
+const errorMod = require("../modules/errorMod");
+const fetch = require("node-fetch");
 
 exports.run = async (client, message, args) => {
-  const cooldown = require('../index.js');
+  const cooldown = require("../index.js");
   async function cmd() {
-    const url = 'https://catfact.ninja/fact';
+    const url = "https://catfact.ninja/fact";
     message.channel.startTyping(1);
 
     try {
       const response = await fetch(url);
       const body = await response.json();
-      message.channel.send(':cat: | ' + body.fact);
+      message.channel.send(":cat: | " + body.fact);
     } catch (e) {
-      errorMod('Could not reach Cat Facts API', message);
+      errorMod("Could not reach Cat Facts API", message);
     }
 
     message.channel.stopTyping(true);
@@ -21,7 +21,7 @@ exports.run = async (client, message, args) => {
 };
 exports.cmd = {
   enabled: true,
-  category: 'Fun',
+  category: "Fun",
   level: 0,
-  description: 'Get a random cat fact.'
+  description: "Get a random cat fact."
 };

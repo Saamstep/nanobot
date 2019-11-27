@@ -8,9 +8,7 @@ const err = function(s) {
 };
 
 exports.run = async function(client, member, message) {
-  await console.log(
-    `+--------------------${`Nano Startup`.inverse}--------------------+`.yellow
-  );
+  await console.log(`+--------------------${`Nano Startup`.inverse}--------------------+`.yellow);
 
   // Check discord status
   try {
@@ -19,67 +17,40 @@ exports.run = async function(client, member, message) {
     const body = await response.json();
 
     if (!response.ok) {
-      err(
-        "DISCORD_STATUS_REQUEST. The Discord API gave us a baaad response..."
-      );
+      err("DISCORD_STATUS_REQUEST. The Discord API gave us a baaad response...");
     }
 
     if (body.status.description == "All Systems Operational") {
-      client.console(
-        "All systems operational!".blue.bold,
-        "info",
-        "Discord Status"
-      );
+      client.console("All systems operational!".blue.bold, "info", "Discord Status");
     } else {
-      client.console(
-        "There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/"
-          .red,
-        "warn",
-        "Ready"
-      );
+      client.console("There seems to be an error with some of the Discord Servers. Double check https://status.discordapp.com/".red, "warn", "Ready");
     }
   } catch (e) {
     err("DISCORD_STATUS_REQUEST. The Discord API gave us a baaad response...");
   }
   //Tell the console the bot is online!
-  await client.console(
-    ``.blue +
-      `${client.user.username}#${client.user.discriminator}`.bold.blue +
-      " bot online!".blue.reset,
-    "info",
-    "Bot"
-  );
+  await client.console(``.blue + `${client.user.username}#${client.user.discriminator}`.bold.blue + " bot online!".blue.reset, "info", "Bot");
 
   //list guilds connected to
-  await client.console(
-    "Connected to => ".blue +
-      client.guilds.map(g => g.name).join(", ").bold.blue,
-    "info",
-    "Guilds"
-  );
+  await client.console("Connected to => ".blue + client.guilds.map(g => g.name).join(", ").bold.blue, "info", "Guilds");
 
   //Load commands
   const cmds = await fs.readdirSync("./commands");
-  await client.console(
-    "Loaded ".green + cmds.length + " commands".green,
-    "info",
-    "Commands"
-  );
+  await client.console("Loaded ".green + cmds.length + " commands".green, "info", "Commands");
   //Load custom commands
-  await client.console(
-    "Loaded ".green + client.ccSize + " custom commands".green,
-    "info",
-    "Commands"
-  );
+  await client.console("Loaded ".green + client.ccSize + " custom commands".green, "info", "Commands");
   //set playing status
-  await client.user
-    .setPresence({
-      game: { name: `${client.ConfigService.config.defaultGame}`, type: 0 }
-    })
-    .catch(console.error);
-  await client.console(
-    `Presence set to ${client.ConfigService.config.defaultGame.underline}`.green
-  );
+  if (!client.ConfigService.config.loops.status) {
+    await client.user
+      .setPresence({
+        game: { name: `${client.ConfigService.config.defaultGame}`, type: 0 }
+      })
+      .catch(console.error);
+    await client.console(`Presence set to ${client.ConfigService.config.defaultGame.underline}`.green);
+  } else {
+    client.console(`Loop Presence set to ${client.ConfigService.config.status[0].underline}`.green);
+    require("../loops/status.js").run(client);
+  }
   //print to console if debug mode enabled
   if (client.ConfigService.config.debug == true) {
     client.console("Debug is enabled:\n".green);
