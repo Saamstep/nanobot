@@ -3,7 +3,7 @@ const client = new Discord.Client({ autoReconnect: true });
 const fs = require("fs");
 const fetch = require("node-fetch");
 const Enmap = require("enmap");
-require("./dashboard/index.js");
+// require("./dashboard/index.js");
 //modules init.
 client.Discord = require("discord.js");
 client.isAdmin = require("./modules/isAdmin.js");
