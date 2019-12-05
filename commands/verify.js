@@ -13,22 +13,25 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         let roleUser = message.guild.members.get(member.id);
         if (!args[1]) return;
         let roleName = args[2];
-        if (args[3]) roleName += args[3];
-        roleUser.addRole(message.guild.roles.find(r => r.name === `${roleName}`));
-        veriEnmap.push(`${member.id}`, `${roleName}`, "roles");
-        message.channel.send(`Updated ${member.user.username}.`);
-        client.log("Role Added to User", `${member} now has role \`${args[2]}\``, 2942691, message, client);
+        if (args[3]) roleName += " " + args[3];
+        roleUser.addRole(message.guild.roles.find(r => r.name === `${roleName}`)).then(out => {
+          veriEnmap.push(`${member.id}`, `${roleName}`, "roles");
+          message.channel.send(`Updated ${member.user.username}.\n+${roleName}`);
+          client.log("Role Added to User", `${member} now has role \`${roleName}\``, 2942691, message, client);
+        });
+
         break;
       case "removerole":
         let m2 = message.mentions.members.first();
         let r2 = message.guild.members.get(m2.id);
         if (!args[1]) return;
         let rName = args[2];
-        if (args[3]) rName += args[3];
-        r2.removeRole(message.guild.roles.find(r => r.name === `${rName}`));
-        veriEnmap.remove(`${m2.id}`, `${rName}`, "roles");
-        message.channel.send(`Updated ${m2.user.username}'s roles.`);
-        client.log("Role Removed from User", `${m2} now does not have role \`${args[2]}\``, 2942691, message, client);
+        if (args[3]) rName += " " + args[3];
+        r2.removeRole(message.guild.roles.find(r => r.name === `${rName}`)).then(o => {
+          veriEnmap.remove(`${m2.id}`, `${rName}`, "roles");
+          message.channel.send(`Updated ${m2.user.username}'s roles.\n-${rName}`);
+          client.log("Role Removed from User", `${m2} now does not have role \`${rName}\``, 2942691, message, client);
+        });
         break;
       case "updatename":
         let m = message.mentions.members.first();
