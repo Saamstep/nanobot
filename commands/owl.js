@@ -1,5 +1,5 @@
 exports.run = async (client, message, args) => {
-  const fetch = require('node-fetch');
+  const fetch = require("node-fetch");
   //OWL Team Logos
   function logos(output) {
     const emoji = client.emojis.find(emoji => emoji.name === `${output}`);
@@ -7,25 +7,22 @@ exports.run = async (client, message, args) => {
   }
 
   switch (args[0]) {
-    case 'ranking':
+    case "ranking":
       try {
-        const response = await fetch('https://api.overwatchleague.com/ranking');
+        const response = await fetch("https://api.overwatchleague.com/ranking");
         const body = await response.json();
-        let rank = '';
+        let rank = "";
         for (j in body.content) {
-          rank += `\`${parseInt(j) + 1}.\` ${logos(body.content[j].competitor.abbreviatedName)} ${
-            body.content[j].competitor.name
-          }\n`;
+          rank += `\`${parseInt(j) + 1}.\` ${logos(body.content[j].competitor.abbreviatedName)} ${body.content[j].competitor.name}\n`;
         }
         const embed = {
           color: 16752385,
           author: {
-            name: 'OverwatchLeague Ranking',
-            icon_url:
-              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+            name: "OverwatchLeague Ranking",
+            icon_url: "http://samstep.net/bots/assets/owl.png"
           },
           footer: {
-            text: 'Overall for entire League'
+            text: "Overall for entire League"
           },
           description: `${rank}`,
           timestamp: Date.now()
@@ -36,10 +33,10 @@ exports.run = async (client, message, args) => {
         client.error(e, message);
       }
       break;
-    case 'news':
+    case "news":
       try {
         //fetch news from official API
-        const response = await fetch('https://api.overwatchleague.com/news');
+        const response = await fetch("https://api.overwatchleague.com/news");
         const body = await response.json();
         const embed = {
           description: `**${body.blogs[0].title}**\n${body.blogs[0].summary}\n\n[Read more](${body.blogs[0].defaultUrl})`,
@@ -50,13 +47,12 @@ exports.run = async (client, message, args) => {
             text: `Author: ${body.blogs[0].author}`
           },
           image: {
-            url: `${body.blogs[0].thumbnail.url.replace('//', 'https://')}`
+            url: `${body.blogs[0].thumbnail.url.replace("//", "https://")}`
           },
           author: {
-            name: 'OverwatchLeague News',
+            name: "OverwatchLeague News",
             url: `${body.blogs[0].defaultUrl}`,
-            icon_url:
-              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+            icon_url: "http://samstep.net/bots/assets/owl.png"
           }
         };
         message.channel.send({ embed });
@@ -64,7 +60,7 @@ exports.run = async (client, message, args) => {
         client.error(e, message);
       }
       break;
-    case 'live':
+    case "live":
       function isEmpty(obj) {
         for (var key in obj) {
           if (obj.hasOwnProperty(key)) return false;
@@ -74,35 +70,30 @@ exports.run = async (client, message, args) => {
       //we use try incase the api doesn't exist and the bot crashes :P
       try {
         //fetch news from official API
-        const response = await fetch('https://api.overwatchleague.com/live-match');
+        const response = await fetch("https://api.overwatchleague.com/live-match");
         const body = await response.json();
         //it wasn't announced, so we annoucne it with this code
         // Finds channel and sends msg to channel
         if (isEmpty(body.data.liveMatch)) {
-          return client.error('No live match data.', message);
+          return client.error("No live match data.", message);
         } else {
           const embed = {
-            description: `${logos(body.data.liveMatch.competitors[0].abbreviatedName)} **${
-              body.data.liveMatch.competitors[0].name
-            }** vs ${logos(body.data.liveMatch.competitors[1].abbreviatedName)} **${
-              body.data.liveMatch.competitors[1].name
-            }**`,
+            description: `${logos(body.data.liveMatch.competitors[0].abbreviatedName)} **${body.data.liveMatch.competitors[0].name}** vs ${logos(body.data.liveMatch.competitors[1].abbreviatedName)} **${body.data.liveMatch.competitors[1].name}**`,
             url: `https://twitch.tv/overwatchleague`,
             color: 16752385,
             fields: [
               {
-                name: 'Date & Time',
+                name: "Date & Time",
                 value: `${new Date(body.data.liveMatch.startDate)}`
               },
               {
-                name: 'Score',
+                name: "Score",
                 value: `||${body.data.liveMatch.scores[0].value} - ${body.data.liveMatch.scores[1].value}||`
               }
             ],
             author: {
-              name: 'OverwatchLeague Live',
-              icon_url:
-                'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+              name: "OverwatchLeague Live",
+              icon_url: "http://samstep.net/bots/assets/owl.png"
             }
           };
           message.channel.send({ embed });
@@ -111,25 +102,22 @@ exports.run = async (client, message, args) => {
         console.error(e);
       }
       break;
-    case 'teams':
+    case "teams":
       try {
-        const response = await fetch('https://api.overwatchleague.com/teams');
+        const response = await fetch("https://api.overwatchleague.com/teams");
         const body = await response.json();
-        let teamList = '';
+        let teamList = "";
         for (j in body.competitors) {
-          teamList += `- ${logos(body.competitors[j].competitor.abbreviatedName)} ${
-            body.competitors[j].competitor.name
-          }\n`;
+          teamList += `- ${logos(body.competitors[j].competitor.abbreviatedName)} ${body.competitors[j].competitor.name}\n`;
         }
         const embed = {
           color: 16752385,
           author: {
-            name: 'OverwatchLeague Teams',
-            icon_url:
-              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+            name: "OverwatchLeague Teams",
+            icon_url: "http://samstep.net/bots/assets/owl.png"
           },
           footer: {
-            text: 'List of all current OWL teams.'
+            text: "List of all current OWL teams."
           },
           description: `${teamList}`,
           timestamp: Date.now()
@@ -139,46 +127,44 @@ exports.run = async (client, message, args) => {
         console.error(e);
       }
       break;
-    case 'team':
+    case "team":
       try {
-        const response = await fetch('https://api.overwatchleague.com/teams');
+        const response = await fetch("https://api.overwatchleague.com/teams");
         const body = await response.json();
         for (j in body.competitors) {
           if (body.competitors[j].competitor.name.includes(args[1])) {
-            let players = '';
+            let players = "";
             for (i in body.competitors[j].competitor.players) {
-              players += `\:flag_${body.competitors[j].competitor.players[i].player.nationality.toLowerCase()}: ${
-                body.competitors[j].competitor.players[i].player.name
-              }\n`;
+              players += `\:flag_${body.competitors[j].competitor.players[i].player.nationality.toLowerCase()}: ${body.competitors[j].competitor.players[i].player.name}\n`;
             }
-            let media = '';
+            let media = "";
             for (k in body.competitors[j].competitor.accounts) {
               media += `[${body.competitors[j].competitor.accounts[k].accountType}](${body.competitors[j].competitor.accounts[k].value})\n`;
             }
             const embed = {
-              url: 'https://discordapp.com',
+              url: "https://discordapp.com",
               color: parseInt(body.competitors[j].competitor.primaryColor, 16),
               footer: {
-                text: 'OverwatchLeague Team Search'
+                text: "OverwatchLeague Team Search"
               },
               thumbnail: {
                 url: `${body.competitors[j].competitor.logo}`
               },
               author: {
                 name: `${body.competitors[j].competitor.name}`,
-                icon_url: `https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png`
+                icon_url: `http://samstep.net/bots/assets/owl.png`
               },
               fields: [
                 {
-                  name: 'Home Location',
+                  name: "Home Location",
                   value: `${body.competitors[j].competitor.homeLocation}`
                 },
                 {
-                  name: 'Players',
+                  name: "Players",
                   value: `${players}`
                 },
                 {
-                  name: 'Social Media',
+                  name: "Social Media",
                   value: `${media}`
                 }
               ]
@@ -190,15 +176,15 @@ exports.run = async (client, message, args) => {
         console.error(e);
       }
       break;
-    case 'player':
-      const response = await fetch('https://api.overwatchleague.com/players');
+    case "player":
+      const response = await fetch("https://api.overwatchleague.com/players");
       const body = await response.json();
       function role(output) {
         const emoji = client.emojis.find(emoji => emoji.name === `${output}`);
         return emoji;
       }
       for (j in body.content) {
-        let media = '';
+        let media = "";
         for (k in body.content[j].accounts) {
           media += `[${body.content[j].accounts[k].accountType}](${body.content[j].accounts[k].value})\n`;
         }
@@ -207,7 +193,7 @@ exports.run = async (client, message, args) => {
           const embed = {
             color: parseInt(body.content[j].teams[0].team.primaryColor, 16),
             footer: {
-              text: 'OverwatchLeague Player Search'
+              text: "OverwatchLeague Player Search"
             },
             thumbnail: {
               url: `${body.content[j].headshot}`
@@ -219,22 +205,22 @@ exports.run = async (client, message, args) => {
             },
             fields: [
               {
-                name: 'Team',
+                name: "Team",
                 value: `${body.content[j].teams[0].team.name}`,
                 inline: true
               },
               {
-                name: 'Nationality',
+                name: "Nationality",
                 value: `:flag_${body.content[j].nationality.toLowerCase()}: ${body.content[j].attributes.hometown}`,
                 inline: true
               },
               {
                 name: `Heroes ${role(body.content[j].attributes.role)}`,
-                value: `${body.content[j].attributes.heroes.join('\n')}`,
+                value: `${body.content[j].attributes.heroes.join("\n")}`,
                 inline: true
               },
               {
-                name: 'Social Media',
+                name: "Social Media",
                 value: `${media}`
               }
             ]
@@ -243,25 +229,22 @@ exports.run = async (client, message, args) => {
         }
       }
       break;
-    case 'standings':
+    case "standings":
       try {
-        const res = await fetch('https://api.overwatchleague.com/standings');
+        const res = await fetch("https://api.overwatchleague.com/standings");
         const data = await res.json();
-        let standingsList = '';
+        let standingsList = "";
         for (j in data.stages[3].teams) {
-          standingsList += `\`${parseInt(j) + 1}.\` ${logos(data.stages[3].teams[j].abbreviatedName)} ${
-            data.stages[3].teams[j].name
-          }\n`;
+          standingsList += `\`${parseInt(j) + 1}.\` ${logos(data.stages[3].teams[j].abbreviatedName)} ${data.stages[3].teams[j].name}\n`;
         }
         const embed = {
           color: 16752385,
           author: {
-            name: 'OverwatchLeague Standings',
-            icon_url:
-              'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+            name: "OverwatchLeague Standings",
+            icon_url: "http://samstep.net/bots/assets/owl.png"
           },
           footer: {
-            text: 'Stage 3 Standings'
+            text: "Stage 3 Standings"
           },
           description: `${standingsList}`,
           timestamp: Date.now()
@@ -272,30 +255,25 @@ exports.run = async (client, message, args) => {
         console.error(e);
       }
       break;
-    case 'matches':
-      const owl_Matches = await fetch('https://api.overwatchleague.com/matches');
+    case "matches":
+      const owl_Matches = await fetch("https://api.overwatchleague.com/matches");
       const allMatches = await owl_Matches.json();
-      let matches = '';
+      let matches = "";
       for (j = 0; j < 5; j++ in allMatches.content) {
-        matches += `${logos(allMatches.content[j].competitors[0].abbreviatedName)} **${
-          allMatches.content[j].competitors[0].name
-        }** vs **${allMatches.content[j].competitors[1].name}** ${logos(
+        matches += `${logos(allMatches.content[j].competitors[0].abbreviatedName)} **${allMatches.content[j].competitors[0].name}** vs **${allMatches.content[j].competitors[1].name}** ${logos(
           allMatches.content[j].competitors[1].abbreviatedName
-        )}\n Score: ||**${allMatches.content[j].scores[0].value}** - **${
-          allMatches.content[j].scores[1].value
-        }**||\n\n`;
+        )}\n Score: ||**${allMatches.content[j].scores[0].value}** - **${allMatches.content[j].scores[1].value}**||\n\n`;
       }
       const embed = {
         description: `${matches}`,
         color: 16752385,
         author: {
-          name: 'OverwatchLeague Matches',
-          icon_url:
-            'https://static-cdn.jtvnw.net/jtv_user_pictures/8c55fdc6-9b84-4daf-a33b-cb318acbf994-profile_image-300x300.png'
+          name: "OverwatchLeague Matches",
+          icon_url: "http://samstep.net/bots/assets/owl.png"
         },
         timestamp: Date.now(),
         footer: {
-          text: '3 Recent Matches'
+          text: "3 Recent Matches"
         }
       };
       message.channel.send({ embed });
@@ -316,7 +294,7 @@ exports.run = async (client, message, args) => {
 };
 exports.cmd = {
   enabled: true,
-  category: 'Games',
+  category: "Games",
   level: 0,
-  description: 'OverwatchLeague information command'
+  description: "OverwatchLeague information command"
 };

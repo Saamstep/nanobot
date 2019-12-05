@@ -7,6 +7,7 @@ exports.run = (client, dupe, sendMessage) => {
       client.console("YouTube | Searching for new videos...");
       const api = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${client.ConfigService.config.apis.youtube}&channelId=${id}&part=snippet,id&order=date&maxResults=1`);
       const channel = await api.json();
+      if (channel.error) return client.console(channel.error.message, "warn", "ytNotifier");
       if (channel.items.length < 1) return;
       if (!dupe.has(channel.items[0].id.videoId)) {
         client.console("YouTube | Found channel video to announce!");
@@ -24,7 +25,7 @@ exports.run = (client, dupe, sendMessage) => {
           author: {
             name: `${channel.items[0].snippet.channelTitle} Uploaded`,
             url: `${youtubeURL}`,
-            icon_url: "https://seeklogo.com/images/Y/youtube-square-logo-3F9D037665-seeklogo.com.png"
+            icon_url: "http://samstep.net/bots/assets/yt.png"
           },
           fields: [
             {

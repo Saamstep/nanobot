@@ -1,27 +1,25 @@
 exports.run = async (client, message, args) => {
   // ---Variables---
-  const fetch = require('node-fetch');
+  const fetch = require("node-fetch");
 
-  let errorMsg = 'There was an error contacting the API or your BattleTag is invalid.';
+  let errorMsg = "There was an error contacting the API or your BattleTag is invalid.";
 
   //Delete command call message
   message.delete(0);
   //Check if there is an actual battletag there!
   if (!args[0]) {
-    return message.reply('Provide a battle tag please!');
+    return message.reply("Provide a battle tag please!");
   }
   //Check if we are searching for a battletag, or looking up stats. Battle tag is listed down here (rather han up with --Variables--) b/c it will interfere with the args[0] check!
-  let battletag = args[0].replace('#', '-');
-  if (!battletag.includes('-')) {
+  let battletag = args[0].replace("#", "-");
+  if (!battletag.includes("-")) {
     try {
       const response = await fetch(`https://owjs.ovh/search/${args[0]}`);
       const body = await response.json();
-      let searchResults = ' ';
+      let searchResults = " ";
       //Put all the users found in a big variable then send it
       for (let j in body) {
-        searchResults += `__**${body[j].name}**__\n${body[
-          j
-        ].platform.toUpperCase()}\n<https://www.overbuff.com/players/${body[j].platform}/${body[j].urlName}>\n`;
+        searchResults += `__**${body[j].name}**__\n${body[j].platform.toUpperCase()}\n<https://www.overbuff.com/players/${body[j].platform}/${body[j].urlName}>\n`;
       }
       message.channel.send(searchResults);
     } catch (e) {
@@ -38,38 +36,38 @@ exports.run = async (client, message, args) => {
       const stats = await request.json();
       //Check for private profile before doing anything else!
       if (stats.message) {
-        return message.channel.send(':no_entry_sign: | ' + stats.message);
+        return message.channel.send(":no_entry_sign: | " + stats.message);
       }
       if (stats.private === true) {
         // Here's the message format for the stats
         const embed = {
-          description: '[OverBuff](https://overbuff.com/players/pc/' + battletag + ')',
-          url: 'https://overbuff.com/players/pc/' + battletag,
+          description: "[OverBuff](https://overbuff.com/players/pc/" + battletag + ")",
+          url: "https://overbuff.com/players/pc/" + battletag,
           color: 16617745,
           footer: {
-            icon_url: 'https://github.com/s32x/ovrstat/raw/master/static/assets/logo.png',
-            text: 'OvrStat'
+            icon_url: "http://samstep.net/bots/assets/ovrstat.png",
+            text: "OvrStat"
           },
           thumbnail: {
             url: stats.endorsementIcon
           },
           author: {
             name: stats.name + "'s stats",
-            url: 'https://overbuff.com/players/pc/' + battletag,
+            url: "https://overbuff.com/players/pc/" + battletag,
             icon_url: stats.icon
           },
           fields: [
             {
-              name: 'Name',
+              name: "Name",
               value: stats.name
             },
             {
-              name: 'Level',
+              name: "Level",
               value: stats.level + stats.prestige * 100
             },
             {
-              name: 'Most Recent Rank',
-              value: '[Click Here](https://overbuff.com/search?q=' + battletag + ')'
+              name: "Most Recent Rank",
+              value: "[Click Here](https://overbuff.com/search?q=" + battletag + ")"
             }
           ]
         };
@@ -80,44 +78,44 @@ exports.run = async (client, message, args) => {
         //If the profile is public, we do this.
         //Here is the code to get the played heros in comp.
         let topHeroes = stats.competitiveStats.topHeroes;
-        let pTime = '';
+        let pTime = "";
         for (var property in topHeroes) {
-          pTime += property + '> ' + topHeroes[property].timePlayed + '\n';
+          pTime += property + "> " + topHeroes[property].timePlayed + "\n";
         }
         // console.log(pTime);
 
         // Here's the message format for the stats
         const embed = {
-          description: '[OverBuff](https://overbuff.com/players/pc/' + battletag + ')',
-          url: 'https://overbuff.com/players/pc/' + battletag,
+          description: "[OverBuff](https://overbuff.com/players/pc/" + battletag + ")",
+          url: "https://overbuff.com/players/pc/" + battletag,
           color: 16617745,
           footer: {
-            icon_url: 'https://github.com/s32x/ovrstat/raw/master/static/assets/logo.png',
-            text: 'OvrStat'
+            icon_url: "http://samstep.net/bots/assets/ovrstat.png",
+            text: "OvrStat"
           },
           thumbnail: {
             url: stats.ratingIcon
           },
           author: {
             name: stats.name + "'s stats",
-            url: 'https://overbuff.com/players/pc/' + battletag,
+            url: "https://overbuff.com/players/pc/" + battletag,
             icon_url: stats.icon
           },
           fields: [
             {
-              name: 'Name',
+              name: "Name",
               value: stats.name
             },
             {
-              name: 'Level',
+              name: "Level",
               value: stats.level + stats.prestige * 100
             },
             {
-              name: 'Rank',
+              name: "Rank",
               value: stats.rating
             },
             {
-              name: 'Playtime',
+              name: "Playtime",
               value: pTime
             }
           ]
@@ -135,7 +133,7 @@ exports.run = async (client, message, args) => {
 };
 exports.cmd = {
   enabled: true,
-  category: 'Games',
+  category: "Games",
   level: 0,
-  description: 'New Overwatch command with a better API and improved formatting.'
+  description: "New Overwatch command with a better API and improved formatting."
 };

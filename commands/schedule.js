@@ -1,27 +1,30 @@
 exports.run = (client, message, args, veriEnmap, cc) => {
   //INIT VARS
   const schedule = require("node-schedule");
-  const listTeams = ["OW Team Blue", "OW Team White", "RL Team Blue", "RL Team White", "LoL Team", "Fortnite Players", "Madden Players", "SSB Ultimate Players", "Minecraft Hunger Games"];
+  let listTeams = require("../toornament.json").teamRoles;
   let now = new Date();
   let year = now.getFullYear();
   let team = `${listTeams[args[0] - 1]}`;
-  let type = args[1].toUpperCase();
+  let type = args[1];
   let day = "";
   let time = "";
   let listOfTeams = "";
   let count = 1;
-  //error check for args
-  if (!args[1] || !team || !args[2]) return client.error("```!schedule [team number] [type (scrim/match)] [description]```", message);
 
-  let desc = args
-    .join(" ")
-    .substring(parseInt(args[0].length + args[1].length + 1), args.join(" ").length)
-    .trim();
   //number the teams list
   listTeams.forEach(t => {
     listOfTeams += `[${count}] ${t}\n`;
     count++;
   });
+
+  //error check for args
+  if (!args[1] || !team || !args[2]) return client.error(`\`\`\`!schedule [team number] [type (scrim/match)] [description]\n--[Team #]--\n${listOfTeams}\`\`\``, message);
+
+  let desc = args
+    .join(" ")
+    .substring(parseInt(args[0].length + args[1].length + 1), args.join(" ").length)
+    .trim();
+
   //check if team is on list
   if (listTeams.indexOf(team) == -1) {
     return client.error(`Please select an active team! Use the number identifiers.\n\`\`\`${listOfTeams}\`\`\``, message);
@@ -240,9 +243,6 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         }
       });
     });
-
-    console.log(ts);
-    console.log(ts1hr);
 
     //schedule 1hour before event
     // schedule.scheduleJob(ts1hr, function() {

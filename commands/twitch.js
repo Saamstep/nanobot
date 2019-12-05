@@ -1,12 +1,12 @@
 exports.run = async (client, message, args, veriEnmap, cc) => {
   async function cmd() {
-    const fetch = require('node-fetch');
-    const date = require('dateformat');
+    const fetch = require("node-fetch");
+    const date = require("dateformat");
     async function getUser(name) {
       let url = `https://api.twitch.tv/helix/users?login=${name}`;
       const req = await fetch(url, {
         headers: {
-          'Client-ID': `${client.ConfigService.config.apis.twitch}`
+          "Client-ID": `${client.ConfigService.config.apis.twitch}`
         }
       });
       const userData = await req.json();
@@ -15,7 +15,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
     async function isLive(name) {
       const request = await fetch(`https://api.twitch.tv/helix/streams?user_login=${name}`, {
         headers: {
-          'Client-ID': `${client.ConfigService.config.apis.twitch}`
+          "Client-ID": `${client.ConfigService.config.apis.twitch}`
         }
       });
       const streamData = await request.json();
@@ -24,28 +24,28 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
     async function getGame(game) {
       const re = await fetch(`https://api.twitch.tv/helix/games?id=${game}`, {
         headers: {
-          'Client-ID': `${client.ConfigService.config.apis.twitch}`
+          "Client-ID": `${client.ConfigService.config.apis.twitch}`
         }
       });
       const ga = await re.json();
       return await ga;
     }
     switch (args[0]) {
-      case 'add':
-        if (!args[1]) return client.error('Please specify a streamer to add!', message);
+      case "add":
+        if (!args[1]) return client.error("Please specify a streamer to add!", message);
         const userReq = await getUser(args[1]);
-        if (userReq.data[0].length < 1) return client.error('That streamer does not exist!', message);
-        const addStreamer = await fetch('https://api.twitch.tv/helix/webhooks/hub', {
-          method: 'POST',
+        if (userReq.data[0].length < 1) return client.error("That streamer does not exist!", message);
+        const addStreamer = await fetch("https://api.twitch.tv/helix/webhooks/hub", {
+          method: "POST",
           headers: {
-            'Client-ID': `${client.ConfigService.config.apis.twitch}`,
-            'Content-Type': 'application/json'
+            "Client-ID": `${client.ConfigService.config.apis.twitch}`,
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            'hub.callback': 'http://mywb.vcs.net:9696',
-            'hub.mode': 'subscribe',
-            'hub.topic': 'https://api.twitch.tv/helix/streams?user_id=' + userReq.data[0].id,
-            'hub.lease_seconds': 864000
+            "hub.callback": "http://mywb.vcs.net:9696",
+            "hub.mode": "subscribe",
+            "hub.topic": "https://api.twitch.tv/helix/streams?user_id=" + userReq.data[0].id,
+            "hub.lease_seconds": 864000
           })
         }).then(val => {
           // console.log(val);
@@ -53,20 +53,20 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         // const cb = await addStreamer.text();
 
         break;
-      case 'remove':
+      case "remove":
         break;
-      case 'list':
+      case "list":
         break;
-      case 'game':
-        if (!args[1]) return client.error('Provite a valid game ID!', message);
+      case "game":
+        if (!args[1]) return client.error("Provite a valid game ID!", message);
         let g = await getGame(args[1]);
-        if (g.data[0].length < 1) return client.error('That game ID does not exist!', message);
+        if (g.data[0].length < 1) return client.error("That game ID does not exist!", message);
         message.channel.send(`${g.data[0].name}`);
         break;
-      case 'user':
-        if (!args[1]) return client.error('You must provide a Twitch username!', message);
+      case "user":
+        if (!args[1]) return client.error("You must provide a Twitch username!", message);
         let user = await getUser(`${args[1]}`);
-        if (user.data[0].length < 1) return client.error('That streamer does not exist!', message);
+        if (user.data[0].length < 1) return client.error("That streamer does not exist!", message);
         embed = {
           title: `${user.data[0].display_name} on Twitch`,
           // description: `${user.data[0].title}`,
@@ -74,22 +74,22 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
           color: 9442302,
           footer: {
             icon_url: client.user.avatarURL,
-            text: client.user.username + ' - Twitch'
+            text: client.user.username + " - Twitch"
           },
           fields: [
             {
-              name: 'Type',
-              value: `${user.data[0].broadcaster_type.toUpperCase() || 'N/A'}`,
+              name: "Type",
+              value: `${user.data[0].broadcaster_type.toUpperCase() || "N/A"}`,
               inline: true
             },
             {
-              name: 'Views',
-              value: `${user.data[0].view_count || '0'}`,
+              name: "Views",
+              value: `${user.data[0].view_count || "0"}`,
               inline: true
             },
             {
-              name: 'Description',
-              value: `${user.data[0].description || 'No description set.'}`,
+              name: "Description",
+              value: `${user.data[0].description || "No description set."}`,
               inline: false
             }
           ],
@@ -102,10 +102,10 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         };
         message.channel.send({ embed });
         break;
-      case 'live':
-        if (!args[1]) return client.error('You must provide a Twitch username!', message);
+      case "live":
+        if (!args[1]) return client.error("You must provide a Twitch username!", message);
         let response = await isLive(args[1]);
-        if (response.data < 1) return message.channel.send('That streamer is not live!');
+        if (response.data < 1) return message.channel.send("That streamer is not live!");
         else {
           const embed = {
             title: `${response.data[0].user_name} is live on Twitch!`,
@@ -114,44 +114,39 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
             color: 9442302,
             footer: {
               icon_url: client.user.avatarURL,
-              text: client.user.username + ' - Twitch'
+              text: client.user.username + " - Twitch"
             },
             fields: [
               {
-                name: 'Viewers',
+                name: "Viewers",
                 value: `${response.data[0].viewer_count}`,
                 inline: true
               },
               {
-                name: 'Started on',
-                value: `${date(response.data[0].started_at, 'm/d/yy @ hh:MM TT')}`,
+                name: "Started on",
+                value: `${date(response.data[0].started_at, "m/d/yy @ hh:MM TT")}`,
                 inline: true
               }
             ],
             image: {
-              url: `${response.data[0].thumbnail_url.replace(`{width}`, '1920').replace(`{height}`, '1080')}`
+              url: `${response.data[0].thumbnail_url.replace(`{width}`, "1920").replace(`{height}`, "1080")}`
             }
           };
           message.channel.send({ embed });
         }
         break;
-      case 'clip':
-        if (!args[1] || !args[1].includes('https://clips.twitch.tv'))
-          return client.error(
-            'Please provide a valid Twitch clip URL!\n`   Ex: https://clips.twitch.tv/CovertBlazingNigiriSoBayed`',
-            message
-          );
+      case "clip":
+        if (!args[1] || !args[1].includes("https://clips.twitch.tv")) return client.error("Please provide a valid Twitch clip URL!\n`   Ex: https://clips.twitch.tv/CovertBlazingNigiriSoBayed`", message);
         //https://clips.twitch.tv/AwkwardHelplessSalamanderSwiftRage
         let id = args[1].slice(24);
 
-        const clipRequest = await fetch('https://api.twitch.tv/helix/clips?id=' + id, {
+        const clipRequest = await fetch("https://api.twitch.tv/helix/clips?id=" + id, {
           headers: {
-            'Client-ID': client.ConfigService.config.apis.twitch
+            "Client-ID": client.ConfigService.config.apis.twitch
           }
         });
         const clip = await clipRequest.json();
-        if (clip.data < 1 || clip.data == undefined)
-          return client.error(clip.message + ' \n`Ex: https://clips.twitch.tv/CovertBlazingNigiriSoBayed`', message);
+        if (clip.data < 1 || clip.data == undefined) return client.error(clip.message + " \n`Ex: https://clips.twitch.tv/CovertBlazingNigiriSoBayed`", message);
 
         // let name = clip.data[0].title;
         // let creator = clip.data[0].creator_name;
@@ -162,8 +157,8 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         const embed = {
           description: `[[Click to Download]](${fileURL})`,
           author: {
-            name: clip.data[0].title + ' - ' + clip.data[0].broadcaster_name,
-            icon_url: 'https://carlisletheacarlisletheatre.org/images/fortnite-background-clipart-logo-7.jpg'
+            name: clip.data[0].title + " - " + clip.data[0].broadcaster_name,
+            icon_url: "http://samstep.net/bots/assets/twitch.jpg"
           },
           image: {
             url: clip.data[0].thumbnail_url
@@ -171,17 +166,17 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         };
         message.channel.send({ embed });
       default:
-        if (!args[0]) return client.error('twitch add|remove|list|live|clip [user|clip URL (if applicable)]', message);
+        if (!args[0]) return client.error("twitch add|remove|list|live|clip [user|clip URL (if applicable)]", message);
         break;
     }
   }
-  const cooldown = require('../index.js');
+  const cooldown = require("../index.js");
   cooldown(message, cmd);
 };
 
 exports.cmd = {
   enabled: true,
-  category: 'Games',
+  category: "Games",
   level: 3,
-  description: 'Manage Twitch notifiactions'
+  description: "Manage Twitch notifiactions"
 };
