@@ -232,7 +232,13 @@ exports.run = (client, message, args, veriEnmap, cc) => {
 
     //after command finished
     teamAnnounce();
-
+    message.guild.members.forEach(m => {
+      if (m.roles.has(message.guild.roles.find(r => r.name == `${team}`).id)) {
+        toTeam(m);
+      } else {
+        return;
+      }
+    });
     //scheduled for at time of event
     schedule.scheduleJob(ts, function() {
       message.guild.members.forEach(m => {
@@ -245,15 +251,15 @@ exports.run = (client, message, args, veriEnmap, cc) => {
     });
 
     //schedule 1hour before event
-    // schedule.scheduleJob(ts1hr, function() {
-    //   message.guild.members.forEach(m => {
-    //     if (m.roles.has(message.guild.roles.find(r => r.name == `${team}`).id)) {
-    //       toTeam(m);
-    //     } else {
-    //       return;
-    //     }
-    //   });
-    // });
+    schedule.scheduleJob(ts1hr, function() {
+      message.guild.members.forEach(m => {
+        if (m.roles.has(message.guild.roles.find(r => r.name == `${team}`).id)) {
+          toTeam(m);
+        } else {
+          return;
+        }
+      });
+    });
     if (type == "match") toCasters();
   }
   if (args[1] == "scrim" || args[1] == "match") {

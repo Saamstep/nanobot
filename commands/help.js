@@ -12,7 +12,7 @@ exports.run = (client, message, args) => {
     };
 
     let commands = fs.readdirSync("./commands/");
-    message.channel.startTyping();
+    message.react("👍");
     // files.forEach(file => {
     let mod = false;
     let ad = false;
@@ -23,6 +23,7 @@ exports.run = (client, message, args) => {
       //command name
       let name = file.split(".")[0];
       let data = require(`../commands/${file}`).cmd;
+      if (!data) return client.console(`No cmd object for ${file}`, "error", "help command");
       //description
       let val = data.enabled ? data.description : "*" + data.description;
       let template = `> ${client.ConfigService.config.prefix}${name}\n‣\`${val}\`\n`;
@@ -73,7 +74,7 @@ exports.run = (client, message, args) => {
       // setTimeoutmessage.channel.send(arrays[arr]);
     });
     message.react("✅");
-    message.channel.stopTyping();
+    // message.channel.stopTyping();
   }
   const cooldown = require("../index.js");
   cooldown(message, cmd);

@@ -36,6 +36,7 @@ exports.run = async function(client, member, message) {
 
   //Load commands
   const cmds = await fs.readdirSync("./commands");
+
   await client.console("Loaded ".green + cmds.length + " commands".green, "info", "Commands");
   //Load custom commands
   await client.console("Loaded ".green + client.ccSize + " custom commands".green, "info", "Commands");

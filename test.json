@@ -5,6 +5,11 @@
     "joinMsg": "**USER** joined the server.",
     "leaveMsg": "**USER** left the server",
     "defaultGame": "Mode: Nano",
+    "status": [
+        "Mode: Nano",
+        "DevBot",
+        "samstep.net/bots"
+    ],
     "supportTags": [
         "[Game]",
         "[General]",
@@ -67,7 +72,8 @@
         "owlNews": false,
         "twitch": false,
         "ytNotifier": true,
-        "hsel": false
+        "hsel": false,
+        "status": false
     },
     "services": {
         "joinSys": false,
@@ -99,6 +105,5 @@
         "acceptMessage": "You were accepted! Congratulations!",
         "website": "",
         "denyImg": "http://images.all-free-download.com/images/graphicthumb/delicious_birthday_cake_creative_vector_577659.jpg"
-    },
-    "roles.mod": "gamer"
+    }
 }

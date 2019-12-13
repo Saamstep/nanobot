@@ -25,21 +25,37 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
       //dot prop
       if (args[1].includes(".")) {
         let copy = args[1].split(".");
-        if(copy.length == 2) {
-        if (data[`${copy[0]}`][`${copy[1]}`] == undefined) return client.error(`The property \`${args[1]}\` does not exist!`, message);
-        if(Array.isArray(data[`${copy[0]}`][`${copy[1]}`]))
-        data[`${copy[0]}`][`${copy[1]}`] = args[2];
+        if (copy.length == 2) {
+          if (data[`${copy[0]}`][`${copy[1]}`] == undefined) return client.error(`The property \`${args[1]}\` does not exist!`, message);
+          if (Array.isArray(data[`${copy[0]}`][`${copy[1]}`])) {
+            data[`${copy[0]}`][`${copy[1]}`] = args[2];
+          } else if (typeof data[`${copy[0]}`][`${copy[1]}`] === "boolean") {
+            out = true;
+            if (args[2] == "false") out = false;
+            data[`${copy[0]}`][`${copy[1]}`] = out;
+          } else {
+            data[`${copy[0]}`][`${copy[1]}`] = args[2];
+          }
         }
         //TODO integrate double dot accessor
         push(data);
       } else {
         //array prop
-        if (Array.isArray(data[args[1]])) return console.log("hi") {
-
+        if (Array.isArray(data[args[1]])) {
+          if (args[2].includes("-")) {
+            data[args[1]].splice(data[args[1]].indexOf(args[2].substring(1, args[2].length)), 1);
+            push(data);
+            return message.channel.send(`Removed property from: \`${args[1]}\`:  \`${args[2]}\``);
+          } else {
+            data[args[1]].push(args[2]);
+            push(data);
+            return message.channel.send(`Added property to \`${args[1]}\`: \`${args[2]}\``);
+          }
+        } else {
+          //normal prop
+          data[args[1]] = args[2];
+          push(data);
         }
-        //normal prop
-        data[args[1]] = args[2];
-        push(data);
       }
 
       //array
@@ -47,7 +63,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
       message.channel.send(`Updated property \`${args[1]}\` to \`${args[2]}\``);
       break;
     default:
-      let msg = `${client.user.username} Settings | Change these config properties (except owner ID lol)\n-------\n<General>\n`;
+      let msg = `${client.user.username} Settings | Change these config properties (except owner ID lol)\nExample: ${client.ConfigService.config.prefix}settings edit <dot.notation> [newValue] (General does not require dot notation)\n---------------\n<General>\n`;
       for (i in data) {
         if (i == "apis" || i == "token" || i == "mail") continue;
         if (Object.prototype.toString.call(data[i]) === "[object Object]") {

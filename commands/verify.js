@@ -19,7 +19,6 @@ exports.run = (client, message, args, veriEnmap, cc) => {
           message.channel.send(`Updated ${member.user.username}.\n+${roleName}`);
           client.log("Role Added to User", `${member} now has role \`${roleName}\``, 2942691, message, client);
         });
-
         break;
       case "removerole":
         let m2 = message.mentions.members.first();
