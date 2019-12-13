@@ -11,7 +11,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
     }
   }
   function push(out) {
-    fs.writeFileSync("./test.json", JSON.stringify(out, null, 4));
+    fs.writeFileSync("./config.json", JSON.stringify(out, null, 4));
   }
 
   switch (args[0]) {

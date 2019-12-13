@@ -125,6 +125,7 @@ client.on("raw", async event => {
 
 client.on("messageReactionAdd", (reaction, user) => {
   if (user.bot) return;
+  if (client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id) == -1) return;
   let roleName = client.ConfigService.config.roleReact.roles[client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)];
   let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
   let member = reaction.message.guild.members.find(m => m.id == user.id);
@@ -135,6 +136,7 @@ client.on("messageReactionAdd", (reaction, user) => {
 
 client.on("messageReactionRemove", (reaction, user) => {
   if (user.bot) return;
+  if (client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id) == -1) return;
   let roleName = client.ConfigService.config.roleReact.roles[client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)];
   let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
   let member = reaction.message.guild.members.find(m => m.id == user.id);

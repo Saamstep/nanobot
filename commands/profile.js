@@ -11,12 +11,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   var teams = [];
   var data;
 
-  let allTeams = [
-    "OW Team Blue",
-    "OW Team White",
-    "RL Team Blue",
-    "RL Team White"
-  ];
+  let allTeams = ["OW Team Blue", "OW Team White", "RL Team Blue", "RL Team White"];
   console.log(veriEnmap.get(user.id, "profile"));
   // change settings args handler
   switch (args[0]) {
@@ -42,53 +37,23 @@ exports.run = (client, message, args, veriEnmap, cc) => {
               //make sure its a good social site
               if (socials.indexOf(args[2]) > -1) {
                 //social url checker
-                if (
-                  !args[3].includes(
-                    socials[socials.indexOf(args[2])].toLowerCase()
-                  ) ||
-                  !args[3].includes("https")
-                )
-                  return client.error(
-                    "That doesn't look right! Make sure its a well formatted URL",
-                    message
-                  );
+                if (!args[3].includes(socials[socials.indexOf(args[2])].toLowerCase()) || !args[3].includes("https")) return client.error("That doesn't look right! Make sure its a well formatted URL", message);
                 //push final result
                 if (veriEnmap.has(user.id, "profile.socials")) {
-                  veriEnmap.push(
-                    user.id,
-                    `[${socials.indexOf(args[2])}](${args[3]})`,
-                    "profile.socials"
-                  );
+                  veriEnmap.push(user.id, `[${socials.indexOf(args[2])}](${args[3]})`, "profile.socials");
                 } else {
-                  veriEnmap.set(
-                    user.id,
-                    [`[${socials[socials.indexOf(args[2])]}](${args[3]})`],
-                    "profile.socials"
-                  );
+                  veriEnmap.set(user.id, [`[${socials[socials.indexOf(args[2])]}](${args[3]})`], "profile.socials");
                 }
               }
               break;
             case "remove":
-              if (!args[4])
-                return client.error(
-                  "Specify an index to remove! (Ex: to remove the first social link use the number 1"
-                );
-              veriEnmap.remove(
-                user.id,
-                `${veriEnmap.get(user.id, "profile.socials")[args[4]]}`,
-                "profile.socials"
-              );
+              if (!args[4]) return client.error("Specify an index to remove! (Ex: to remove the first social link use the number 1");
+              veriEnmap.remove(user.id, `${veriEnmap.get(user.id, "profile.socials")[args[4]]}`, "profile.socials");
               break;
             default:
-              message.channel.send(
-                `Socials List:\n\`\`\`${veriEnmap
-                  .get(user.id, "profile.socials")
-                  .join("\n") || defaultProfile.socials}\`\`\``
-              );
+              message.channel.send(`Socials List:\n\`\`\`${veriEnmap.get(user.id, "profile.socials").join("\n") || defaultProfile.socials}\`\`\``);
           }
-          message.channel.send(
-            `Added ${socials[socials.indexOf(args[2])]} to list of socials.`
-          );
+          message.channel.send(`Added ${socials[socials.indexOf(args[2])]} to list of socials.`);
           break;
         default:
           message.channel.send("That property does not exist!");
@@ -100,10 +65,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         if (veriEnmap.has(user.id)) {
           data = veriEnmap.ensure(user.id, defaultProfile, "profile");
         } else {
-          client.error(
-            "That user is not verified, please fill out the Discord verification form.",
-            message
-          );
+          client.error("That user is not verified, please fill out the Discord verification form.", message);
         }
         user.roles.forEach(r => {
           if (allTeams.indexOf(r.name) > -1) {
@@ -155,7 +117,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   }
 };
 exports.cmd = {
-  enabled: true,
+  enabled: false,
   category: "Fun",
   level: 0,
   description: "Create/view your profile"
