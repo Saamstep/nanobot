@@ -96,13 +96,13 @@ exports.run = (client, message, args) => {
   if (ad) out += `\nAdmin: 🔒`;
   if (mod) out += `\nModeration: 🛡️`;
   message.author.send(out).then(async msg => {
-    if (ad) await msg.react("🔒");
-    if (mod) await msg.react("🛡️");
     await msg.react("🚀");
     await msg.react("🔗");
     await msg.react("⛏️");
     await msg.react("🎲");
     await msg.react("🖱️");
+    if (ad) await msg.react("🔒");
+    if (mod) await msg.react("🛡️");
     function toUpdate() {
       const filter = (reaction, user) => user.id === message.author.id;
       msg

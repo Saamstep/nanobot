@@ -1,6 +1,6 @@
 {
   "name": "nanobot",
-  "version": "3.5.4",
+  "version": "3.6.5",
   "description": "Nano like bot, large possibilities.",
   "main": "index.js",
   "scripts": {

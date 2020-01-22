@@ -2,6 +2,7 @@ const Discord = require("discord.js");
 const client = new Discord.Client({ autoReconnect: true });
 const fs = require("fs");
 const fetch = require("node-fetch");
+const schedule = require("node-schedule");
 const Enmap = require("enmap");
 // require("./dashboard/index.js");
 //modules init.
@@ -73,6 +74,14 @@ client.on("ready", ready => {
         client.console(`${eventName}: Disabled`.cyan.dim, "info", "Services");
       }
     });
+  });
+
+  schedule.scheduleJob("0 */12 * * *", function() {
+    let guild = client.guilds.get(client.ConfigService.config.guild);
+    let noRoleMembers = guild.members.filter(member => !member.roles.has(guild.roles.find(r => r.name == `${client.ConfigService.config.roles.iamRole}`).id));
+    noRoleMembers.forEach(member =>
+      member.send("**VCHS Esports Discord** Please verify yourself! Verification allows you to get access to all channels within our Discord server and interact with the community!\nhttps://forms.gle/8YyJqV3Nnd7VJyYPA")
+    );
   });
 });
 

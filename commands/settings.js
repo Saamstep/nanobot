@@ -61,6 +61,25 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
       //array
       // if()
       message.channel.send(`Updated property \`${args[1]}\` to \`${args[2]}\``);
+      var spawn = require("child_process").spawn;
+
+      (function main() {
+        if (process.env.process_restarting) {
+          delete process.env.process_restarting;
+          // Give old process one second to shut down before continuing ...
+          setTimeout(main, 1000);
+          return;
+        }
+
+        // ...
+
+        // Restart process ...
+
+        spawn(process.argv[0], process.argv.slice(1), {
+          env: { process_restarting: 1 },
+          stdio: "ignore"
+        }).unref();
+      })();
       break;
     default:
       let msg = `${client.user.username} Settings | Change these config properties (except owner ID lol)\nExample: ${client.ConfigService.config.prefix}settings edit <dot.notation> [newValue] (General does not require dot notation)\n---------------\n<General>\n`;
@@ -92,6 +111,6 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
 exports.cmd = {
   enabled: true,
   category: "Utility",
-  level: 3,
+  level: 2,
   description: "View and change bot settings"
 };

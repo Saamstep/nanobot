@@ -108,8 +108,18 @@ exports.run = (client, message, args, veriEnmap, cc) => {
           }
         });
         break;
+      case "remind":
+        let count = 0;
+        let guild = client.guilds.get(client.ConfigService.config.guild);
+        let noRoleMembers = guild.members.filter(member => !member.roles.has(guild.roles.find(r => r.name == `${client.ConfigService.config.roles.iamRole}`).id));
+        noRoleMembers.forEach(member => {
+          member.send("**VCHS Esports Discord** Please verify yourself! Verification allows you to get access to all channels within our Discord server and interact with the community!\nhttps://forms.gle/8YyJqV3Nnd7VJyYPA");
+          count++;
+        });
+        message.channel.send(`Sent to ${count} users!`);
+        break;
       default:
-        message.channel.send(`\`\`\`${client.ConfigService.config.prefix}verify [clearALL_dangerous_be_careful/addrole/removerole/updatename/seedata] [user] [new]\`\`\``);
+        message.channel.send(`\`\`\`${client.ConfigService.config.prefix}verify [clearALL_dangerous_be_careful/addrole/removerole/updatename/seedata/remind] [user] [new]\`\`\``);
     }
   }
 };
