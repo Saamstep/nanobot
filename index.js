@@ -48,6 +48,7 @@ client.on("ready", ready => {
   fs.readdir("./loops/", (err, files) => {
     if (err) return client.console(err, "warn", "Events Loop");
     files.forEach(file => {
+      if (!file.includes("js")) return;
       let eventFunction = require(`./loops/${file}`);
       let eventName = file.split(".")[0];
       if (client.ConfigService.config.loops[eventName] == true) {
@@ -65,6 +66,7 @@ client.on("ready", ready => {
   fs.readdir("./services/", (err, files) => {
     if (err) return client.console(err, "warn", "Services");
     files.forEach(file => {
+      if (!file.includes("js")) return;
       let eventFunction = require(`./services/${file}`);
       let eventName = file.split(".")[0];
       if (client.ConfigService.config.services[eventName] == true) {
