@@ -45,6 +45,8 @@ function sendMessage(name, msg) {
 
 //controls all loop checkers
 client.on("ready", ready => {
+  let sheets = require("./sheets.js");
+  sheets.run(client, sendMessage, "Samstep#1428");
   fs.readdir("./loops/", (err, files) => {
     if (err) return client.console(err, "warn", "Events Loop");
     files.forEach(file => {

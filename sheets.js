@@ -1,8 +1,8 @@
-exports.run = (client, dupe, veriEnmap, sendMessage, input, job) => {
+exports.run = (client, sendMessage, input) => {
   const fs = require("fs");
   const readline = require("readline");
   const { google } = require("googleapis");
-
+  console.log("running");
   // If modifying these scopes, delete token.json.
   const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
   // The file token.json stores the user's access and refresh tokens, and is
@@ -71,7 +71,6 @@ exports.run = (client, dupe, veriEnmap, sendMessage, input, job) => {
             // row[0] = name
             // row[2] == discordtag
             // console.log(row[2]);
-            input = "Samstep#1428";
             if (row[2] == input) {
               name = row[0];
               discord = row[2];
@@ -84,7 +83,7 @@ exports.run = (client, dupe, veriEnmap, sendMessage, input, job) => {
             console.log(name);
           }
         } else {
-          console.log("No data found.");
+          // console.log("No data found.");
         }
       }
     );
