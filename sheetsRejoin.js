@@ -1,8 +1,7 @@
-exports.run = (client, sendMessage, input) => {
+exports.run = (client, sendMessage, member) => {
   const fs = require("fs");
   const readline = require("readline");
   const { google } = require("googleapis");
-  console.log("running");
   // If modifying these scopes, delete token.json.
   const SCOPES = ["https://www.googleapis.com/auth/spreadsheets.readonly"];
   // The file token.json stores the user's access and refresh tokens, and is
@@ -56,34 +55,69 @@ exports.run = (client, sendMessage, input) => {
 
   function findDiscord(auth) {
     const sheets = google.sheets({ version: "v4", auth });
-    let name = "DNE";
-    let discord = "DNE";
+    let found = false;
     sheets.spreadsheets.values.get(
       {
         spreadsheetId: "1eAXCsCxEw1uH-_Wk5oF0tmK5xBYV1dmxMqPo0kq2Z6Y",
         range: "Form Responses 1!B2:E"
       },
       (err, res) => {
-        if (err) return console.log("The API returned an error: " + err);
+        if (err) return client.error("The API returned an error: " + err, "error", "Verification");
         const rows = res.data.values;
         if (rows.length) {
           rows.map(row => {
             // row[0] = name
-            // row[2] == discordtag
-            // console.log(row[2]);
-            if (row[2] == input) {
-              name = row[0];
-              discord = row[2];
+            // row[1] = email
+            // row[2] = discordtag
+            // row[3] = class
+            if (row[2] == `${member.user.username}#${member.user.discriminator}`) {
+              found = true;
+              const guild = client.guilds.get(client.ConfigService.config.guild);
+              member.addRole(guild.roles.find(role => role.name == row[3]));
+              member.addRole(guild.roles.find(role => role.name == client.ConfigService.config.roles.iamRole));
+              member.send({
+                embed: {
+                  description: `Welcome back! You have been re-verified sucessfully in the **${guild.name}** official Discord server. Here is your info for confirmation. Remember to read <#476920535520116736> for more server info!`,
+                  color: 2582446,
+                  footer: {
+                    text: "VCHS Esports Verification"
+                  },
+                  author: {
+                    name: "Re-Verification Confirmation",
+                    icon_url: client.user.avatarURL
+                  },
+                  image: {
+                    url: guild.splashURL
+                  },
+                  fields: [
+                    {
+                      name: "Name",
+                      value: row[0]
+                    },
+                    {
+                      name: "Discord",
+                      value: row[2]
+                    },
+                    {
+                      name: "Email",
+                      value: row[1]
+                    },
+                    {
+                      name: "Class",
+                      value: row[3]
+                    }
+                  ]
+                }
+              });
+              sendMessage("general", `✅ **${member.user.username}** is now re-verified, welcome back!`);
+              return;
             }
           });
-
-          if (name == "DNE" || discord == "DNE") {
-            console.log("user does not exist");
-          } else {
-            console.log(name);
+          if (!found) {
+            return member.send("You are not verified! Please verify with the Google form: http://discord.vchsesports.net. Verification gives you access to all text and voice channels!");
           }
         } else {
-          // console.log("No data found.");
+          client.console("This is bad, the google sheet has no data!", "error", "Verification");
         }
       }
     );

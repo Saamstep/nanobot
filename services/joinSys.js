@@ -58,7 +58,7 @@ exports.run = (client, dupe, veriEnmap, sendMessage) => {
             name: "Verification Confirmation",
             icon_url: client.user.avatarURL
           },
-          thumbnail: {
+          image: {
             url: guild.splashURL
           },
           fields: [

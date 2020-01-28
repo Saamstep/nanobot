@@ -45,8 +45,6 @@ function sendMessage(name, msg) {
 
 //controls all loop checkers
 client.on("ready", ready => {
-  let sheets = require("./sheets.js");
-  sheets.run(client, sendMessage, "Samstep#1428");
   fs.readdir("./loops/", (err, files) => {
     if (err) return client.console(err, "warn", "Events Loop");
     files.forEach(file => {
@@ -159,56 +157,6 @@ client.on("messageReactionRemove", (reaction, user) => {
 });
 // role react system end -------------
 
-//veriEnamp system
-async function onJoin(member) {
-  if (client.ConfigService.config.services.joinSys == true) {
-    try {
-      //check if DB is ready
-      veriEnmap.defer.then(() => {
-        let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-        //if the user is not in the guild, do not crash!
-        //if the discord id is in db, it means they are verified :D so add roles, nickname etc
-        if (veriEnmap.has(`${member.user.id}`)) {
-          let addRole = guild.roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`);
-          //if they dont have default role, run commands
-          if (!guild.member(member.user.id).roles.find(r => r.name === `${client.ConfigService.config.roles.iamRole}`)) {
-            // add the roles
-            guild.members
-              .get(member.user.id)
-              .addRole(addRole)
-              .catch(console.error);
-            // set nickname
-            guild.members.get(member.user.id).setNickname(`${member.user.username} (${veriEnmap.get(`${member.user.id}`, "name")})`, "Joined server.");
-            client.console("Updated user " + member.user.id);
-            sendMessage(`${client.ConfigService.config.channel.log}`, `<@${member.user.id}> was updated with all their roles and nicknames after joining.`);
-            veriEnmap.get(`${member.user.id}`, "roles").forEach(function(choice) {
-              let role = guild.roles.find(r => r.name === `${choice}`);
-              guild.members.get(member.user.id).addRole(role);
-            });
-            let hsClass = guild.roles.find(r => r.name === `${veriEnmap.get(member.user.id, "class")}`);
-            guild.members.get(member.user.id).addRole(hsClass);
-            member.send(
-              `You have been sucessfully verified in the Discord server **${guild.name}**. If you believe this was an error email us at vchsesports@gmail.com\n\nConfirmation Info:\n\`\`\`Discord: ${member.user.username}\nEmail: ${veriEnmap.get(
-                member.user.id,
-                "email"
-              )}\`\`\``
-            );
-            let newchannel = guild.channels.find(ch => ch.name === `${client.ConfigService.config.channel.joinCh}`);
-            newchannel.send(`✅ **${member.user.username}** has been verified, welcome back!`);
-          }
-        } else {
-          //if they are not in the database (wonder how they got there) then run the following commands
-          if (member) member.send(`Welcome to **${guild.name}**, we require user verification, please fill out the Google form here: https://forms.gle/8YyJqV3Nnd7VJyYPA. Note that you will be kicked if you do not fill the form out.`);
-        }
-      });
-
-      // });
-    } catch (e) {
-      console.error(e);
-    }
-  }
-}
-
 //username update
 client.on("userUpdate", (oldUser, newUser) => {
   if (oldUser.username != newUser.username) {
@@ -250,9 +198,11 @@ client.on("userUpdate", (oldUser, newUser) => {
   }
 });
 
+//verification remember system
 client.on("guildMemberAdd", member => {
-  if (member.guild.id == client.ConfigService.config.guild) {
-    onJoin(member);
+  if (member.guild.id == client.ConfigService.config.guild && client.ConfigService.config.services.joinSys == true) {
+    let sheets = require("./sheetsRejoin.js");
+    sheets.run(client, sendMessage, member);
   } else {
     return;
   }
