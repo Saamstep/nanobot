@@ -22,7 +22,11 @@ exports.run = (client, dupe, veriEnmap, sendMessage) => {
       //find member in guild
       let member = guild.members.find(member => member.user.username == user[0] && member.user.discriminator == user[1]);
       //if the member isnt in the guild return an error in console
-      if (member == null) return client.console(`${req.body.discord} returned ${member}`, "error", "Verification");
+      if (member == null) {
+        client.console(`${req.body.discord} returned ${member}`, "error", "Verification");
+        sendMessage(client.ConfigService.config.channel.log, `> __VCHS Esports Verification__\n> **${req.body.discord}** returned ${member}\n> Contact **${req.body.email}** to fix`);
+        return;
+      }
       //if the member already has the join role that means they are already verified so.. tell them that someone is about to hacks them!!
       if (member.roles.has(guild.roles.find(role => role.name == client.ConfigService.config.roles.iamRole).id))
         return member.send({
@@ -77,6 +81,7 @@ exports.run = (client, dupe, veriEnmap, sendMessage) => {
           ]
         }
       });
+      sendMessage("general", `✅ **${member.user.username}** is now verified, everyone welcome ${req.body.name} to the server!`);
     } else {
       //if no body.. return this
       res.status(400).send({ error: "No data found" });
