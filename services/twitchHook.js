@@ -29,6 +29,7 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
         body += chunk;
       });
       req.on("end", async function() {
+        console.log(res);
         if (body) {
           // let hash = crypto
           //   .createHmac(incoming[0], secret)
@@ -37,6 +38,7 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
           // if (incoming == undefined) return client.console('TwitchHook | Unauthorized request!');
 
           client.console("TwitchHook Found");
+          console.log(body);
           let data = JSON.parse(body).data[0];
           if (data < 1) return;
           if (data.type == "live") {
@@ -80,6 +82,7 @@ exports.run = async (client, dupe, veriEnmap, sendMessage) => {
             res.end("success");
           }
         } else {
+          console.log(req);
           var parts = url.parse(req.url, true);
           var challenge = parts.query["hub.challenge"];
           if (challenge == undefined) return res.end("error");

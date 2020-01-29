@@ -18,7 +18,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
   });
 
   //error check for args
-  if (!args[1] || !team || !args[2]) return client.error(`\`\`\`!schedule [team number] [type (scrim/match)] [description]\n--[Team #]--\n${listOfTeams}\`\`\``, message);
+  if (!args[1] || !team || !args[2]) return client.error(`\`\`\`${client.ConfigService.config.prefix}schedule [team number] [type (scrim/match)] [description]\n--[Team #]--\n${listOfTeams}\`\`\``, message);
 
   let desc = args
     .join(" ")
@@ -46,7 +46,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         return client.error("There was no date inputed within the time limit!", message);
       });
     //asks for time in 24hr format
-    await message.channel.send("Input the time (24 hour time ONLY) `ex: 17:00 (5PM)`");
+    await message.channel.send("Input the time (24 hour time format ONLY) `ex: 17:00 (5PM)`");
     await message.channel
       .awaitMessages(response => response.author.id == message.author.id, {
         max: 1,
@@ -147,7 +147,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
           }
         ]
       };
-      message.guild.channels.find(ch => ch.name == "casters").send("@Casters", { embed });
+      message.guild.channels.find(ch => ch.name == "casters").send(`<@&${message.guild.roles.find(role => role.name == "Casters").id}>`, { embed });
     }
 
     function toTeam(member) {

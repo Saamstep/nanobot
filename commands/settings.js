@@ -103,6 +103,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
           if (Array.isArray(output)) output = data[i].join(" | ").replace("_", "-");
           msg += "< " + i + " > " + output + "\n";
         }
+        if (msg.length >= 1900) return;
       }
       message.channel.send(`\`\`\`md\n${msg}\`\`\``);
       break;

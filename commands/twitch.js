@@ -32,6 +32,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
     }
     switch (args[0]) {
       case "add":
+        /*
         if (!args[1]) return client.error("Please specify a streamer to add!", message);
         const userReq = await getUser(args[1]);
         if (userReq.data[0].length < 1) return client.error("That streamer does not exist!", message);
@@ -42,16 +43,17 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            "hub.callback": "http://mywb.vcs.net:9696",
+            "hub.callback": client.ConfigService.config.twitch.dev.callback,
             "hub.mode": "subscribe",
             "hub.topic": "https://api.twitch.tv/helix/streams?user_id=" + userReq.data[0].id,
-            "hub.lease_seconds": 864000
+            "hub.lease_seconds": 864000,
+            "hub.secret": client.ConfigService.config.twitch.dev.secret
           })
         }).then(val => {
           // console.log(val);
         });
         // const cb = await addStreamer.text();
-
+        */
         break;
       case "remove":
         break;
@@ -105,7 +107,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
       case "live":
         if (!args[1]) return client.error("You must provide a Twitch username!", message);
         let response = await isLive(args[1]);
-        if (response.data < 1) return message.channel.send("That streamer is not live!");
+        if (response.data < 1) return message.channel.send({ embed: { description: `**${args[1]}** is not live!` } });
         else {
           const embed = {
             title: `${response.data[0].user_name} is live on Twitch!`,
@@ -166,7 +168,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         };
         message.channel.send({ embed });
       default:
-        if (!args[0]) return client.error("twitch add|remove|list|live|clip [user|clip URL (if applicable)]", message);
+        if (!args[0]) return client.error(client.ConfigService.config.prefix + "twitch live|clip [user|clip URL (if applicable)]", message);
         break;
     }
   }
