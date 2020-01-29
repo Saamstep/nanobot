@@ -1,7 +1,7 @@
 exports.run = (client, message, args, veriEnmap, cc) => {
   //INIT VARS
   const schedule = require("node-schedule");
-  let listTeams = ["Rocket League Varsity", "Rocket League JV 1", "Overwatch Varsity"];
+  let listTeams = ["Rocket League Varsity", "Rocket League JV 1", "OW Varsity"];
   let now = new Date();
   let year = now.getFullYear();
   let team = `${listTeams[args[0] - 1]}`;
