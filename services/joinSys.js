@@ -47,6 +47,7 @@ exports.run = (client, dupe, veriEnmap, sendMessage) => {
       //give member the join role
       member.addRole(guild.roles.find(role => role.name == client.ConfigService.config.roles.iamRole));
       //send them a confirmation
+      member.setNickname(`${member.user.username} (${req.body.name})`);
       member.send({
         embed: {
           description: `You have been verified sucessfully in the **${guild.name}** official Discord server. Here is your info for confirmation. Remember to read <#476920535520116736> for more server info!`,

@@ -75,6 +75,7 @@ exports.run = (client, sendMessage, member) => {
               const guild = client.guilds.get(client.ConfigService.config.guild);
               member.addRole(guild.roles.find(role => role.name == row[3]));
               member.addRole(guild.roles.find(role => role.name == client.ConfigService.config.roles.iamRole));
+              member.setNickname(`${member.user.username} (${req.body.name})`);
               member.send({
                 embed: {
                   description: `Welcome back! You have been re-verified sucessfully in the **${guild.name}** official Discord server. Here is your info for confirmation. Remember to read <#476920535520116736> for more server info!`,
