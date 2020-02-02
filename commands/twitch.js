@@ -138,11 +138,11 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         }
         break;
       case "clip":
-        if (!args[1] || !args[1].includes("https://clips.twitch.tv")) return client.error("Please provide a valid Twitch clip URL!\n`   Ex: https://clips.twitch.tv/CovertBlazingNigiriSoBayed`", message);
+        if (!args[1] || !args[1].includes("https://clips.twitch.tv")) return client.error("Please provide a valid Twitch clip URL!\n`Ex: https://clips.twitch.tv/CovertBlazingNigiriSoBayed`", message);
         //https://clips.twitch.tv/AwkwardHelplessSalamanderSwiftRage
         let id = args[1].slice(24);
 
-        const clipRequest = await fetch("https://api.twitch.tv/helix/clips?id=" + id, {
+        const clipRequest = await fetch("https://api.twitch.tv/kraken/clips/" + id, {
           headers: {
             "Client-ID": client.ConfigService.config.apis.twitch
           }
@@ -155,6 +155,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
         // let bcaster = clip.data[0].broadcaster_name;
         const download = await fetch(`https://clips.twitch.tv/api/v1/clips/${id}/status`);
         const DLfile = await download.json();
+        // console.log(fileURL);
         let fileURL = DLfile.quality_options[0].source;
         const embed = {
           description: `[[Click to Download]](${fileURL})`,

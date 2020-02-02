@@ -2,6 +2,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
   fs = require("fs");
   var m = JSON.parse(fs.readFileSync("./config.json").toString());
   const data = m;
+  const fetch = require("node-fetch");
 
   function hasNoDisabled(input) {
     if (input == "token" || input == "ownerid" || input.includes("apis")) {
@@ -12,6 +13,33 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
   }
   function push(out) {
     fs.writeFileSync("./config.json", JSON.stringify(out, null, 4));
+  }
+
+  function getConfigData() {
+    let msg = `${client.user.username} Settings | Change these config properties (except owner ID lol)\nExample: ${client.ConfigService.config.prefix}settings edit <dot.notation> [newValue] (General does not require dot notation)\n---------------\n<General>\n`;
+    for (i in data) {
+      if (i == "apis" || i == "token" || i == "mail") continue;
+      if (Object.prototype.toString.call(data[i]) === "[object Object]") {
+        for (k = 0; k < Object.keys(data[i]).length; k++) {
+          if (!msg.includes(i)) msg += "\n<" + i + ">\n";
+          msg += "< " + Object.keys(data[i])[k] + " > ";
+          if (Array.isArray(Object.values(data[i])[k])) {
+            msg +=
+              Object.values(data[i])
+                [k].join(" | ")
+                .replace("_", "-") + "\n";
+          } else {
+            msg += Object.values(data[i])[k] + "\n";
+          }
+        }
+      } else {
+        let output = data[i];
+        if (Array.isArray(output)) output = data[i].join(" | ").replace("_", "-");
+        msg += "< " + i + " > " + output + "\n";
+      }
+      // console.log(msg.length);
+    }
+    return msg;
   }
 
   switch (args[0]) {
@@ -61,57 +89,49 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
       //array
       // if()
       message.channel.send(`Updated property \`${args[1]}\` to \`${args[2]}\``);
-      var spawn = require("child_process").spawn;
+      // var spawn = require("child_process").spawn;
 
-      (function main() {
-        if (process.env.process_restarting) {
-          delete process.env.process_restarting;
-          // Give old process one second to shut down before continuing ...
-          setTimeout(main, 1000);
-          return;
-        }
+      // (function main() {
+      //   if (process.env.process_restarting) {
+      //     delete process.env.process_restarting;
+      //     // Give old process one second to shut down before continuing ...
+      //     setTimeout(main, 1000);
+      //     return;
+      //   }
 
-        // ...
+      //   // ...
 
-        // Restart process ...
+      //   // Restart process ...
 
-        spawn(process.argv[0], process.argv.slice(1), {
-          env: { process_restarting: 1 },
-          stdio: "ignore"
-        }).unref();
-      })();
+      //   spawn(process.argv[0], process.argv.slice(1), {
+      //     env: { process_restarting: 1 },
+      //     stdio: "ignore"
+      //   }).unref();
+      // })();
+      break;
+    case "hastebin":
+      const hastebin = await fetch("https://hastebin.com/documents", {
+        method: "post",
+        body: getConfigData()
+      });
+      const key = await hastebin.json();
+      message.author.send(`https://hastebin.com/${key.key}`);
+      message.react("✅");
       break;
     default:
-      let msg = `${client.user.username} Settings | Change these config properties (except owner ID lol)\nExample: ${client.ConfigService.config.prefix}settings edit <dot.notation> [newValue] (General does not require dot notation)\n---------------\n<General>\n`;
-      for (i in data) {
-        if (i == "apis" || i == "token" || i == "mail") continue;
-        if (Object.prototype.toString.call(data[i]) === "[object Object]") {
-          for (k = 0; k < Object.keys(data[i]).length; k++) {
-            if (!msg.includes(i)) msg += "\n<" + i + ">\n";
-            msg += "< " + Object.keys(data[i])[k] + " > ";
-            if (Array.isArray(Object.values(data[i])[k])) {
-              msg +=
-                Object.values(data[i])
-                  [k].join(" | ")
-                  .replace("_", "-") + "\n";
-            } else {
-              msg += Object.values(data[i])[k] + "\n";
-            }
-          }
-        } else {
-          let output = data[i];
-          if (Array.isArray(output)) output = data[i].join(" | ").replace("_", "-");
-          msg += "< " + i + " > " + output + "\n";
-        }
-        if (msg.length >= 1900) return;
+      let msg = getConfigData();
+      if (msg.length <= 2000) {
+        message.channel.send(`\`\`\`md\n${msg}\`\`\``);
+      } else {
+        client.error("Your config file is too powerful for Discord (over 2000 characters)! `" + msg.length + "` characters", message);
       }
-      message.channel.send(`\`\`\`md\n${msg}\`\`\``);
+
       break;
   }
 };
 exports.cmd = {
   enabled: true,
-  category: "Utility",
-  level: 2,
+  category: "VCHS Esports",
+  level: 0,
   description: "View and change bot settings"
 };
