@@ -13,11 +13,12 @@ exports.run = (client, message, args, veriEnmap, cc) => {
           const stats = await response.json();
           // ALL SERVERS
           if (stats.online) {
-            let icon = new Buffer.from(stats.icon.replace("data:image/png;base64,", ""), "base64");
+            console.log(stats);
+            let icon = stats.icon ? new Buffer.from(stats.icon.replace("data:image/png;base64,", ""), "base64") : "https://samstep.net/bots/assets/grass_block.png";
             // let output = stats.hostname.replace('/./g', '-') + '.png';
             // fs.writeFileSync('.+/icons/' + output, icon);
             const attachment = new client.Discord.Attachment(icon, `${client.ConfigService.config.smp.ip}.png`);
-
+            let modded = stats.mods ? " Modded" : " " + stats.software;
             const embed = {
               url: `https://mcsrvstat.us/server/${client.ConfigService.config.smp.ip}`,
               color: 10276707,
@@ -45,7 +46,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
                 },
                 {
                   name: "Version",
-                  value: stats.version
+                  value: stats.version + modded
                 }
               ]
             };
@@ -85,9 +86,9 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         embed: {
           title: `IP: ${client.ConfigService.config.smp.ip}`,
           thumbnail: {
-            url: `${client.ConfigService.config.smp.iconURL}`
+            url: `${client.ConfigService.config.smp.iconURL || "https://samstep.net/bots/assets/grass_block.png"}`
           },
-          description: `${client.ConfigService.config.smp.description}`,
+          description: `${client.ConfigService.config.smp.description || "Edit this description in the config file!"}`,
           fields: [
             {
               name: "Avaliable Sub-Commands",
