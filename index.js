@@ -118,6 +118,16 @@ const events = {
 client.on("raw", async event => {
   if (!events.hasOwnProperty(event.t)) return;
   const { d: data } = event;
+  if (data.emoji.name == "🗑️" && event.t == "MESSAGE_REACTION_ADD" && !client.users.get(data.user_id).bot) {
+    client.channels
+      .get(data.channel_id)
+      .fetchMessage(data.message_id)
+      .then(msg => {
+        if (msg.author.id == client.user.id) {
+          msg.delete();
+        }
+      });
+  }
   if (data.message_id != client.ConfigService.config.roleReact.message) return;
   if (client.ConfigService.config.roleReact.emojis.includes(event.d.emoji.id)) {
     //user that reacted

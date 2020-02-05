@@ -137,6 +137,7 @@ exports.run = (client, message, args) => {
         .catch(console.error);
     }
     toUpdate();
+    message.react("📩");
   });
 
   // cooldown(message, cmd);

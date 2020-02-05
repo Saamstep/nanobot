@@ -13,6 +13,5 @@ module.exports = function errorEvent(type, message) {
       icon_url: "https://samstep.net/bots/assets/error.png"
     }
   };
-  message.channel.send({ embed });
-  message.channel.stopTyping(true);
+  message.channel.send({ embed }).then(m => m.react("🗑️"));
 };

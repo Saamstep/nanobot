@@ -4,7 +4,7 @@
   "description": "Nano like bot, large possibilities.",
   "main": "index.js",
   "scripts": {
-    "start": "node .",
+    "start": "node index.js",
     "dev": "node .",
     "updater": "echo \"\n\n\n\n\n\n\n\n\n\n\n>>Updating all NPM packages\n\n\n\n>>Run npm start after updater complete.\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\nWe do know what we're doing so we're fine :)\" && npm update"
   },
