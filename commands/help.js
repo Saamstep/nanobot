@@ -92,7 +92,7 @@ exports.run = (client, message, args) => {
   }
 
   // message.channel.stopTyping();
-  let out = "Fun: 🚀\nUtility: 🔗\nMinecraft SMP: ⛏️\nGames: 🎲\nVCHS Esports: 🖱️";
+  let out = "Fun: 🚀\nUtility: 🔗\nMinecraft SMP: ⛏️\nGames: 🎲";
   if (ad) out += `\nAdmin: 🔒`;
   if (mod) out += `\nModeration: 🛡️`;
   message.author.send(out).then(async msg => {
@@ -100,7 +100,6 @@ exports.run = (client, message, args) => {
     await msg.react("🔗");
     await msg.react("⛏️");
     await msg.react("🎲");
-    await msg.react("🖱️");
     if (ad) await msg.react("🔒");
     if (mod) await msg.react("🛡️");
     function toUpdate() {
