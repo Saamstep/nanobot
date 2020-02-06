@@ -85,7 +85,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
       let public = client.ConfigService.config.smp.public ? client.ConfigService.config.smp.ip : `${message.guild.name}'s Minecraft Server`;
       message.channel.send({
         embed: {
-          title: `${public}`,
+          title: `IP: ${public}`,
           thumbnail: {
             url: `${client.ConfigService.config.smp.iconURL || "https://samstep.net/bots/assets/grass_block.png"}`
           },
