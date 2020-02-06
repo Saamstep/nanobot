@@ -131,7 +131,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
 };
 exports.cmd = {
   enabled: true,
-  category: "VCHS Esports",
+  category: "Admin",
   level: 0,
   description: "View and change bot settings"
 };
