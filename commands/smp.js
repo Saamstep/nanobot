@@ -13,14 +13,14 @@ exports.run = (client, message, args, veriEnmap, cc) => {
           const stats = await response.json();
           // ALL SERVERS
           if (stats.online) {
-            console.log(stats);
             let icon = stats.icon ? new Buffer.from(stats.icon.replace("data:image/png;base64,", ""), "base64") : "https://samstep.net/bots/assets/grass_block.png";
             // let output = stats.hostname.replace('/./g', '-') + '.png';
             // fs.writeFileSync('.+/icons/' + output, icon);
             const attachment = new client.Discord.Attachment(icon, `${client.ConfigService.config.smp.ip}.png`);
             let modded = stats.mods ? " Modded" : " " + stats.software;
+            let public = client.ConfigService.config.smp.public ? `https://mcsrvstat.us/server/${client.ConfigService.config.smp.ip}` : "https://mcsrvstat.us/server/";
             const embed = {
-              url: `https://mcsrvstat.us/server/${client.ConfigService.config.smp.ip}`,
+              url: `${public}`,
               color: 10276707,
               timestamp: Date.now(),
               footer: {
@@ -32,7 +32,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
               },
               author: {
                 name: args[0],
-                url: `https://mcsrvstat.us/server/${client.ConfigService.config.smp.ip}`,
+                url: `${public}`,
                 icon_url: "http://samstep.net/bots/assets/grass_block.png"
               },
               fields: [
@@ -82,9 +82,10 @@ exports.run = (client, message, args, veriEnmap, cc) => {
       }
       break;
     default:
+      let public = client.ConfigService.config.smp.public ? client.ConfigService.config.smp.ip : `${message.guild.name}'s Minecraft Server`;
       message.channel.send({
         embed: {
-          title: `IP: ${client.ConfigService.config.smp.ip}`,
+          title: `${public}`,
           thumbnail: {
             url: `${client.ConfigService.config.smp.iconURL || "https://samstep.net/bots/assets/grass_block.png"}`
           },

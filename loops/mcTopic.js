@@ -3,7 +3,7 @@ exports.run = (client, dupe, sendMessage) => {
   // mc channel topic:
   async function topic() {
     try {
-      const response = await fetch(`http://mcapi.us/server/status?ip=${client.ConfigService.config.minecraft.IP}&port=${client.ConfigService.config.minecraft.port}`);
+      const response = await fetch(`http://mcapi.us/server/status?ip=${client.ConfigService.config.smp.ip}&port=${client.ConfigService.config.smp.port || "25565"}`);
 
       const body = await response.json();
 
@@ -17,7 +17,7 @@ exports.run = (client, dupe, sendMessage) => {
       }
       if (body.online === true) {
         client.guilds.map(guild => {
-          let channel = guild.channels.find(channel => channel.name === `mc-channel`);
+          let channel = guild.channels.find(channel => channel.name === `${client.ConfigService.config.channel.mcBridge}`);
           if (channel) {
             channel.setTopic(`${client.user.username} | ${body.server.name} | ${body.players.now}/${body.players.max} online`);
             client.console("MC --> Discord | Set topic!");
