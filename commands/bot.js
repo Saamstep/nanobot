@@ -1,6 +1,5 @@
 exports.run = (client, message, args) => {
   const pkg = require("../package.json");
-
   async function cmd() {
     const embed = {
       color: 3447003,
@@ -9,7 +8,7 @@ exports.run = (client, message, args) => {
       fields: [
         {
           name: "Social Links:",
-          value: "[YouTube](http://www.bit.ly/subtosamstep) **|** [Twitch](http://www.twitch.tv/saamstep) **|** [Twitter](http://www.twitter.com/saamstep) **|** [GitHub](http://gihub.com/saamstep)"
+          value: "[YouTube](http://www.bit.ly/subtosamstep) **|** [Twitch](http://www.twitch.tv/samstep) **|** [Twitter](http://www.twitter.com/saamstep) **|** [GitHub](http://gihub.com/saamstep)"
         },
         {
           name: "Thank You:",
@@ -22,7 +21,7 @@ exports.run = (client, message, args) => {
         {
           name: "APIs:",
           value:
-            "[DiscordJS](http://discord.js.org) **|** [Cat Fact](https://catfact.ninja) **|** [TheCatAPI](http://thecatapi.com) **|** [TheDogAPI](http://thedogapi.com) **|** [Coinbase](https://developers.coinbase.com/api/v2) **|** [OW API](example.com)"
+            "[Discord API](http://discordapp.com/developers/) **|** [Cat Fact](https://catfact.ninja) **|** [TheCatAPI](http://thecatapi.com) **|** [TheDogAPI](http://thedogapi.com) **|** [Coinbase](https://developers.coinbase.com/api/v2) **|** [OW API](https://owjs.ovh) | [Twitch API](https://dev.twitch.tv/) | [OverwatchLeague](https://overwatchleague.com) | [YouTube API](https://developers.google.com/youtube/v3) | [Toornament API](https://developer.toornament.com/v2/overview/get-started)"
         },
         {
           name: "Dependencies:",

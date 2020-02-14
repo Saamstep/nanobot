@@ -77,12 +77,13 @@ client.on("ready", ready => {
       }
     });
   });
-
-  schedule.scheduleJob("0 */12 * * *", function() {
-    let guild = client.guilds.get(client.ConfigService.config.guild);
-    let noRoleMembers = guild.members.filter(member => !member.roles.has(guild.roles.find(r => r.name == `${client.ConfigService.config.roles.iamRole}`).id));
-    noRoleMembers.forEach(member => member.send("**VCHS Esports Discord** Please verify yourself! Verification allows you to get access to all channels within our Discord server and interact with the community!\nhttp://discord.vchsesports.net"));
-  });
+  if (client.ConfigService.config.services.joinSys) {
+    schedule.scheduleJob("0 */12 * * *", function() {
+      let guild = client.guilds.get(client.ConfigService.config.guild);
+      let noRoleMembers = guild.members.filter(member => !member.roles.has(guild.roles.find(r => r.name == `${client.ConfigService.config.roles.iamRole}`).id));
+      noRoleMembers.forEach(member => member.send("**VCHS Esports Discord** Please verify yourself! Verification allows you to get access to all channels within our Discord server and interact with the community!\nhttp://discord.vchsesports.net"));
+    });
+  }
 });
 
 //===ALL ENMAPS DECLARED===

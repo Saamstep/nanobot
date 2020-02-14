@@ -1,139 +1,124 @@
-exports.run = async (client, message, args) => {
-  // ---Variables---
+exports.run = async (client, message, args, INPUT_TAG) => {
+  //init vars
   const fetch = require("node-fetch");
+  const platforms = ["pc", "xbl", "psn", "nintendo-switch"];
+  const regions = ["us", "eu", "kr"];
+  let inputBattleTag = null;
+  let region = "us";
+  let platform = "pc";
 
-  let errorMsg = "There was an error contacting the API or your BattleTag is invalid.";
-
-  //Delete command call message
-  message.delete(0);
-  //Check if there is an actual battletag there!
-  if (!args[0]) {
-    return message.reply("Provide a battle tag please!");
-  }
-  //Check if we are searching for a battletag, or looking up stats. Battle tag is listed down here (rather han up with --Variables--) b/c it will interfere with the args[0] check!
-  let battletag = args[0].replace("#", "-");
-  if (!battletag.includes("-")) {
-    try {
-      const response = await fetch(`https://owjs.ovh/search/${args[0]}`);
-      const body = await response.json();
-      let searchResults = " ";
-      //Put all the users found in a big variable then send it
-      for (let j in body) {
-        searchResults += `__**${body[j].name}**__\n${body[j].platform.toUpperCase()}\n<https://www.overbuff.com/players/${body[j].platform}/${body[j].urlName}>\n`;
-      }
-      message.channel.send(searchResults);
-    } catch (e) {
-      if (e) {
-        client.error(errorMsg, message);
-      }
+  //figure out what field is what
+  args.forEach(element => {
+    if (regions.some(region => element == region)) {
+      region = element;
+    } else if (platforms.some(platform => element == platform)) {
+      platform = element;
+    } else if (element.includes("#")) {
+      inputBattleTag = element;
     }
-  } else {
-    // Here we are actually finding the stats if a battletag is found.
-    // First we need to see if args for region and platform are included
-    // if (!args[1] && args[2]) {
-    try {
-      const request = await fetch(`https://ovrstat.com/stats/pc/us/${battletag}`);
-      const stats = await request.json();
-      //Check for private profile before doing anything else!
-      if (stats.message) {
-        return message.channel.send(":no_entry_sign: | " + stats.message);
-      }
-      if (stats.private === true) {
-        // Here's the message format for the stats
-        const embed = {
-          description: "[OverBuff](https://overbuff.com/players/pc/" + battletag + ")",
-          url: "https://overbuff.com/players/pc/" + battletag,
-          color: 16617745,
-          footer: {
-            icon_url: "http://samstep.net/bots/assets/ovrstat.png",
-            text: "OvrStat"
-          },
-          thumbnail: {
-            url: stats.endorsementIcon
-          },
-          author: {
-            name: stats.name + "'s stats",
-            url: "https://overbuff.com/players/pc/" + battletag,
-            icon_url: stats.icon
-          },
-          fields: [
-            {
-              name: "Name",
-              value: stats.name
-            },
-            {
-              name: "Level",
-              value: stats.level + stats.prestige * 100
-            },
-            {
-              name: "Most Recent Rank",
-              value: "[Click Here](https://overbuff.com/search?q=" + battletag + ")"
-            }
-          ]
-        };
-        // We are now sending the formatted message
-        return message.channel.send({ embed });
-      }
-      if (stats.private === false) {
-        //If the profile is public, we do this.
-        //Here is the code to get the played heros in comp.
-        let topHeroes = stats.competitiveStats.topHeroes;
-        let pTime = "";
-        for (var property in topHeroes) {
-          pTime += property + "> " + topHeroes[property].timePlayed + "\n";
+  });
+
+  //allows us to figure out if they did everything right
+  if (inputBattleTag == null) {
+    return client.error("That is an invalid battletag", message);
+  }
+  message.channel
+    .send({
+      embed: {
+        description: `Getting stats for **${inputBattleTag}**  in region **${region.toUpperCase()}** on platform **${platform.toUpperCase()}** this may take some time...`,
+        author: {
+          name: "Loading",
+          icon_url: "https://samstep.net/bots/assets/loading.gif"
         }
-        // console.log(pTime);
-
-        // Here's the message format for the stats
-        const embed = {
-          description: "[OverBuff](https://overbuff.com/players/pc/" + battletag + ")",
-          url: "https://overbuff.com/players/pc/" + battletag,
-          color: 16617745,
-          footer: {
-            icon_url: "http://samstep.net/bots/assets/ovrstat.png",
-            text: "OvrStat"
-          },
-          thumbnail: {
-            url: stats.ratingIcon
-          },
-          author: {
-            name: stats.name + "'s stats",
-            url: "https://overbuff.com/players/pc/" + battletag,
-            icon_url: stats.icon
-          },
-          fields: [
-            {
-              name: "Name",
-              value: stats.name
-            },
-            {
-              name: "Level",
-              value: stats.level + stats.prestige * 100
-            },
-            {
-              name: "Rank",
-              value: stats.rating
-            },
-            {
-              name: "Playtime",
-              value: pTime
-            }
-          ]
-        };
-        // We are now sending the formatted message
-        return message.channel.send({ embed });
       }
-    } catch (e) {
-      error(errorMsg, message);
-    }
-    // } else {
-    //   // If region and platform are included then we let them pass to the request api.
-    // }
-  }
+    })
+    .then(async loadingMessage => {
+      const getJSON = await fetch(`https://ow-api.com/v1/stats/${platform}/${region}/${inputBattleTag.replace("#", "-")}/complete`);
+      const json = await getJSON.json();
+      if (json.error)
+        return loadingMessage.edit({
+          embed: {
+            description: `\`\`\`${json.error}\`\`\``,
+            author: {
+              name: "Stats Error",
+              icon_url: "https://samstep.net/bots/assets/error.png"
+            }
+          }
+        });
+      function getTop3(heroes) {
+        let top3 = [];
+        for (hero in heroes) {
+          let time = heroes[hero].timePlayed.split(":");
+          switch (time.length) {
+            case 3:
+              top3.unshift(`${heroes[hero]} - ${heroes[hero].timePlayed}`);
+              break;
+            case 2:
+              top3.push();
+              break;
+            case 1:
+              break;
+          }
+        }
+        console.log(top3);
+      }
+
+      function getRankIcon(sr) {
+        if (sr >= 4000) {
+          return client.emojis.get("677209282441117706");
+        } else if (sr < 4000 && sr >= 3500) {
+          return client.emojis.get("677209282646638612");
+        } else if (sr < 3500 && sr >= 3000) {
+          return client.emojis.get("677209282671935509");
+        } else if (sr < 3000 && sr >= 2500) {
+          return client.emojis.get("677209282394980374");
+        } else if (sr < 2500 && sr >= 2000) {
+          return client.emojis.get("677209282097446946");
+        } else if (sr < 2000 && sr > 1500) {
+          return client.emojis.get("677209282546237450");
+        } else if (sr <= 1500) {
+          return client.emojis.get("677209282143322117");
+        } else {
+          return "❔";
+        }
+      }
+
+      let f = json.private
+        ? [{ name: "Level", value: json.prestige * 100 + json.level, inline: true }]
+        : [
+            { name: "Level", value: json.prestige * 100 + json.level, inline: true },
+            { name: "WinRate", value: Math.round((json.competitiveStats.games.won / json.competitiveStats.games.played) * 100) + "%", inline: true },
+            { name: "AVG SR", value: `${getRankIcon(json.rating)} ${json.rating}` }
+          ];
+
+      if (!json.private) {
+        json.ratings.forEach(role => {
+          f.push({ name: role.role.substring(0, 1).toUpperCase() + role.role.substring(1, role.role.length), value: getRankIcon(role.level) + " " + role.level });
+        });
+        // getTop3(json.competitiveStats.topHeroes);
+      }
+      let embed = {
+        description: `[OverBuff](https://overbuff.com/players/${platform}/${inputBattleTag.replace("#", "-")}) **|** [op.gg](https://overwatch.op.gg/search/?playerName=${inputBattleTag})`,
+        color: 16358669,
+        footer: {
+          text: json.private ? `Profile is private, limited stats avaliable | Overwatch Competitive Stats` : `Overwatch Stats`
+        },
+        thumbnail: {
+          url: ""
+        },
+        author: {
+          name: `Stats for ${json.name}`,
+          icon_url: json.icon
+        },
+        fields: f
+      };
+      loadingMessage.edit({ embed });
+    })
+    .catch(err => console.error(err));
 };
 exports.cmd = {
   enabled: true,
   category: "Games",
   level: 0,
-  description: "New Overwatch command with a better API and improved formatting."
+  description: "Overwatch Stats"
 };

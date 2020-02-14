@@ -260,12 +260,17 @@ exports.run = (client, message, args, veriEnmap, cc) => {
         }
       });
     });
-    if (type == "match") toCasters();
+    // if (type == "match") toCasters();
   }
-  if (args[1] == "scrim" || args[1] == "match") {
-    cmd();
+
+  if (message.author.roles.has(message.guild.roles.find(r => r.name == "Captains").id)) {
+    if (args[1] == "scrim" || args[1] == "match") {
+      cmd();
+    } else {
+      return client.error("Invalid type! Please choose **scrim** OR **match**.", message);
+    }
   } else {
-    return client.error("Invalid type! Please choose **scrim** OR **match**.", message);
+    return client.error("You need the captains role!");
   }
 };
 
