@@ -29,7 +29,24 @@ exports.run = async (client, message, args, INPUT_TAG) => {
       return "❔";
     }
   }
+
   message.delete(100);
+
+  if (args[0] == "avg" || args[0] == "average" || args[0] == "AVG") {
+    let allAvg = args[1].split(",");
+    console.log(allAvg);
+    try {
+      let avg = 0;
+      for (sr in allAvg) {
+        avg += parseInt(allAvg[sr]);
+      }
+      avg = parseInt(avg / allAvg.length);
+      return message.channel.send(`Average SR: ${getRankIcon(avg)} **${avg}**`);
+    } catch (e) {
+      client.error(e, message);
+    }
+  }
+
   battleTags.forEach(function(inputBattleTag) {
     message.channel
       .send({
@@ -45,15 +62,19 @@ exports.run = async (client, message, args, INPUT_TAG) => {
         const getJSON = await fetch(`https://ow-api.com/v1/stats/${platform}/${region}/${inputBattleTag.replace("#", "-")}/complete`);
         const json = await getJSON.json();
         if (json.error)
-          return loadingMessage.edit({
-            embed: {
-              description: `\`\`\`${json.error} for player ${inputBattleTag}\`\`\``,
-              author: {
-                name: "Stats Error",
-                icon_url: "https://samstep.net/bots/assets/error.png"
+          return loadingMessage
+            .edit({
+              embed: {
+                description: `\`\`\`${json.error} for player ${inputBattleTag}\`\`\``,
+                author: {
+                  name: "Stats Error",
+                  icon_url: "https://samstep.net/bots/assets/error.png"
+                }
               }
-            }
-          });
+            })
+            .then(msg => {
+              msg.react("🗑️");
+            });
 
         let f = json.private
           ? [{ name: "Level", value: json.prestige * 100 + json.level, inline: true }]
