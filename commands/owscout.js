@@ -61,7 +61,21 @@ exports.run = async (client, message, args, INPUT_TAG) => {
       .then(async loadingMessage => {
         const getJSON = await fetch(`https://ow-api.com/v1/stats/${platform}/${region}/${inputBattleTag.replace("#", "-")}/complete`);
         const json = await getJSON.json();
-        if (json.error)
+        if (json.error && !inputBattleTag.includes("#")) {
+          return loadingMessage
+            .edit({
+              embed: {
+                description: `[Click to Search overbuff.com](https://www.overbuff.com/search?q=${inputBattleTag})`,
+                author: {
+                  name: `${inputBattleTag} (Manual Search)`
+                }
+              }
+            })
+            .then(msg => {
+              msg.react("🗑️");
+            });
+        }
+        if (json.error && inputBattleTag.includes("#")) {
           return loadingMessage
             .edit({
               embed: {
@@ -75,6 +89,7 @@ exports.run = async (client, message, args, INPUT_TAG) => {
             .then(msg => {
               msg.react("🗑️");
             });
+        }
 
         let f = json.private
           ? [{ name: "Level", value: json.prestige * 100 + json.level, inline: true }]
@@ -105,7 +120,6 @@ exports.run = async (client, message, args, INPUT_TAG) => {
           fields: f
         };
         loadingMessage.edit({ embed });
-
         const filter = (reaction, user) => {
           return ["📷"].includes(reaction.emoji.name) && user.id === message.author.id;
         };
