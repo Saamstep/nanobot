@@ -263,7 +263,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
     // if (type == "match") toCasters();
   }
 
-  if (message.author.roles.has(message.guild.roles.find(r => r.name == "Captains").id)) {
+  if (message.member.roles.has(message.guild.roles.find(r => r.name == "Captains").id)) {
     if (args[1] == "scrim" || args[1] == "match") {
       cmd();
     } else {
