@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Overwatch Varsity",
+    "isTeam": true
+  },
+  {
+    "name": "Overwatch JV1",
+    "isTeam": true
+  },
+  {
+    "name": "Overwatch JV2",
+    "isTeam": true
+  },
+  {
+    "name": "Rocket League Varsity",
+    "isTeam": true
+  },
+  {
+    "name": "Rocket League JV1",
+    "isTeam": true
+  }
+]

@@ -1,4 +1,4 @@
-const ConfigService = require('./config.js');
+const ConfigService = require('../config.js');
 var commandList = (function () {
   this.commands = {};
 

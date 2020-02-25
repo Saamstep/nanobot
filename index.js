@@ -34,7 +34,7 @@ fs.readdir("./events/", (err, files) => {
 //Send Message to Channel Function
 function sendMessage(name, msg) {
   client.guilds.map(guild => {
-    if (guild.available) {
+    if (guild.available) {  
       let channel = guild.channels.find(channel => channel.name === `${name}`);
       if (channel) {
         channel.send(msg);
@@ -210,7 +210,7 @@ client.on("userUpdate", (oldUser, newUser) => {
 //verification remember system
 client.on("guildMemberAdd", member => {
   if (member.guild.id == client.ConfigService.config.guild && client.ConfigService.config.services.joinSys == true) {
-    let sheets = require("./sheetsRejoin.js");
+    let sheets = require("./src/sheetsRejoin.js");
     sheets.run(client, sendMessage, member);
   } else {
     return;

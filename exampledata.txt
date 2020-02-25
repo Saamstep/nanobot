@@ -1,4 +1,0 @@
-{ name: 'Sam',
-  email: 'email@example.com',
-  class: '2020',
-  roles: [ 'Overwatch', 'Cool People' ] }

@@ -4,7 +4,7 @@ exports.run = (client, message, args) => {
     .toLowerCase()
     .split("");
   message.delete(0);
-  const emojiChars = require("../emojiCharacters");
+  const emojiChars = require("../support/emojiCharacters");
   let msg = "";
   for (i in components) {
     const letter = components[i];

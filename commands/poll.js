@@ -1,28 +1,26 @@
 exports.run = (client, message, args) => {
   message.delete(100);
-  let emojis = require('../emojiCharacters.js');
-  let title = message.content.substring(message.content.indexOf('(') + 1, message.content.indexOf(')'));
+  let emojis = require("../support/emojiCharacters.js");
+  let title = message.content.substring(message.content.indexOf("(") + 1, message.content.indexOf(")"));
   let options = args
-    .join(' ')
-    .replace(`(${title})`, '')
-    .split('|');
+    .join(" ")
+    .replace(`(${title})`, "")
+    .split("|");
 
-  if (!args || !message.content.includes('|')) {
-    return message.channel.send(
-      `\`\`\`${client.ConfigService.config.prefix}poll (Title Here) Option 1|Option 2|Option n...\`\`\``
-    );
+  if (!args || !message.content.includes("|")) {
+    return message.channel.send(`\`\`\`${client.ConfigService.config.prefix}poll (Title Here) Option 1|Option 2|Option n...\`\`\``);
   }
   if (options.length > 10) {
-    return client.error('Poll is limited to 10 options', message);
+    return client.error("Poll is limited to 10 options", message);
   }
 
-  let msg = '';
+  let msg = "";
   for (i = 0; i < options.length; i++) {
     msg += `${emojis[i + 1]} *=>* ${options[i].trim()}\n\n`;
   }
 
   const embed = {
-    title: 'Question: ' + title,
+    title: "Question: " + title,
     description: msg,
     timestamp: Date.now(),
     footer: {
@@ -47,7 +45,7 @@ exports.run = (client, message, args) => {
 
 exports.cmd = {
   enabled: true,
-  category: 'Utility',
+  category: "Utility",
   level: 0,
-  description: 'Create a poll with a upvote/downvote choice.'
+  description: "Create a poll with a upvote/downvote choice."
 };
