@@ -36,21 +36,29 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
       });
     });
   }
-  /*
-==TODO==
-!teams create [] []
--- creates role
--- sets basic properties in json file
 
-  */
-  const teams = require("../teams.json");
   switch (args[0]) {
-    case "list":
-      let chunk = "";
-      for (i in teams) {
-        chunk += teams[i].name + "\n";
-      }
-      message.channel.send(chunk);
+    case "create":
+      message.guild
+        .createRole({
+          name: args
+            .join(" ")
+            .replace(args[0], "")
+            .trim(),
+          color: "RANDOM",
+          hoist: true,
+          mentionable: false,
+          position: 38
+        })
+        .then(role => {
+          message.channel.send(`> Added team role **${role.name}**`);
+          message.guild.channels
+            .find(ch => ch.name == "team-announcements")
+            .overwritePermissions(role, {
+              VIEW_CHANNEL: true,
+              SEND_MESSAGES: false
+            });
+        });
       break;
     case "assign":
       async function process() {
@@ -89,7 +97,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
               sendMail(
                 data["Email"],
                 "ACTION REQUIRED: Invalid Discord Provided",
-                `Hello there <b>${data["First Name"]}</b>,<br>We have you signed up for the <b>${data["Team"]}</b> team. However, the Discord account you provided <b>${data["Discord"]}</b> appears to be either invalid or not apart of our <a href="http://discord.vchsesports.net>VCHS Esports server</a>. Discord is our #1 communication method and it is required to be a part of our server. Please join with the hyperlink above or contact ModMail if you need to update your Discord username within our system. Have a good day!<br>-VCHS Esports`
+                `Hello there <b>${data["First Name"]}</b>,<br>We have you signed up for the <b>${data["Team"]}</b> team. However, the Discord account you provided <b>${data["Discord"]}</b> appears to be either invalid or not a member in our <a href="http://discord.vchsesports.net">VCHS Esports server</a>. Discord is our #1 communication method and it is required to be a member in our server. Please join with the hyperlink above or contact <b style="color:#33daa5">@ModMail</b> if you need to update your Discord username within our system. Have a good day!<br>-VCHS Esports`
               );
             } else {
               //valid member, we can proceed with adding roles and confirmation
@@ -98,7 +106,7 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
                 if (team == null) return client.console("Could not find team " + data["Team"]);
                 if (!member.roles.has(team.id)) {
                   member.addRole(team);
-                  member.send(`You were granted the ${data["Team"]} role`);
+                  member.send({ embed: { description: `You joined the **${data["Team"]}** team` } });
                   sendMail(
                     data["Email"],
                     "Roster Confirmation",
@@ -108,11 +116,16 @@ exports.run = async (client, message, args, veriEnmap, cc) => {
               } else {
                 //if they are not on VES tell them they need to do that
                 console.log(data["Discord"] + " is not on VES");
-                // sendMail(
-                //   data["Email"],
-                //   "ACTION REQUIRED: Checklist Completion Required",
-                //   `Hello there <b>${data["First Name"]}</b>,<br>We have you signed up for the <b>${data["Team"]}</b> team. However, you have not completed the <a href="example.com">Spring Majors 2020 checklist</a> yet. Please complete this and DM our ModMail bot when you have finished. Have a good day!<br>-VCHS Esports`
-                // );
+                member.send({
+                  embed: {
+                    description: `Hello! We have you signed up for the  **${data["Team"]}** team. However, you have not completed the [Spring Majors 2020 checklist](example.com). Please complete this and DM our @ModMail bot when you have finished so we can add you to the roster officially.`
+                  }
+                });
+                sendMail(
+                  data["Email"],
+                  "ACTION REQUIRED: Checklist Completion Required",
+                  `Hello there <b>${data["First Name"]}</b>,<br>We have you signed up for the <b>${data["Team"]}</b> team. However, you have not completed the <a href="example.com">Spring Majors 2020 checklist</a> yet. Please complete this and DM our <b style="color:#33daa5">@ModMail</b> bot when you have finished, we can then officially add you to the team! Have a good day!<br>-VCHS Esports`
+                );
               }
             }
           })
