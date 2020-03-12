@@ -1,4 +1,4 @@
-exports.run = (client, dupe, veriEnmap, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   const fs = require('fs');
 
   function sendAuthEmail(email, name, discorduser) {

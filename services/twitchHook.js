@@ -1,4 +1,4 @@
-exports.run = async (client, dupe, veriEnmap, sendMessage) => {
+exports.run = async (client, dupe, sendMessage) => {
   const http = require("http");
   const date = require("dateformat");
   const fetch = require("node-fetch");

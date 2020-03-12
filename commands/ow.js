@@ -88,10 +88,10 @@ exports.run = async (client, message, args, INPUT_TAG) => {
         : [
             { name: "Level", value: json.prestige * 100 + json.level, inline: true },
             { name: "WinRate", value: Math.round((json.competitiveStats.games.won / json.competitiveStats.games.played) * 100) + "%", inline: true },
-            { name: "AVG SR", value: `${getRankIcon(json.rating)} ${json.rating}` }
+            { name: "AVG SR", value: `${getRankIcon(json.rating)}  ${json.rating}` }
           ];
 
-      if (!json.private) {
+      if (!json.private && json.ratings != null) {
         json.ratings.forEach(role => {
           f.push({ name: role.role.substring(0, 1).toUpperCase() + role.role.substring(1, role.role.length), value: getRankIcon(role.level) + " " + role.level });
         });

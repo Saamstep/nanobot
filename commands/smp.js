@@ -1,4 +1,4 @@
-exports.run = (client, message, args, veriEnmap, cc) => {
+exports.run = (client, message, args, cc) => {
   if (client.ConfigService.config.smp.ip == "" || !client.ConfigService.config.smp.ip.includes(".")) {
     return client.error("IP not specified `smp.ip` is empty or invalid!");
   }

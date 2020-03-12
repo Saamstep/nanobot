@@ -1,4 +1,4 @@
-exports.run = async (client, message, args, veriEnmap, cc) => {
+exports.run = async (client, message, args, cc) => {
   fs = require("fs");
   var m = JSON.parse(fs.readFileSync("./config.json").toString());
   const data = m;

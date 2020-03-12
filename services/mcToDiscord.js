@@ -1,4 +1,4 @@
-exports.run = (client, dupe, veriEnmap, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   // mc to discord
   if (client.ConfigService.config.minecraft.discordToMC == true) {
     try {

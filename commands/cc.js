@@ -1,4 +1,4 @@
-exports.run = (client, message, args, veriEnmap, cc) => {
+exports.run = (client, message, args, cc) => {
   const error = require('../modules/errorMod.js');
   const fs = require('fs');
   let msg = args.join(' ').replace(args[0], '');

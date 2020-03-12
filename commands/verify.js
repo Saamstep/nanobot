@@ -125,7 +125,7 @@ exports.run = (client, message, args, veriEnmap, cc) => {
 };
 
 exports.cmd = {
-  enabled: true,
+  enabled: false,
   category: "VCHS Esports",
   level: 1,
   description: "Verification control command"

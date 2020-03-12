@@ -1,4 +1,4 @@
-exports.run = (client, dupe, veriEnmap, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   var Rcon = require("rcon");
 
   if (Object.values(client.ConfigService.config.smp.rcon)[0] == "" || Object.values(client.ConfigService.config.smp.rcon)[1] == null) {

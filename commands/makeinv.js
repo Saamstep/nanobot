@@ -1,4 +1,4 @@
-exports.run = (client, message, args, veriEnmap, cc) => {
+exports.run = (client, message, args, cc) => {
   if (client.isAdmin(message.author, message, true, client)) {
     let target = client.channels.get(
       `${args[0]

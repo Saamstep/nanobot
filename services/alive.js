@@ -1,4 +1,4 @@
-exports.run = (client, dupe, veriEnmap, sendMessage) => {
+exports.run = (client, dupe, sendMessage) => {
   //tests if process is alive with http server
   let types = ["READY", "CONNECTING", "RECONNECTING", "IDLE", "NEARLY", "DISCONNECTED"];
   const http = require("http");

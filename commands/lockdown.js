@@ -1,4 +1,4 @@
-exports.run = (client, message, args, veriEnmap, cc) => {
+exports.run = (client, message, args, cc) => {
   if (client.isMod(message.author, message, client)) {
     message.delete(500);
     let category = message.guild.channels.find(ch => ch.name == 'All');

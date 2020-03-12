@@ -34,7 +34,7 @@ fs.readdir("./events/", (err, files) => {
 //Send Message to Channel Function
 function sendMessage(name, msg) {
   client.guilds.map(guild => {
-    if (guild.available) {  
+    if (guild.available) {
       let channel = guild.channels.find(channel => channel.name === `${name}`);
       if (channel) {
         channel.send(msg);
@@ -70,7 +70,7 @@ client.on("ready", ready => {
       let eventFunction = require(`./services/${file}`);
       let eventName = file.split(".")[0];
       if (client.ConfigService.config.services[eventName] == true) {
-        eventFunction.run(client, dupe, veriEnmap, sendMessage);
+        eventFunction.run(client, dupe, sendMessage);
         client.console(`${eventName}: Started`.cyan, "info", "Services");
       } else {
         client.console(`${eventName}: Disabled`.cyan.dim, "info", "Services");
@@ -97,8 +97,14 @@ const dupe = new Enmap({
 
 // enmap and data storage object for verification system
 
-const veriEnmap = new Enmap({
-  name: "verification",
+// const veriEnmap = new Enmap({
+//   name: "verification",
+//   autoFetch: true,
+//   fetchAll: true
+// });
+
+client.profiles = new Enmap({
+  name: "profiles",
   autoFetch: true,
   fetchAll: true
 });
@@ -150,7 +156,7 @@ client.on("messageReactionAdd", (reaction, user) => {
   let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
   let member = reaction.message.guild.members.find(m => m.id == user.id);
   member.send(`You were given the role **${roleName}**`);
-  veriEnmap.push(`${member.id}`, `${roleName}`, "roles");
+  // veriEnmap.push(`${member.id}`, `${roleName}`, "roles");
   member.addRole(role.id);
 });
 
@@ -161,7 +167,7 @@ client.on("messageReactionRemove", (reaction, user) => {
   let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
   let member = reaction.message.guild.members.find(m => m.id == user.id);
   member.send(`Removed **${roleName}** from you`);
-  veriEnmap.remove(`${member.id}`, `${roleName}`, "roles");
+  // veriEnmap.remove(`${member.id}`, `${roleName}`, "roles");
   member.removeRole(role.id);
 });
 // role react system end -------------
@@ -169,39 +175,39 @@ client.on("messageReactionRemove", (reaction, user) => {
 //username update
 client.on("userUpdate", (oldUser, newUser) => {
   if (oldUser.username != newUser.username) {
-    try {
-      veriEnmap.defer.then(() => {
-        let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
-        let u = guild.members.get(newUser.id);
-        u.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, "name")})`);
-        const embed = {
-          color: 16075062,
-          timestamp: Date.now(),
-          footer: {
-            icon_url: client.user.avatarURL,
-            text: `${client.user.username} Verification`
-          },
-          author: {
-            name: "Username Updated"
-          },
-          fields: [
-            {
-              name: "Old",
-              value: oldUser.username,
-              inline: true
-            },
-            {
-              name: "New",
-              value: newUser.username,
-              inline: true
-            }
-          ]
-        };
-        sendMessage(client.ConfigService.config.channel.log, { embed });
-      });
-    } catch (e) {
-      return;
-    }
+    // try {
+    //   veriEnmap.defer.then(() => {
+    //     let guild = client.guilds.get(`${client.ConfigService.config.guild}`);
+    //     let u = guild.members.get(newUser.id);
+    //     u.setNickname(`${newUser.username} (${veriEnmap.get(`${newUser.id}`, "name")})`);
+    //     const embed = {
+    //       color: 16075062,
+    //       timestamp: Date.now(),
+    //       footer: {
+    //         icon_url: client.user.avatarURL,
+    //         text: `${client.user.username} Verification`
+    //       },
+    //       author: {
+    //         name: "Username Updated"
+    //       },
+    //       fields: [
+    //         {
+    //           name: "Old",
+    //           value: oldUser.username,
+    //           inline: true
+    //         },
+    //         {
+    //           name: "New",
+    //           value: newUser.username,
+    //           inline: true
+    //         }
+    //       ]
+    //     };
+    //     sendMessage(client.ConfigService.config.channel.log, { embed });
+    //   });
+    // } catch (e) {
+    //   return;
+    // }
   } else {
     return;
   }
@@ -235,13 +241,6 @@ module.exports = function cooldown(message, code) {
 };
 
 client.on("message", message => {
-  // MC to Discord message handler (deprecating for now)
-  // if (message.channel.name === `${client.settings.get(`${g.id}`, 'minecraft.topicChannel')}`) {
-  //   if (message.author.bot) return;
-  //   let msg = `tellraw @a ["",{"text":"<${message.author.username}> ${message.content}","color":"aqua"}]`;
-  //   conn.send(msg);
-  // }
-
   //links in general
   let link = /(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gim;
   if (message.channel.id == "476921107778109442" && link.test(message.content) && !client.isMod(message.author, message, client, false)) {
@@ -322,7 +321,7 @@ client.on("message", message => {
           3 - Owner only
           */
           function run() {
-            commandFile.run(client, message, args, veriEnmap, cc);
+            commandFile.run(client, message, args, cc);
           }
 
           switch (commandFile.cmd.level) {

@@ -1,4 +1,4 @@
-exports.run = async (client, message, args, veriEnmap, cc) => {
+exports.run = async (client, message, args, cc) => {
   async function cmd() {
     const fetch = require("node-fetch");
     const date = require("dateformat");

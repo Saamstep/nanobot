@@ -1,4 +1,4 @@
-exports.run = (client, message, args, veriEnmap, cc) => {
+exports.run = (client, message, args, cc) => {
   //INIT VARS
   const schedule = require("node-schedule");
   let listTeams = ["Rocket League Varsity", "Rocket League JV 1", "OW Varsity"];

@@ -1,4 +1,4 @@
-exports.run = (client, message, args, veriEnmap) => {
+exports.run = (client, message, args) => {
   const error = require('../modules/errorMod.js');
   const ConfigService = require('../config.js');
   const member = message.mentions.members.first();
@@ -21,7 +21,7 @@ exports.run = (client, message, args, veriEnmap) => {
   }
 };
 exports.cmd = {
-  enabled: true,
+  enabled: false,
   category: 'Admin',
   level: 2,
   description: 'Verification System: reset a user completely.'
