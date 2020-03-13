@@ -7,7 +7,7 @@ exports.run = (client, message, args, cc) => {
     case "status":
       const fetch = require("node-fetch");
       async function cmd() {
-        var statusURL = `https://api.mcsrvstat.us/2/${client.ConfigService.config.smp.ip}`;
+        var statusURL = `https://api.mcsrvstat.us/2/${client.ConfigService.config.smp.ip}:${client.ConfigService.config.smp.port}`;
         try {
           const response = await fetch(statusURL);
           const stats = await response.json();
@@ -42,7 +42,7 @@ exports.run = (client, message, args, cc) => {
                 },
                 {
                   name: "MOTD",
-                  value: stats.motd.clean.join(" ")
+                  value: stats.motd.clean.join("\n")
                 },
                 {
                   name: "Version",
@@ -61,7 +61,7 @@ exports.run = (client, message, args, cc) => {
         }
       }
 
-      message.channel.send(client.load + " Loading Minecraft SMP Status`" + args[0] + "` ").then(async m => {
+      message.channel.send("Loading Minecraft SMP Status...").then(async m => {
         await cmd();
         await m.delete();
       });
