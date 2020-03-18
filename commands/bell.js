@@ -12,7 +12,7 @@ exports.run = (client, message, args, cc) => {
       embed: {
         description:
           "✅ You will now get Bell schedule notifications. Please make sure to turn **OFF** this toggle switch (shown in image) in server notification settings to recieve bell notifications properly. If you cannot see the image or need more help click [here](https://support.discordapp.com/hc/en-us/articles/215253258-Notifications-Settings-101).",
-        image: { url: "https://imgur.com/6mkkP0a" }
+        image: { url: "https://i.imgur.com/6mkkP0a.png" }
       }
     });
     message.member.addRole(message.guild.roles.find(r => r.name == "Bell"));
