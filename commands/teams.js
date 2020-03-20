@@ -118,12 +118,12 @@ exports.run = async (client, message, args, cc) => {
                     "Roster Confirmation",
                     `Hello there <b>${data["First Name"]}</b>,<br>We have you signed up for the <b>${data["Team"]}</b> team. You should have recieved proper roles via Discord. Have a good day!<br>-VCHS Esports`
                   );
-                  fs.appendFile("./uploads/results.txt", `===Joined Successfully===\n${data["First Name"]} ${data["Last Name"]}\n${data["Discord"]}\n${data["Email"]}`, "utf8", err => {
+                  fs.appendFile("./uploads/results.txt", `===[Joined Successfully]===\n${data["First Name"]} ${data["Last Name"]}\n${data["Discord"]}\n${data["Email"]}\n${data["Team"]}`, "utf8", err => {
                     if (err) throw err;
                   });
                 } else {
                   client.console(data["Discord"] + " already has their roles!", "info", "Team Assign");
-                  fs.appendFile("./uploads/results.txt", `===Already has Roles===\n${data["First Name"]} ${data["Last Name"]}\n${data["Discord"]}\n${data["Email"]}`, "utf8", err => {
+                  fs.appendFile("./uploads/results.txt", `===[Already has Roles]===\n${data["First Name"]} ${data["Last Name"]}\n${data["Discord"]}\n${data["Email"]}\n${data["Team"]}`, "utf8", err => {
                     if (err) throw err;
                   });
                 }
@@ -132,15 +132,15 @@ exports.run = async (client, message, args, cc) => {
                 client.console(data["Discord"] + " is not on VES", "info", "Team Assign");
                 member.send({
                   embed: {
-                    description: `Hello! We have you signed up for the  **${data["Team"]}** team. However, you have not completed the [Spring Majors 2020 checklist](example.com). Please complete this and DM our @ModMail bot when you have finished so we can add you to the roster officially.`
+                    description: `Hello! We have you signed up for the  **${data["Team"]}** team. However, you have not completed the [Spring Majors 2020 checklist](https://docs.google.com/document/d/1-qS5kgTkzaPj-Er8kbHK7S53QoOBlie7OPUmdZCqO0o/edit?usp=sharing). Please complete this and DM our @ModMail bot when you have finished so we can add you to the roster officially.`
                   }
                 });
                 sendMail(
                   data["Email"],
                   "ACTION REQUIRED: Checklist Completion Required",
-                  `Hello there <b>${data["First Name"]}</b>,<br>We have you signed up for the <b>${data["Team"]}</b> team. However, you have not completed the <a href="example.com">Spring Majors 2020 checklist</a> yet. Please complete this and DM our <b style="color:#33daa5">@ModMail</b> bot when you have finished, we can then officially add you to the team! Have a good day!<br>-VCHS Esports`
+                  `Hello there <b>${data["First Name"]}</b>,<br>We have you signed up for the <b>${data["Team"]}</b> team. However, you have not completed the <a href="https://docs.google.com/document/d/1-qS5kgTkzaPj-Er8kbHK7S53QoOBlie7OPUmdZCqO0o/edit?usp=sharing">Spring Majors 2020 checklist</a> yet. Please complete this and DM our <b style="color:#33daa5">@ModMail</b> bot when you have finished, we can then officially add you to the team! Have a good day!<br>-VCHS Esports`
                 );
-                fs.appendFile("./uploads/results.txt", `===[No VES]===\n${data["First Name"]} ${data["Last Name"]}\n${data["Discord"]}\n${data["Email"]}`, "utf8", err => {
+                fs.appendFile("./uploads/results.txt", `===[No VES]===\n${data["First Name"]} ${data["Last Name"]}\n${data["Discord"]}\n${data["Email"]}\n${data["Team"]}`, "utf8", err => {
                   if (err) throw err;
                 });
               }

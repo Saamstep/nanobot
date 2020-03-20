@@ -77,6 +77,13 @@ client.on("ready", ready => {
       }
     });
   });
+
+  if (client.ConfigService.config.smp.rcon.autoRestart) {
+    setInterval(() => {
+      require("./services/rcon.js").run(client);
+    }, 300000);
+  }
+
   if (client.ConfigService.config.services.joinSys) {
     schedule.scheduleJob("0 */12 * * *", function() {
       let guild = client.guilds.get(client.ConfigService.config.guild);
