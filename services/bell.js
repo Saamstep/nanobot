@@ -7,13 +7,16 @@ exports.run = (client, dupe, sendMessage) => {
       .channels.find(ch => ch.name == `${client.ConfigService.config.channel.bell}`)
       .bulkDelete(100);
     if (period == null) {
-      sendMessage(client.ConfigService.config.channel.bell, `> 🔔 ${event} @Bell`);
+      sendMessage(client.ConfigService.config.channel.bell, `> 🔔 ${event} <@&689634857877372964>`);
     } else {
       sendMessage(client.ConfigService.config.channel.bell, `> 🔔 \`${period}\` period has ${event} <@&689634857877372964>`);
     }
   }
 
   //First Period Starting
+  schedule.scheduleJob("20 9 * * 1-5", function() {
+    announcePeriod(null, "School is begining in 10 minutes!");
+  });
   schedule.scheduleJob("30 9 * * 1-5", function() {
     announcePeriod("1st", "started.");
   });
@@ -38,7 +41,7 @@ exports.run = (client, dupe, sendMessage) => {
     announcePeriod("4th", "started.");
   });
   //SCHOOL Period Ending
-  schedule.scheduleJob("50 11 * * 1-5", function() {
+  schedule.scheduleJob("00 14 * * 1-5", function() {
     announcePeriod(null, "School is over! You did it!");
   });
 };

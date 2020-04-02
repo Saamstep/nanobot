@@ -1,132 +1,53 @@
-exports.run = (client, message, args, veriEnmap, cc) => {
-  if (client.isMod(message.author, message, client)) {
-    switch (args[0]) {
-      case "clearALL_dangerous_be_careful":
-        veriEnmap.defer.then(() => {
-          veriEnmap.deleteAll();
-          message.channel.send("Cleared verification enmap");
-        });
-        client.log("All Data Deleted", `Yea... its all gone :|`, 2942691, message, client);
-        break;
-      case "addrole":
-        let member = message.mentions.members.first();
-        let roleUser = message.guild.members.get(member.id);
-        if (!args[1]) return;
-        let roleName = args[2];
-        if (args[3]) roleName += " " + args[3];
-        roleUser.addRole(message.guild.roles.find(r => r.name === `${roleName}`)).then(out => {
-          veriEnmap.push(`${member.id}`, `${roleName}`, "roles");
-          message.channel.send(`Updated ${member.user.username}.\n+${roleName}`);
-          client.log("Role Added to User", `${member} now has role \`${roleName}\``, 2942691, message, client);
-        });
-        break;
-      case "removerole":
-        let m2 = message.mentions.members.first();
-        let r2 = message.guild.members.get(m2.id);
-        if (!args[1]) return;
-        let rName = args[2];
-        if (args[3]) rName += " " + args[3];
-        r2.removeRole(message.guild.roles.find(r => r.name === `${rName}`)).then(o => {
-          veriEnmap.remove(`${m2.id}`, `${rName}`, "roles");
-          message.channel.send(`Updated ${m2.user.username}'s roles.\n-${rName}`);
-          client.log("Role Removed from User", `${m2} now does not have role \`${rName}\``, 2942691, message, client);
-        });
-        break;
-      case "updatename":
-        let m = message.mentions.members.first();
-        let r = message.guild.members.get(m.id);
-        veriEnmap.set(`${m.id}`, `${args[2]}`, "name");
-        r.setNickname(`${m.user.username} (${veriEnmap.get(m.id, "name")})`);
-        message.channel.send(`Updated ${m.user.username}'s name to ${args[2]}.`);
-        client.log("User's Name Updated", `${m} now is named ${args[2]} ${args[3]}`, 2942691, message, client);
-        break;
-      case "seedata":
-        veriEnmap.defer.then(() => {
-          if (!args[0]) {
-            const embed = {
-              color: 16239504,
-              author: {
-                name: `${message.author.username}'s Data`,
-                avatar_url: `${message.author.avatarURL}`
-              },
-              fields: [
-                {
-                  name: "Name",
-                  value: `${veriEnmap.get(`${message.author.id}`, "name")}`
-                },
-                {
-                  name: "Discord",
-                  value: `${message.author.username}#${message.author.discriminator}`
-                },
-                {
-                  name: "Class",
-                  value: `${veriEnmap.get(`${message.author.id}`, "class")}`
-                },
-                {
-                  name: "Email",
-                  value: `${veriEnmap.get(`${message.author.id}`, "email")}`
-                },
-                {
-                  name: "Interested Games",
-                  value: `${veriEnmap.get(`${message.author.id}`, "roles").join("\n")}`
-                }
-              ]
-            };
-            message.author.send({ embed });
-          } else {
-            var member = message.mentions.users.first();
-            const embed = {
-              color: 16239504,
-              author: {
-                name: `${member.username}'s Data`,
-                avatar_url: `${member.avatarURL}`
-              },
-              fields: [
-                {
-                  name: "Name",
-                  value: `${veriEnmap.get(`${member.id}`, "name")}`
-                },
-                {
-                  name: "Discord",
-                  value: `<@${member.id}>`
-                },
-                {
-                  name: "Class",
-                  value: `${veriEnmap.get(`${member.id}`, "class")}`
-                },
-                {
-                  name: "Email",
-                  value: `${veriEnmap.get(`${member.id}`, "email")}`
-                },
-                {
-                  name: "Interested Games",
-                  value: `${veriEnmap.get(`${member.id}`, "roles").join("\n")}`
-                }
-              ]
-            };
-            if (client.isMod(message.author, message, client)) return message.author.send({ embed });
-          }
-        });
-        break;
-      case "remind":
-        let count = 0;
-        let guild = client.guilds.get(client.ConfigService.config.guild);
-        let noRoleMembers = guild.members.filter(member => !member.roles.has(guild.roles.find(r => r.name == `${client.ConfigService.config.roles.iamRole}`).id));
-        noRoleMembers.forEach(member => {
-          member.send("**VCHS Esports Discord** Please verify yourself! Verification allows you to get access to all channels within our Discord server and interact with the community!\nhttps://forms.gle/8YyJqV3Nnd7VJyYPA");
-          count++;
-        });
-        message.channel.send(`Sent to ${count} users!`);
-        break;
-      default:
-        message.channel.send(`\`\`\`${client.ConfigService.config.prefix}verify [clearALL_dangerous_be_careful/addrole/removerole/updatename/seedata/remind] [user] [new]\`\`\``);
+exports.run = (client, message, args, cc) => {
+  const syntax = `\`\`\`${client.ConfigService.config.prefix}verify [@user] [firstName] [year]\`\`\``;
+  let target;
+  let year;
+  let firstName;
+  let currentYears = ["2020", "2021", "2022", "2023"];
+  try {
+    target = message.guild.member(message.mentions.users.first());
+  } catch (e) {
+    return client.error("I could not find that user.\n" + syntax, message);
+  }
+
+  try {
+    if (currentYears.indexOf(args[2]) == -1 && args[2] != null) {
+      return client.error("This is an invalid year\n" + syntax, message);
     }
+    year = message.guild.roles.find(r => r.name == args[2]);
+  } catch (e) {
+    return client.error(`Could not find year, \`${args[2]}\`\n` + syntax, message);
+  }
+
+  try {
+    firstName = args[1];
+  } catch (e) {
+    return client.error("Please specify their first name!\n" + syntax, message);
+  }
+
+  let joinRole = message.guild.roles.find(r => r.name == client.ConfigService.config.roles.iamRole);
+  if (target.roles.has(joinRole.id) && year == null) {
+    let oldNick = target.nickname.substring(target.nickname.indexOf("(") + 1, target.nickname.indexOf(")"));
+    if (oldNick == firstName) return client.error("These names are the same silly!", message);
+    target.setNickname(`${target.user.username} (${firstName})`);
+    client.log(`First name updated on ${target.user.username}#${target.user.discriminator}`, `Old Name: ${oldNick}\nNew Name: ${firstName}`, 3298328, message, client);
+    return message.react("✅");
+  }
+  if (target.roles.has(joinRole.id) || target.roles.has(year.id)) {
+    return client.error("This user is already verified!", message);
+  } else {
+    target.addRole(joinRole);
+    target.addRole(year);
+    target.setNickname(`${target.user.username} (${firstName})`);
+    target.send("You have been verified successfully. Enjoy chatting in the **VCHS Esports** Discord server!\nRemember to read our Code of Conduct as all Discord members must abide by it: https://vchsesports.net/codeofconduct");
+    client.log(`${target.user.username}#${target.user.discriminator} was verified`, `**This user was verified manually!**\nName: ${firstName}\nYear: ${year}`, 3298328, message, client);
+    return message.react("✅");
   }
 };
 
 exports.cmd = {
-  enabled: false,
+  enabled: true,
   category: "VCHS Esports",
   level: 1,
-  description: "Verification control command"
+  description: "Allows mods to manually verify a user"
 };
