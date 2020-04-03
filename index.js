@@ -143,7 +143,7 @@ client.on("raw", async event => {
       .get(data.channel_id)
       .fetchMessage(data.message_id)
       .then(msg => {
-        if (msg.author.id == client.user.id) {
+        if (msg.author.id == client.user.id && client.isMod(message.author, message, client, false)) {
           msg.delete();
         }
       });

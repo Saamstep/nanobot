@@ -7,21 +7,24 @@ exports.run = (client, message, args) => {
         case "add":
           //notes storage obj exists
           if (client.notes.has(message.channel.id)) {
-            client.notes.push(message.channel.id, args.join().substring(10, args.join().length));
+            client.notes.push(message.channel.id, args.join(" ").substring(4, args.join().length));
+            message.channel.send(`> Created note \`\`\`${args.join(" ").substring(4, args.join().length)}\`\`\``);
           } else {
             //create notes storage object
-            client.notes.set(message.channel.id, [args.join().substring(10, args.join().length)]);
+            client.notes.set(message.channel.id, [args.join(" ").substring(4, args.join().length)]);
+            message.channel.send(`> Created note \`\`\`${args.join(" ").substring(4, args.join().length)}\`\`\``);
           }
 
           break;
         case "del":
           if (!args[1]) return client.error("Please specify a note ID to remove!", message);
           if (client.notes.has(message.channel.id)) {
+            message.channel.send(`> Removing note \`${args[1]}\``);
             client.notes.remove(message.channel.id, args[1]);
           }
           break;
         case "list":
-          if (client.notes.get(message.channel.id) == undefined) return message.channel.send("No notes here!");
+          if (client.notes.get(message.channel.id) == undefined || client.notes.get(message.channel.id).length == 0) return message.channel.send("> No notes here!");
           let chunk = "```";
           let i = 0;
           client.notes.get(message.channel.id).forEach(note => {
@@ -33,10 +36,12 @@ exports.run = (client, message, args) => {
           client.notes.delete(message.channel.id);
           break;
         default:
-          message.channel.send("base");
+          message.channel.send(`\`\`\`${client.ConfigService.config.prefix}notes [add] [note text]\n notes [del] [index]\n notes list\`\`\``);
           break;
       }
     });
+  } else {
+    client.error("Notes are disabled here!", message);
   }
 };
 exports.cmd = {
