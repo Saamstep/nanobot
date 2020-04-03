@@ -59,12 +59,19 @@ exports.run = (client, dupe, sendMessage) => {
           };
           //send message via function
           sendMessage(client.ConfigService.config.channel.poll, { embed });
-          client.console("Sending new match score...");
+          client.console("Sending new match score...", "info", "HSEL");
+          //remove the previous response (we grabbed the data of the previous match just to get the ID (hence range 0-1))
+          if (dupe.has(`hsel-${match[1].id}`)) {
+            dupe.delete(`hsel-${match[1].id}`);
+            client.console("Removed previous match ID", "info", "HSEL");
+          } else {
+            client.console(`Could not delete previous match ID from the dupe checker.`, "warn", "HSEL");
+          }
           //add to set so that we don't loop the same announcement
           dupe.set(`hsel-${match[0].id}`);
         } else {
           //because we already announced OR the score was not inputted. don't do anything!
-          client.console(`Already announced hsel-${match[0].id}`);
+          client.console(`Already announced hsel-${match[0].id}`, "info", "HSEL");
         }
       } catch (e) {
         //err

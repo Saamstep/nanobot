@@ -124,6 +124,12 @@ const cc = new Enmap({
 });
 client.ccSize = cc.size;
 
+client.notes = new Enmap({
+  name: "notes",
+  autoFetch: true,
+  fetchAll: true
+});
+
 //role react system start -------------
 const events = {
   MESSAGE_REACTION_ADD: "messageReactionAdd",
@@ -257,6 +263,11 @@ client.on("message", message => {
     });
   }
 
+  if (message.content.startsWith(`${client.ConfigService.config.prefix}forget`)) {
+    dupe.deleteAll();
+    message.react("✅");
+  }
+
   // Nicknamer [p]iam command
   try {
     if (message.channel.name === `${client.ConfigService.config.channel.nickID}`) {
@@ -336,7 +347,7 @@ client.on("message", message => {
               run();
               break;
             case 1:
-              if (client.isMod(message.author, message, client)) {
+              if (client.isMod(message.author, message, client) || client.isAdmin(message.author, message, true, client) || client.isOwner(message, true, client)) {
                 run();
               }
               break;

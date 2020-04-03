@@ -8,7 +8,7 @@ exports.run = (client, dupe, sendMessage) => {
 
   //OWL News
   async function owlNews() {
-    client.console("OWL | Checking for OWL news...".yellow);
+    client.console("OWL | Checking for OWL news...".yellow, "info", "OWL News");
 
     //we use try incase the api doesn't exist and the bot crashes :P
     try {
@@ -19,7 +19,7 @@ exports.run = (client, dupe, sendMessage) => {
       dupe.defer.then(() => {
         if (dupe.get("news") === body.blogs[0].blogId) {
           //if announced, skip it (:
-          return client.console(`Already announced ${body.blogs[0].blogId}`.yellow);
+          return client.console(`Already announced ${body.blogs[0].blogId}`.yellow, "info", "OWL News");
         } else {
           dupe.set("news", body.blogs[0].blogId);
           //it wasn't announced, so we annoucne it with this code
@@ -55,10 +55,10 @@ exports.run = (client, dupe, sendMessage) => {
         }
       });
     } catch (e) {
-      client.console(e);
+      client.console(e, "error", "OWL News");
     }
   }
   owlNews();
 };
 
-exports.time = 280000;
+exports.time = 600000;
