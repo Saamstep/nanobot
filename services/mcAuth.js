@@ -17,11 +17,11 @@ exports.run = async (client, dupe, sendMessage) => {
       //data in body checker
     } else if (Object.keys(req.body).length > 0) {
       res.status(200).send({ status: "Successful" });
+      console.log(req.body);
       //DO STUFF HERE NOW
       try {
         const usr = await fetch(`https://api.mojang.com/users/profiles/minecraft/${req.body.username}`);
         const user = await usr.json();
-        console.log(user);
       } catch (e) {
         if (e.type == "invalid-json") {
           return sendMessage(client.ConfigService.config.channel.log, `> __AutoWhitelist__\n> The AutoWhitelister failed for username **${req.body.username}**. This username does not exist.`);
