@@ -15,12 +15,12 @@ client.console = require("./modules/consoleMod.js");
 client.log = require("./modules/logMod.js");
 client.ConfigService = require("./config.js");
 client.login(client.ConfigService.config.token);
-client.load = client.emojis.find(emoji => emoji.name === "NANOloading");
+client.load = client.emojis.find((emoji) => emoji.name === "NANOloading");
 
 // This loop reads the /events/ folder and attaches each event file to the appropriate event.
 fs.readdir("./events/", (err, files) => {
   if (err) return client.console(err, "warn", "Events Loop");
-  files.forEach(file => {
+  files.forEach((file) => {
     if (file.startsWith(".")) {
       return;
     }
@@ -33,9 +33,9 @@ fs.readdir("./events/", (err, files) => {
 
 //Send Message to Channel Function
 function sendMessage(name, msg) {
-  client.guilds.map(guild => {
+  client.guilds.map((guild) => {
     if (guild.available) {
-      let channel = guild.channels.find(channel => channel.name === `${name}`);
+      let channel = guild.channels.find((channel) => channel.name === `${name}`);
       if (channel) {
         channel.send(msg);
       }
@@ -44,10 +44,10 @@ function sendMessage(name, msg) {
 }
 
 //controls all loop checkers
-client.on("ready", ready => {
+client.on("ready", (ready) => {
   fs.readdir("./loops/", (err, files) => {
     if (err) return client.console(err, "warn", "Events Loop");
-    files.forEach(file => {
+    files.forEach((file) => {
       if (!file.includes("js")) return;
       let eventFunction = require(`./loops/${file}`);
       let eventName = file.split(".")[0];
@@ -65,7 +65,7 @@ client.on("ready", ready => {
   //runs services once to keep them alive
   fs.readdir("./services/", (err, files) => {
     if (err) return client.console(err, "warn", "Services");
-    files.forEach(file => {
+    files.forEach((file) => {
       if (!file.includes("js")) return;
       let eventFunction = require(`./services/${file}`);
       let eventName = file.split(".")[0];
@@ -85,10 +85,10 @@ client.on("ready", ready => {
   }
 
   if (client.ConfigService.config.services.joinSys) {
-    schedule.scheduleJob("0 */12 * * *", function() {
+    schedule.scheduleJob("0 */12 * * *", function () {
       let guild = client.guilds.get(client.ConfigService.config.guild);
-      let noRoleMembers = guild.members.filter(member => !member.roles.has(guild.roles.find(r => r.name == `${client.ConfigService.config.roles.iamRole}`).id));
-      noRoleMembers.forEach(member => member.send("**VCHS Esports Discord** Please verify yourself! Verification allows you to get access to all channels within our Discord server and interact with the community!\nhttp://discord.vchsesports.net"));
+      let noRoleMembers = guild.members.filter((member) => !member.roles.has(guild.roles.find((r) => r.name == `${client.ConfigService.config.roles.iamRole}`).id));
+      noRoleMembers.forEach((member) => member.send("**VCHS Esports Discord** Please verify yourself! Verification allows you to get access to all channels within our Discord server and interact with the community!\nhttp://discord.vchsesports.net"));
     });
   }
 });
@@ -99,7 +99,7 @@ client.on("ready", ready => {
 const dupe = new Enmap({
   name: "dupeCheck",
   autoFetch: true,
-  fetchAll: true
+  fetchAll: true,
 });
 
 // enmap and data storage object for verification system
@@ -113,37 +113,37 @@ const dupe = new Enmap({
 client.profiles = new Enmap({
   name: "profiles",
   autoFetch: true,
-  fetchAll: true
+  fetchAll: true,
 });
 
 //Custom command
 const cc = new Enmap({
   name: "cc",
   autoFetch: true,
-  fetchAll: true
+  fetchAll: true,
 });
 client.ccSize = cc.size;
 
 client.notes = new Enmap({
   name: "notes",
   autoFetch: true,
-  fetchAll: true
+  fetchAll: true,
 });
 
 //role react system start -------------
 const events = {
   MESSAGE_REACTION_ADD: "messageReactionAdd",
-  MESSAGE_REACTION_REMOVE: "messageReactionRemove"
+  MESSAGE_REACTION_REMOVE: "messageReactionRemove",
 };
-client.on("raw", async event => {
+client.on("raw", async (event) => {
   if (!events.hasOwnProperty(event.t)) return;
   const { d: data } = event;
   if (data.emoji.name == "🗑️" && event.t == "MESSAGE_REACTION_ADD" && !client.users.get(data.user_id).bot) {
     client.channels
       .get(data.channel_id)
       .fetchMessage(data.message_id)
-      .then(msg => {
-        if (msg.author.id == client.user.id && client.isMod(message.author, message, client, false)) {
+      .then((msg) => {
+        if (msg.author.id == client.user.id) {
           msg.delete();
         }
       });
@@ -166,8 +166,8 @@ client.on("messageReactionAdd", (reaction, user) => {
   if (user.bot) return;
   if (client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id) == -1) return;
   let roleName = client.ConfigService.config.roleReact.roles[client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)];
-  let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
-  let member = reaction.message.guild.members.find(m => m.id == user.id);
+  let role = client.guilds.get(reaction.emoji.guild.id).roles.find((r) => r.name == roleName);
+  let member = reaction.message.guild.members.find((m) => m.id == user.id);
   member.send(`You were given the role **${roleName}**`);
   // veriEnmap.push(`${member.id}`, `${roleName}`, "roles");
   member.addRole(role.id);
@@ -177,8 +177,8 @@ client.on("messageReactionRemove", (reaction, user) => {
   if (user.bot) return;
   if (client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id) == -1) return;
   let roleName = client.ConfigService.config.roleReact.roles[client.ConfigService.config.roleReact.emojis.indexOf(reaction.emoji.id)];
-  let role = client.guilds.get(reaction.emoji.guild.id).roles.find(r => r.name == roleName);
-  let member = reaction.message.guild.members.find(m => m.id == user.id);
+  let role = client.guilds.get(reaction.emoji.guild.id).roles.find((r) => r.name == roleName);
+  let member = reaction.message.guild.members.find((m) => m.id == user.id);
   member.send(`Removed **${roleName}** from you`);
   // veriEnmap.remove(`${member.id}`, `${roleName}`, "roles");
   member.removeRole(role.id);
@@ -227,7 +227,7 @@ client.on("userUpdate", (oldUser, newUser) => {
 });
 
 //verification remember system
-client.on("guildMemberAdd", member => {
+client.on("guildMemberAdd", (member) => {
   if (member.guild.id == client.ConfigService.config.guild && client.ConfigService.config.services.joinSys == true) {
     let sheets = require("./src/sheetsRejoin.js");
     sheets.run(client, sendMessage, member);
@@ -253,12 +253,12 @@ module.exports = function cooldown(message, code) {
   }
 };
 
-client.on("message", message => {
+client.on("message", (message) => {
   //links in general
   let link = /(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gim;
   if (message.channel.id == "476921107778109442" && link.test(message.content) && !client.isMod(message.author, message, client, false)) {
     message.delete(0);
-    message.channel.send("No links allowed here! Please use <#498912077499334712>").then(m => {
+    message.channel.send("No links allowed here! Please use <#498912077499334712>").then((m) => {
       m.delete(4000);
     });
   }
@@ -287,13 +287,13 @@ client.on("message", message => {
 
   if (message.channel.id == `${client.ConfigService.config.channel.supportID}` && !message.author.bot) {
     const tag = client.ConfigService.config.supportTags;
-    let manager = message.guild.roles.find(r => r.name == "Community Manager");
-    if (tag.some(word => message.content.startsWith(word))) {
+    let manager = message.guild.roles.find((r) => r.name == "Community Manager");
+    if (tag.some((word) => message.content.startsWith(word))) {
       pMreact();
     } else if (client.isAdmin(message.author, message, false, client) || message.member.roles.has(manager.id)) {
       if (message.content.startsWith("check")) {
         let args = message.content.split(" ").slice(1);
-        message.channel.fetchMessage(args[0]).then(msg => {
+        message.channel.fetchMessage(args[0]).then((msg) => {
           msg.react("✅");
         });
         message.delete(0);
@@ -303,7 +303,7 @@ client.on("message", message => {
         let reason = args.join(" ");
         reason = reason.replace(args[0], "\n");
         message.delete(0);
-        message.channel.fetchMessage(args[0]).then(msg => {
+        message.channel.fetchMessage(args[0]).then((msg) => {
           msg.delete(0);
           msg.author.send("Your suggestion `" + msg.content + "` was removed by an admin for: ```" + reason + "```");
         });
