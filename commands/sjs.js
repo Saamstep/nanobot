@@ -51,7 +51,7 @@ exports.run = (client, message, args) => {
                     await tc.lockPermissions();
                     await tc
                       .send(
-                        `This category has been specially created for **${schoolName}** to discuss and strategize during the tournament. As specified in the rules, you **MUST** use the provided voice channel below to comm during the game. This will allow for smooth communication with the tournament admins and to keep competitive integrity for the tournament. Please take time to review the rules and make sure you have submitted proof forms as specified in the rules.\n__Links__\n→**Rules** <https://rules.sanjoseshowdown.com>\n→**Proof Form** <https://proof.sanjoseshowdown.com>\n→**Invite Team Here** https://discord.sanjoseshowdown.com\n→**About** <https://sanjoseshowdown.com>`
+                        `This category has been specially created for **${schoolName}** to discuss and strategize during the tournament. As specified in the rules, you **MUST** use the provided voice channel below to comm during the game. This will allow for smooth communication with the tournament admins and to keep competitive integrity for the tournament. Please take time to review the rules and make sure you have submitted proof forms as specified in the rules.\n\n__Links__\n→**Rules** <https://rules.sanjoseshowdown.com>\n→**Proof Form** <https://proof.sanjoseshowdown.com>\n→**Invite Team Here** <https://discord.sanjoseshowdown.com>\n→**About** <https://sanjoseshowdown.com>`
                       )
                       .then((m) => m.pin());
                   });
@@ -65,6 +65,7 @@ exports.run = (client, message, args) => {
             });
           });
         });
+      client.log("SJS Team", `Team Created **${schoolName}**`, 6800070, message, client);
       break;
     case "join":
       message.delete(0);
@@ -76,6 +77,7 @@ exports.run = (client, message, args) => {
           .addRole(message.guild.roles.find((r) => r.name == teamName))
           .then((s) => {
             message.channel.send(`Added ${s.user.username} to team **${teamName}**`);
+            client.log("SJS Team", `Added **${s.user}** to team **${teamName}**`, 6800070, message, client);
           });
       });
       break;
