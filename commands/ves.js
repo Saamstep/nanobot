@@ -146,7 +146,7 @@ exports.run = (client, message, args) => {
 };
 
 exports.cmd = {
-  enabled: true,
+  enabled: false,
   category: "VCHS Esports",
   level: 1,
   description: "Varsity Esports interaction with Discord.(Some features do not work)"

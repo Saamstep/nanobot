@@ -35,7 +35,7 @@ exports.run = async (client, dupe, sendMessage) => {
       console.log(req.body.discord);
       if (req.body.discord.includes("#")) {
         let member = guild.members.find((m) => m.user.username == req.body.discord.split("#")[0] && m.user.discriminator == req.body.discord.split("#")[1]);
-        member.addRole(guild.roles.find((r) => r.name == "Minecraft Server Player"));
+        member.addRole(guild.roles.finds((r) => r.name == "Minecraft Server Player"));
         member.send(`> You have been whitelisted to our Minecraft Server with the account **${req.body.username}**\n> Please make sure to read the rules of the server at https://vchsesports.net/mcserver\n> The IP is ||\`mc.vchsesports.net\`||`);
         sendMessage("minecraft-server-connected", `<@${member.user.id}> was whitelisted. Welcome to the server **${req.body.username}**`);
       }

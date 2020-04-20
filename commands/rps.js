@@ -3,9 +3,9 @@ exports.run = (client, message, args) => {
   const USER_PLAYER = `${message.author} wins!`;
   const COMPUTER_PLAYER = `${client.user} wins!`;
   const TIE = `It's a tie!`;
-  if (!args[0]) return client.error(`Choose a move...\`\`\`rock\npaper\nscissors \`\`\``, message);
+  if (!args[0]) return client.error(`Choose a move...\`\`\`rock, paper, or scissors \`\`\``, message);
   if (choices.indexOf(args[0]) == -1) {
-    return client.error(`Choose a move...\n\`\`\`rock\npaper\nscissors\`\`\``, message);
+    return client.error(`Choose a move...\`\`\`rock, paper, or scissors \`\`\``, message);
   }
   let computer = choices[Math.floor(Math.random() * 3 + 1) - 1];
   let user = args[0];
@@ -23,21 +23,21 @@ exports.run = (client, message, args) => {
   const embed = {
     description: calculate(user, computer),
     author: {
-      name: "RPS"
+      name: "RPS",
     },
     footer: {
-      text: `${client.user.username} - Fun`
+      text: `${client.user.username} - Fun`,
     },
     fields: [
       {
         name: "User Choice",
-        value: user
+        value: user,
       },
       {
         name: "Computer Choice",
-        value: computer
-      }
-    ]
+        value: computer,
+      },
+    ],
   };
   message.channel.send({ embed });
 };
@@ -45,5 +45,5 @@ exports.cmd = {
   enabled: true,
   category: "Fun",
   level: 0,
-  description: "Play Rock, paper, scissors with the bot!"
+  description: "Play Rock, paper, scissors with the bot!",
 };

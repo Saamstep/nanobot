@@ -22,7 +22,7 @@ exports.run = (client, message, args) => {
 };
 
 exports.cmd = {
-  enabled: true,
+  enabled: false,
   category: 'VCHS Esports',
   level: 0,
   description: 'Interact with the toornament API.'

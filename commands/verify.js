@@ -14,7 +14,7 @@ exports.run = (client, message, args, cc) => {
     if (currentYears.indexOf(args[2]) == -1 && args[2] != null) {
       return client.error("This is an invalid year\n" + syntax, message);
     }
-    year = message.guild.roles.find(r => r.name == args[2]);
+    year = message.guild.roles.find((r) => r.name == args[2]);
   } catch (e) {
     return client.error(`Could not find year, \`${args[2]}\`\n` + syntax, message);
   }
@@ -25,8 +25,8 @@ exports.run = (client, message, args, cc) => {
     return client.error("Please specify their first name!\n" + syntax, message);
   }
 
-  let joinRole = message.guild.roles.find(r => r.name == client.ConfigService.config.roles.iamRole);
-  if (target.roles.has(joinRole.id) && year == null) {
+  let joinRole = message.guild.roles.find((r) => r.name == client.ConfigService.config.roles.iamRole);
+  if (target.roles.has(joinRole.id) || year == null) {
     let oldNick = target.nickname.substring(target.nickname.indexOf("(") + 1, target.nickname.indexOf(")"));
     if (oldNick == firstName) return client.error("These names are the same silly!", message);
     target.setNickname(`${target.user.username} (${firstName})`);
@@ -49,5 +49,5 @@ exports.cmd = {
   enabled: true,
   category: "VCHS Esports",
   level: 1,
-  description: "Allows mods to manually verify a user"
+  description: "Allows mods to manually verify a user",
 };
