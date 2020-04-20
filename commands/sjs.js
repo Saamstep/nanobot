@@ -90,6 +90,6 @@ exports.run = (client, message, args) => {
 exports.cmd = {
   enabled: true,
   category: "Utility",
-  level: 3,
+  level: 2,
   description: "[San Jose Showdown] Adds a new team, sets up role and channel for said team.",
 };
