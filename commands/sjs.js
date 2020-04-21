@@ -41,6 +41,7 @@ exports.run = (client, message, args) => {
                   permissionOverwrites: [
                     //add bots and organizer to see this
                     { id: role.id, allow: ["READ_MESSAGES"] },
+                    { id: message.guild.roles.find((r) => r.name == client.ConfigService.config.roles.mod).id, allow: ["READ_MESSAGES"] },
                     { id: message.guild.roles.find((r) => r.name == client.ConfigService.config.roles.bot).id, allow: ["READ_MESSAGES"] },
                     { id: message.guild.id, deny: ["READ_MESSAGES"] },
                   ],
@@ -81,8 +82,37 @@ exports.run = (client, message, args) => {
           });
       });
       break;
+    case "announce":
+      if (!args[1]) return client.error("Please make announcement longer", message);
+      getAllTeams().forEach((team) => {
+        let chName = team.replace(/\s+/g, "-").toLowerCase();
+        try {
+          message.guild.channels
+            .find((ch) => ch.name == chName)
+            .send(args.join(" ").slice(9))
+            .then((msg) => {
+              msg.pin();
+            });
+        } catch (e) {
+          client.error(`Error with channel ${chName}: \`${e}\``);
+        }
+      });
+      break;
+    case "chperms":
+      try {
+        let permsObject = JSON.parse(args.join(" ").substring(args.join(" ").indexOf("{"), args.join(" ").indexOf("}") + 2));
+        let roleFind = args.join(" ").substring(args.join(" ").indexOf("(") + 1, args.join(" ").indexOf(")"));
+        let allTeams = getAllTeams();
+        allTeams.forEach((team) => {
+          message.guild.channels.find((ch) => ch.name == team && ch.type == "category").overwritePermissions(message.guild.roles.find((r) => r.name == roleFind).id, permsObject);
+        });
+      } catch (e) {
+        return client.error(`\`\`\`${e}\`\`\``, message);
+      }
+      message.channel.send(`Updated permissions for role **${roleFind}** in \`${allTeams.length}\` team categories.`);
+      break;
     default:
-      const helpText = `*San Jose Showdown Server Management Command*\n${client.ConfigService.config.prefix}sjs list -> lists all teams\n${client.ConfigService.config.prefix}sjs add [Team Name] -> Adds a new team (sets up roles/channels)\n${client.ConfigService.config.prefix}sjs join (Team Name) @user @user2 @user3... -> adds user(s) to specified team in parentheticals`;
+      const helpText = `*San Jose Showdown Server Management Command*\n${client.ConfigService.config.prefix}sjs list -> lists all teams\n${client.ConfigService.config.prefix}sjs add [Team Name] -> Adds a new team (sets up roles/channels)\n${client.ConfigService.config.prefix}sjs join (Team Name) @user @user2 @user3... -> adds user(s) to specified team in parentheticals\n${client.ConfigService.config.prefix}sjs announce [announcement] --> Sends announcement to each team channel and pins message.\n${client.ConfigService.config.prefix}sjs chperms (Role) {PermissionOverwriteOptions}`;
       message.channel.send(`\`\`\`${helpText}\`\`\``);
       break;
   }
