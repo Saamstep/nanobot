@@ -41,6 +41,7 @@ exports.run = (client, message, args) => {
                   permissionOverwrites: [
                     //add bots and organizer to see this
                     { id: role.id, allow: ["READ_MESSAGES"] },
+                    { id: message.guild.roles.find((r) => r.name == "League of Legends Captain").id, allow: ["MANAGE_MESSAGES", "MENTION_EVERYONE"] },
                     { id: message.guild.roles.find((r) => r.name == client.ConfigService.config.roles.mod).id, allow: ["READ_MESSAGES"] },
                     { id: message.guild.roles.find((r) => r.name == client.ConfigService.config.roles.bot).id, allow: ["READ_MESSAGES"] },
                     { id: message.guild.id, deny: ["READ_MESSAGES"] },
