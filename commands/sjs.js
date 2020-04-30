@@ -112,8 +112,13 @@ exports.run = (client, message, args) => {
       }
       message.channel.send(`Updated permissions for role **${roleFind}** in \`${allTeams.length}\` team categories.`);
       break;
+    case "vcCount":
+      getAllTeams().forEach((team) => {
+        message.guild.channels.find((ch) => ch.name == team && ch.type == "voice").setUserLimit(args[1]);
+      });
+      break;
     default:
-      const helpText = `*San Jose Showdown Server Management Command*\n${client.ConfigService.config.prefix}sjs list -> lists all teams\n${client.ConfigService.config.prefix}sjs add [Team Name] -> Adds a new team (sets up roles/channels)\n${client.ConfigService.config.prefix}sjs join (Team Name) @user @user2 @user3... -> adds user(s) to specified team in parentheticals\n${client.ConfigService.config.prefix}sjs announce [announcement] --> Sends announcement to each team channel and pins message.\n${client.ConfigService.config.prefix}sjs chperms (Role) {PermissionOverwriteOptions}`;
+      const helpText = `*San Jose Showdown Server Management Command*\n${client.ConfigService.config.prefix}sjs list -> lists all teams\n${client.ConfigService.config.prefix}sjs add [Team Name] -> Adds a new team (sets up roles/channels)\n${client.ConfigService.config.prefix}sjs join (Team Name) @user @user2 @user3... -> adds user(s) to specified team in parentheticals\n${client.ConfigService.config.prefix}sjs announce [announcement] --> Sends announcement to each team channel and pins message.\n${client.ConfigService.config.prefix}sjs chperms (Role) {PermissionOverwriteOptions}\n${client.ConfigService.config.prefix}sjs vcCount [maxUsersInVC]`;
       message.channel.send(`\`\`\`${helpText}\`\`\``);
       break;
   }
